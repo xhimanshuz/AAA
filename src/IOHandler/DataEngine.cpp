@@ -16,6 +16,10 @@ DataEngine::DataEngine()
     clientMap = new QMap<QString, QStringList>;
     mediaHouseMap = new QMap<QString, QStringList>;
     ROMap = new QMap<int, QStringList>;
+    paymentMap = new QMap<int, QStringList>;
+    receiptMap = new QMap<int, QStringList>;
+    gBillMap = new QMap<int, QStringList>;
+    mediaBillMap = new QMap<int, QStringList>;
 }
 
 DataEngine::~DataEngine()
@@ -88,6 +92,104 @@ QStringList DataEngine::roStringList()
         roString << ro.at(0);
 
     return roString;
+}
+
+QStringList DataEngine::roStringList(const int roNo)
+{
+    auto it = ROMap->find(roNo);
+    if(it == ROMap->end())
+        return {};
+    return it.value();
+}
+
+void DataEngine::insertPaymentData(const QStringList &paymentDetail)
+{
+    auto RONo = paymentDetail.at(0).toInt();
+
+    paymentMap->insert(RONo, paymentDetail);
+}
+
+void DataEngine::RemovePaymentData(const QString &roNo)
+{
+    paymentMap->remove(roNo.toInt());
+}
+
+QStringList DataEngine::paymentStringList(int roNo)
+{
+    auto idt = paymentMap->find(roNo);
+    if(idt != paymentMap->end())
+        return idt.value();
+    return {};
+}
+
+void DataEngine::insertReceiptData(const QStringList &receiptDetail)
+{
+    auto RONo = receiptDetail.at(0).toInt();
+
+    receiptMap->insert(RONo, receiptDetail);
+}
+
+void DataEngine::RemoveReceiptData(const QString &roNo)
+{
+    receiptMap->remove(roNo.toInt());
+}
+
+QStringList DataEngine::receiptStringList(int roNo)
+{
+    auto idt = receiptMap->find(roNo);
+    if(idt != receiptMap->end())
+        return idt.value();
+    return {};
+}
+
+QMap<int, QStringList> *DataEngine::getGBillMap() const
+{
+    return gBillMap;
+}
+
+QMap<int, QStringList> *DataEngine::getMediaBillMap() const
+{
+    return mediaBillMap;
+}
+
+void DataEngine::insertMediaBillData(const QStringList &mediaBillDetail)
+{
+    auto RONo = mediaBillDetail.at(0).toInt();
+
+    mediaBillMap->insert(RONo, mediaBillDetail);
+}
+
+void DataEngine::RemoveMediaBillData(const QString &roNo)
+{
+    mediaBillMap->remove(roNo.toInt());
+}
+
+QStringList DataEngine::mediaBillStringList(int roNo)
+{
+    auto idt = mediaBillMap->find(roNo);
+    if(idt != mediaBillMap->end())
+        return idt.value();
+    return {};
+}
+
+void DataEngine::insertGBillData(const QStringList &gBillDetail)
+{
+    auto RONo = gBillDetail.at(0).toInt();
+
+    gBillMap->insert(RONo, gBillDetail);
+}
+
+void DataEngine::RemoveGBillData(const QString &roNo)
+{
+    gBillMap->remove(roNo.toInt());
+}
+
+QStringList DataEngine::gBillStringList(int roNo)
+{
+    auto it = gBillMap->find(roNo);
+    if(it != gBillMap->end())
+        return  it.value();
+    return {};
 }
 
 QStringList DataEngine::jobTypeStringList()

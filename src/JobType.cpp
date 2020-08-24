@@ -1,7 +1,7 @@
 #include "JobType.h"
 #include <QDebug>
 
-JobType::JobType(QWidget *parent) : QWidget(parent)
+JobType::JobType(QWidget *parent) : QDialog(parent)
 {
     io = IOHandler::getInstance();
 

@@ -17,7 +17,7 @@
 #include <QSet>
 #include <QMessageBox>
 
-class JobType : public QWidget
+class JobType : public QDialog
 {
     Q_OBJECT
 

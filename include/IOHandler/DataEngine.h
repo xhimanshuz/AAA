@@ -34,10 +34,36 @@ public:
     void removeMediaHouseData(const QString &mediaHouse);
     QStringList mediaHouseStringList();
 
+    // RO MAP
     QMap<int, QStringList> *ROMap;
     void insertROData(const QStringList detailList);
+    QStringList roStringList(const int roNo);
     QStringList roStringList();
 
+    // PAYMENT MAP
+    QMap<int, QStringList> *paymentMap;
+    void insertPaymentData(const QStringList &paymentDetail);
+    void RemovePaymentData(const QString &roNo);
+    QStringList paymentStringList(int roNo);
+
+    // RECEIPT MAP
+    QMap<int, QStringList> *receiptMap;
+    void insertReceiptData(const QStringList &receiptDetail);
+    void RemoveReceiptData(const QString &roNo);
+    QStringList receiptStringList(int roNo);
+
+    // GENERATE BILL MAP
+    QMap<int, QStringList> *gBillMap;
+    void insertGBillData(const QStringList &gBillDetail);
+    void RemoveGBillData(const QString &roNo);
+    QStringList gBillStringList(int roNo);
+    QMap<int, QStringList> *getGBillMap() const;
+
+    QMap<int, QStringList> *mediaBillMap;
+    void insertMediaBillData(const QStringList &mediaBillDetail);
+    void RemoveMediaBillData(const QString &roNo);
+    QStringList mediaBillStringList(int roNo);
+    QMap<int, QStringList> *getMediaBillMap() const;
 };
 
 #endif // DATAENGINE_H

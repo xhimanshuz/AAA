@@ -1,7 +1,7 @@
 #ifndef RELEASEORDER_H
 #define RELEASEORDER_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QLabel>
@@ -14,7 +14,7 @@
 
 #include "IOHandler/IOHandler.h"
 
-class AddReleaseOrder: public QWidget
+class AddReleaseOrder: public QDialog
 {
     Q_OBJECT
 
@@ -56,7 +56,7 @@ class AddReleaseOrder: public QWidget
     void setValues(const QStringList detailList);
 public:
     explicit AddReleaseOrder(QWidget *parent = nullptr);
-    AddReleaseOrder(const QStringList& detailList, QWidget *parent = nullptr);
+    AddReleaseOrder(const int roNo, QWidget *parent = nullptr);
     virtual ~AddReleaseOrder();
 
 };

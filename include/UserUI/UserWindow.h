@@ -1,7 +1,7 @@
 #ifndef USERWINDOW_H
 #define USERWINDOW_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QLineEdit>
 #include <QTableView>
 #include <QPushButton>
@@ -14,7 +14,7 @@
 #include "IOHandler/DataEngine.h"
 #include "NewUser.h"
 
-class UserWindow : public QWidget
+class UserWindow : public QDialog
 {
     Q_OBJECT
 

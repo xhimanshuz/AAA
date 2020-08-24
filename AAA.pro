@@ -1,6 +1,12 @@
 QT += widgets
 
 SOURCES += \
+    AAA.cpp \
+    AddGeneratebill.cpp \
+    GenerateBillWindow.cpp \
+    MediaBillDetail.cpp \
+    PaymentDetail.cpp \
+    ReceiptDetail.cpp \
     src/ReleaseOrder/AddReleaseOrder.cpp \
     src/UserUI/NewUser.cpp \
     src/UserUI/UserWindow.cpp \
@@ -10,6 +16,12 @@ SOURCES += \
     src/app.cpp
 
 HEADERS += \
+    AAA.h \
+    AddGeneratebill.h \
+    GenerateBillWindow.h \
+    MediaBillDetail.h \
+    PaymentDetail.h \
+    ReceiptDetail.h \
     include/ReleaseOrder/AddReleaseOrder.h \
     include/UserUI/NewUser.h \
     include/UserUI/UserWindow.h \

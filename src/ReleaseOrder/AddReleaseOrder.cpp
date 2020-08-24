@@ -1,14 +1,19 @@
 #include "ReleaseOrder/AddReleaseOrder.h"
 
-AddReleaseOrder::AddReleaseOrder(QWidget *parent): QWidget(parent)
+AddReleaseOrder::AddReleaseOrder(QWidget *parent): QDialog(parent)
 {
     io = IOHandler::getInstance();
     render();
 }
 
-AddReleaseOrder::AddReleaseOrder(const QStringList &detailList, QWidget *parent)
+AddReleaseOrder::AddReleaseOrder(const int roNo, QWidget *parent)
 {
+    io = IOHandler::getInstance();
 
+    render();
+    auto strList = io->dataEngine->roStringList(roNo);
+    if(!strList.isEmpty())
+        setValues(strList);
 }
 
 AddReleaseOrder::~AddReleaseOrder()
@@ -127,6 +132,7 @@ void AddReleaseOrder::setupSignal()
 {
     connect(save, &QPushButton::clicked, [this]{
         io->dataEngine->insertROData(toStringList());
+        this->close();
     });
 }
 
@@ -134,8 +140,8 @@ QStringList AddReleaseOrder::toStringList()
 {
     return {roNo->text(), mediaHousList->currentText(), jobTypeList->currentText(), editionCentre->text(),
                 sizeDuration->text(), guarantedPosition->text(), premium->text(), premiumRemark->toPlainText().toUtf8(),
-                rate->text(), rateRemark->toPlainText(), date->text(), clientList->currentText(), dateOfPublication->text(),
-                totalSizeDuration->text(), totalSizeDuration->text(), remarks->toPlainText(), hsnCode->text(), amount->text(),
+                rate->text(), rateRemark->toPlainText(), date->text(), clientList->currentText(), caption->text(), dateOfPublication->text(),
+                totalSizeDuration->text(), remarks->toPlainText(), hsnCode->text(), amount->text(),
                 netAmount->text(), CGST->currentText(), cgstRemark->text(), SGST->currentText(), sgstRemark->text(),
                 IGST->currentText(), igstRemark->text(), roAmount->text()};
 }

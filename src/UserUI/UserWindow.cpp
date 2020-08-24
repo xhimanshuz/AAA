@@ -1,6 +1,6 @@
 #include "UserUI/UserWindow.h"
 
-UserWindow::UserWindow(USER_TYPE _type, QWidget *parent) : QWidget(parent), type(_type)
+UserWindow::UserWindow(USER_TYPE _type, QWidget *parent) : QDialog(parent), type(_type)
 {
     io = IOHandler::getInstance();
     userMap = (type == USER_TYPE::CLIENT)? io->dataEngine->getClientMap(): io->dataEngine->getMediaHouseMap();
