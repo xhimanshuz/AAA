@@ -39,6 +39,7 @@ class NewUser : public QWidget
     QLineEdit *pinCode;
     QPushButton *save;
     QPushButton *clear;
+    int id;
 
 public:
     explicit NewUser(USER_TYPE type, QWidget *parent = nullptr);
@@ -46,8 +47,8 @@ public:
     virtual ~NewUser();
     void render();
     void setUpStyleSheet();
-    void setValues(const QString client, const QStringList &strList);
-    void setValues(const QList<QStandardItem*> &items);
+    void setValues(const QStringList &strList);
+    void setValues(const QList<QVariant> &items);
     void signalSetup();
     void clearValues();
     bool isValid();

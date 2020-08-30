@@ -11,12 +11,12 @@ NewUser::NewUser(USER_TYPE _type, QWidget *parent) : QWidget(parent), type(_type
     this->setLayout(mainLayout);
 }
 
-NewUser::NewUser(QString username, QStringList userDetail, USER_TYPE _type, QWidget *parent): QWidget(parent), type(_type)
+NewUser::NewUser(QString username, QStringList userDetail, USER_TYPE _type, QWidget *parent): QWidget(parent), type(_type), id{0}
 {
     render();
     setLayout(mainLayout);
 
-    setValues(username, userDetail);
+    setValues(userDetail);
     save->click();
 }
 
@@ -71,32 +71,33 @@ void NewUser::setUpStyleSheet()
     //    this->setStyleSheet("QLabel {")
 }
 
-void NewUser::setValues(const QString client, const QStringList &strList)
+void NewUser::setValues(const QStringList &strList)
 {
-    userName->setText(client);
+    id = strList.at(0).toInt();
+    userName->setText(strList.at(1));
     userName->setDisabled(true);
-    contactPerson->setText(strList[0]);
-    phone->setText(strList[1]);
-    email->setText(strList[2]);
-    address->setPlainText(strList[3]);
-    city->setCurrentText(strList[4]);
-    state->setCurrentText(strList[5]);
-    gstin->setText(strList[6]);
-    pinCode->setText(strList[7]);
+    contactPerson->setText(strList[2]);
+    phone->setText(strList[3]);
+    email->setText(strList[4]);
+    address->setPlainText(strList[5]);
+    city->setCurrentText(strList[6]);
+    state->setCurrentText(strList[7]);
+    gstin->setText(strList[8]);
+    pinCode->setText(strList[9]);
 }
 
-void NewUser::setValues(const QList<QStandardItem *> &items)
+void NewUser::setValues(const QList<QVariant> &items)
 {
-    userName->setText(items.at(0)->text());
+    userName->setText(items.at(0).toString());
     userName->setDisabled(true);
-    contactPerson->setText(items.at(1)->text());
-    phone->setText(items.at(2)->text());
-    email->setText(items.at(3)->text());
-    address->setPlainText(items.at(4)->text());
-    city->setCurrentText(items.at(5)->text());
-    state->setCurrentText(items.at(6)->text());
-    gstin->setText(items.at(7)->text());
-    pinCode->setText(items.at(8)->text());
+    contactPerson->setText(items.at(1).toString());
+    phone->setText(items.at(2).toString());
+    email->setText(items.at(3).toString());
+    address->setPlainText(items.at(4).toString());
+    city->setCurrentText(items.at(5).toString());
+    state->setCurrentText(items.at(6).toString());
+    gstin->setText(items.at(7).toString());
+    pinCode->setText(items.at(8).toString());
 }
 
 void NewUser::signalSetup()
@@ -106,9 +107,11 @@ void NewUser::signalSetup()
             return;
 
         if(type == USER_TYPE::CLIENT)
-            IOHandler::getInstance()->dataEngine->insertClientData(userName->text(), toStringList());
+            IOHandler::getInstance()->sql->insertClientRow(toStringList());
         else
-            IOHandler::getInstance()->dataEngine->insertMediaHouseData(userName->text(), toStringList());
+            IOHandler::getInstance()->sql->insertMediaHouseRow(toStringList());
+
+        clearValues();
     });
 
     connect(clear, &QPushButton::clicked, this, &NewUser::clearValues);
@@ -117,6 +120,7 @@ void NewUser::signalSetup()
 
 void NewUser::clearValues()
 {
+    id = 0;
     if(!userName->isEnabled())
         userName->setEnabled(true);
     userName->clear();
@@ -132,13 +136,15 @@ void NewUser::clearValues()
 
 bool NewUser::isValid()
 {
-    if(userName->text().isEmpty() || contactPerson->text().isEmpty() || phone->text().isEmpty() || email->text().isEmpty() || address->toPlainText().isEmpty() || city->currentText().isEmpty()
-            || state->currentText().isEmpty() || pinCode->text().isEmpty())
+//    if(userName->text().isEmpty() || contactPerson->text().isEmpty() || phone->text().isEmpty() || email->text().isEmpty() || address->toPlainText().isEmpty() || city->currentText().isEmpty()
+//            || state->currentText().isEmpty() || pinCode->text().isEmpty())
+//        return false;
+    if(userName->text().isEmpty())
         return false;
     return true;
 }
 
 const QStringList NewUser::toStringList()
 {
-    return {userName->text(), contactPerson->text(), phone->text(), email->text(), address->toPlainText(), city->currentText(), state->currentText(), gstin->text(), pinCode->text()};
+    return {QString::number(id), userName->text(), contactPerson->text(), phone->text(), email->text(), address->toPlainText(), city->currentText(), state->currentText(), gstin->text(), pinCode->text()};
 }

@@ -54,8 +54,8 @@ private slots:
     void cellChanged(int row, int column);
 
 public:
-    explicit PaymentDetail(QWidget *parent = nullptr);
-    PaymentDetail(int roNo, QWidget *parent = nullptr);
+//    explicit PaymentDetail(QWidget *parent = nullptr);
+    PaymentDetail(QWidget *parent = nullptr, int roNo=-1);
     virtual ~PaymentDetail();
 
 signals:

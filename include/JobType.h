@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QListView>
-#include <QStandardItemModel>
+#include <QSqlQueryModel>
 #include <QStandardItem>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -22,7 +22,7 @@ class JobType : public QDialog
     Q_OBJECT
 
     QTableView *jobListView;
-    QStandardItemModel *dataModel;
+    QSqlQueryModel *dataModel;
     QPushButton *addButton;
     QPushButton *removeButton;
     QPushButton *editButton;

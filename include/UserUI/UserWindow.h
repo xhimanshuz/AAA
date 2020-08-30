@@ -8,8 +8,9 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QStandardItem>
-#include <QStandardItemModel>
+#include <QSqlTableModel>
 #include <QHeaderView>
+#include <QMessageBox>
 
 #include "IOHandler/DataEngine.h"
 #include "NewUser.h"
@@ -25,8 +26,8 @@ class UserWindow : public QDialog
     QPushButton *searchButton;
     QPushButton *addNew;
     QPushButton *refreshList;
-    QPushButton *exit;
-    QStandardItemModel *modelData;
+    QPushButton *remove;
+    QSqlTableModel *modelData;
 
     NewUser *newUserWidget;
 

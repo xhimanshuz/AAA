@@ -1,8 +1,10 @@
 #include "ReceiptDetail.h"
 
-ReceiptDetail::ReceiptDetail(int roNo, QWidget *parent): QDialog(parent)
+
+
+ReceiptDetail::ReceiptDetail(QWidget *parent, int roNo)
 {
-    io = IOHandler::getInstance();
+        io = IOHandler::getInstance();
 
     render();
     setLayout(mainLayout);
@@ -13,13 +15,6 @@ ReceiptDetail::ReceiptDetail(int roNo, QWidget *parent): QDialog(parent)
         setValues(strList);
 }
 
-ReceiptDetail::ReceiptDetail(QWidget *parent):QDialog(parent)
-{
-    io = IOHandler::getInstance();
-
-    render();
-    setLayout(mainLayout);
-}
 
 ReceiptDetail::~ReceiptDetail()
 {
@@ -114,22 +109,9 @@ void ReceiptDetail::setupSignals()
 void ReceiptDetail::setValues(const QStringList paymentStrList)
 {
     roNo->setCurrentText(paymentStrList.at(0));
-    date->setDate(QDate());
-    client->setCurrentText(paymentStrList.at(2));
-    caption->setText(paymentStrList.at(3));
-    dateOfPublicationTelecast->setText(paymentStrList.at(4));
-    totalSizeDuration->setText(paymentStrList.at(5));
-    premium->setText(paymentStrList.at(6));
-    amount->setText(paymentStrList.at(7));
-    mediaHouse->setCurrentText(paymentStrList.at(8));
-    jobType->setCurrentText(paymentStrList.at(9));
-    editionCentre->setText(paymentStrList.at(10));
-    sizeDuration->setText(paymentStrList.at(11));
-    guarantedPosition->setText(paymentStrList.at(12));
-    rate->setText(paymentStrList.at(13));
-    netAmount->setText(paymentStrList.at(14));
+    roNo->setEnabled(false);
 
-    auto rowsStr = paymentStrList.at(15).split('\n');
+    auto rowsStr = paymentStrList.at(1).split('\n');
     amountTable->clear();
     for(auto r=0; r< rowsStr.size()-1; r++)
     {
@@ -146,8 +128,6 @@ void ReceiptDetail::setValues(const QStringList paymentStrList)
 
     amountTable->setHorizontalHeaderLabels(QStringList()<< "Recpt No." "Date"<< "Amount"<< "CashCheque"<< "Cheuque No."<< "Bank Name"<<"Remark"<< "Print");
 
-    totalAmount->setText(paymentStrList.at(16));
-    balAmount->setText(paymentStrList.at(17));
 }
 
 QStringList ReceiptDetail::toStringList()
@@ -169,11 +149,7 @@ QStringList ReceiptDetail::toStringList()
     }
 
     QStringList strList;
-    strList << roNo->currentText() << date->text() << client->currentText()<< caption->text()<< dateOfPublicationTelecast->text()
-            << totalSizeDuration->text() << premium->text() << amount->text() << mediaHouse->currentText() << jobType->currentText()
-            << editionCentre->text() << sizeDuration->text() << guarantedPosition->text() << rate->text() << netAmount->text()
-            << rowStr << totalAmount->text() << balAmount->text();
-
+    strList << roNo->currentText() << rowStr;
     return strList;
 }
 
@@ -189,3 +165,4 @@ void ReceiptDetail::cellChanged(int row, int column)
 
     amountTable->setRowCount(amountTable->rowCount()+1);
 }
+

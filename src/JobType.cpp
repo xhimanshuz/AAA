@@ -23,7 +23,7 @@ void JobType::render()
     jobListView = new QTableView(this);
     jobListView->horizontalHeader()->setStretchLastSection(true);
 
-    dataModel = new QStandardItemModel();
+    dataModel = io->sql->getJobTypeModel();
     jobListView->setModel(dataModel);
     updateData();
 
@@ -78,16 +78,16 @@ void JobType::signalSetup()
         auto currentListData = jobListCurrentData();
         if(currentListData.isEmpty())
             return;
-        QMessageBox msgBox(QMessageBox::Warning, tr("Do you want to remove"), tr("Do you want to remove '%0' from Job Type").arg(currentListData), QMessageBox::Yes | QMessageBox::No, this);
+        QMessageBox msgBox(QMessageBox::Warning, tr("Do you want to remove"), tr("Do you want to remove <b>'%0'</b> from Job Type").arg(currentListData), QMessageBox::Yes | QMessageBox::No, this);
         if(msgBox.exec() == QMessageBox::Yes)
-            io->dataEngine->removeJobTypeData(jobListCurrentData());
+            io->sql->removeJobType(jobListCurrentData());
 
         updateData();
+        jobListView->clearSelection();
     });
 
     connect(saveButton, &QPushButton::clicked, [this]{
-        io->dataEngine->insertJobTypeData(addLineEdit->text());
-
+        io->sql->insertJobType(addLineEdit->text());
         addButton->toggle();
 
         updateData();
@@ -110,8 +110,7 @@ void JobType::signalSetup()
     });
 
     connect(modifyButton, &QPushButton::clicked, [this]{
-        io->dataEngine->insertJobTypeData(addLineEdit->text(), jobListCurrentData());
-
+        io->sql->insertJobType(addLineEdit->text(), jobListCurrentData());
         editButton->toggle();
 
         updateData();
@@ -122,17 +121,16 @@ void JobType::signalSetup()
 
 void JobType::updateData()
 {
-    dataModel->clear();
-    dataModel->setHorizontalHeaderLabels(QStringList()<< "Job Type Name");
-
-    for(auto i: *io->dataEngine->getJobTypeSets())
-        dataModel->appendRow(new QStandardItem(i));
+    io->sql->getJobTypeModel()->query().exec();
 }
 
 QString JobType::jobListCurrentData()
 {
     if(jobListView->currentIndex().row() > -1)
-        return dataModel->item(jobListView->currentIndex().row())->text();
+    {
+        auto text = dataModel->data(jobListView->currentIndex()).toString();
+        return text;
+    }
     return "";
 }
 

@@ -53,8 +53,7 @@ class ReceiptDetail : public QDialog
 private slots:
     void cellChanged(int row, int column);
 public:
-    ReceiptDetail(int roNo=0, QWidget *parent = nullptr);
-    ReceiptDetail(QWidget *parent = nullptr);
+    ReceiptDetail(QWidget *parent = nullptr, int roNo=0);
     virtual ~ReceiptDetail();
 };
 

@@ -2,6 +2,7 @@
 #define IOHANDLER_H
 
 #include "DataEngine.h"
+#include "SQLiteHandler.h"
 
 #include <QObject>
 
@@ -14,6 +15,7 @@ public:
     static IOHandler* getInstance();
 
     DataEngine *dataEngine;
+    SQLiteHandler *sql;
 };
 
 #endif // IOHANDLER_H

@@ -1,7 +1,9 @@
 #include "AAA.h"
+#include <QSqlDatabase>
 
 AAA::AAA(QWidget *parent) : QMainWindow(parent)
 {
+
     io = IOHandler::getInstance();
 
     render();
@@ -136,7 +138,7 @@ void AAA::setupSignals()
             ro.exec();
     });
 
-    connect(generateBill, &QAction::triggered, [this](){
+    connect(generateBill, &QAction::triggered, [](){
         GenerateBillWindow gbw;;
         gbw.exec();
     });

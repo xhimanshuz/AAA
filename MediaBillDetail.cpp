@@ -1,15 +1,15 @@
 #include "MediaBillDetail.h"
 
 
-MediaBill::MediaBill(QWidget *parent):QDialog(parent)
-{
-    io = IOHandler::getInstance();
+//MediaBill::MediaBill(QWidget *parent):QDialog(parent)
+//{
+//    io = IOHandler::getInstance();
 
-    render();
-    setLayout(mainLayout);
-}
+//    render();
+//    setLayout(mainLayout);
+//}
 
-MediaBill::MediaBill(const int roNo, QWidget *parent):QDialog(parent)
+MediaBill::MediaBill(QWidget *parent, const int roNo):QDialog(parent)
 {
     io = IOHandler::getInstance();
 
@@ -109,22 +109,22 @@ void MediaBill::setValues(const QStringList paymentStrList)
 {
     roNo->setCurrentText(paymentStrList.at(0));
     roNo->setDisabled(true);
-    date->setDate(QDate());
-    client->setCurrentText(paymentStrList.at(2));
-    caption->setText(paymentStrList.at(3));
-    dateOfPublicationTelecast->setText(paymentStrList.at(4));
-    totalSizeDuration->setText(paymentStrList.at(5));
-    premium->setText(paymentStrList.at(6));
-    amount->setText(paymentStrList.at(7));
-    mediaHouse->setCurrentText(paymentStrList.at(8));
-    jobType->setCurrentText(paymentStrList.at(9));
-    editionCentre->setText(paymentStrList.at(10));
-    sizeDuration->setText(paymentStrList.at(11));
-    guarantedPosition->setText(paymentStrList.at(12));
-    rate->setText(paymentStrList.at(13));
-    netAmount->setText(paymentStrList.at(14));
+//    date->setDate(QDate());
+//    client->setCurrentText(paymentStrList.at(2));
+//    caption->setText(paymentStrList.at(3));
+//    dateOfPublicationTelecast->setText(paymentStrList.at(4));
+//    totalSizeDuration->setText(paymentStrList.at(5));
+//    premium->setText(paymentStrList.at(6));
+//    amount->setText(paymentStrList.at(7));
+//    mediaHouse->setCurrentText(paymentStrList.at(8));
+//    jobType->setCurrentText(paymentStrList.at(9));
+//    editionCentre->setText(paymentStrList.at(10));
+//    sizeDuration->setText(paymentStrList.at(11));
+//    guarantedPosition->setText(paymentStrList.at(12));
+//    rate->setText(paymentStrList.at(13));
+//    netAmount->setText(paymentStrList.at(14));
 
-    auto rowsStr = paymentStrList.at(15).split('\n');
+    auto rowsStr = paymentStrList.at(1).split('\n');
     amountTable->clear();
     for(auto r=0; r< rowsStr.size()-1; r++)
     {
@@ -137,7 +137,7 @@ void MediaBill::setValues(const QStringList paymentStrList)
 
     amountTable->setHorizontalHeaderLabels(QStringList()<< "Media Bill"<< "Date"<< "Amount");
 
-    totalAmount->setText(paymentStrList.at(16));
+//    totalAmount->setText(paymentStrList.at(16));
 }
 
 QStringList MediaBill::toStringList()
@@ -154,10 +154,8 @@ QStringList MediaBill::toStringList()
     }
 
     QStringList strList;
-    strList << roNo->currentText() << date->text() << client->currentText()<< caption->text()<< dateOfPublicationTelecast->text()
-            << totalSizeDuration->text() << premium->text() << amount->text() << mediaHouse->currentText() << jobType->currentText()
-            << editionCentre->text() << sizeDuration->text() << guarantedPosition->text() << rate->text() << netAmount->text()
-            << rowStr << totalAmount->text();
+
+    strList << roNo->currentText() << rowStr;
 
     return strList;
 }

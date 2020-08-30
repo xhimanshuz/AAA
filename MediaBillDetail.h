@@ -52,8 +52,8 @@ class MediaBill : public QDialog
 private slots:
     void cellChanged(int row, int column);
 public:
-    MediaBill(QWidget *parent = nullptr);
-    MediaBill(const int roNo, QWidget *parent = nullptr);
+//    MediaBill(QWidget *parent = nullptr);
+    MediaBill( QWidget *parent = nullptr, const int roNo=-1);
 
 };
 

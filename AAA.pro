@@ -1,4 +1,4 @@
-QT += widgets
+QT += widgets sql
 
 SOURCES += \
     AAA.cpp \
@@ -12,6 +12,7 @@ SOURCES += \
     src/UserUI/UserWindow.cpp \
     src/IOHandler/DataEngine.cpp \
     src/IOHandler/IOHandler.cpp \
+    src/IOHandler/SQLiteHandler.cpp \
     src/JobType.cpp \
     src/app.cpp
 
@@ -22,6 +23,7 @@ HEADERS += \
     MediaBillDetail.h \
     PaymentDetail.h \
     ReceiptDetail.h \
+    include/IOHandler/SQLiteHandler.h \
     include/ReleaseOrder/AddReleaseOrder.h \
     include/UserUI/NewUser.h \
     include/UserUI/UserWindow.h \
