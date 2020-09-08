@@ -9,17 +9,15 @@
 //    setLayout(mainLayout);
 //}
 
-MediaBill::MediaBill(QWidget *parent, const int roNo):QDialog(parent)
+MediaBill::MediaBill(QWidget *parent, const int _roNo):QDialog(parent), rono(_roNo)
 {
     io = IOHandler::getInstance();
 
     render();
     setLayout(mainLayout);
 
-    QStringList strList = io->dataEngine->mediaBillStringList(roNo);
-
-    if(!strList.empty())
-        setValues(strList);
+    if(rono != -1)
+        setValues();
 }
 
 void MediaBill::render()
@@ -47,9 +45,10 @@ void MediaBill::render()
     rate = new QLineEdit;
     netAmount = new QLineEdit;
 
-    amountTable = new QTableWidget(1,3);
-
-    tableWidgetSetup();
+    mediaBillTableView = new QTableView;
+    mediaBillModel = io->sql->getMediaBill();
+    mediaBillTableView->setModel(mediaBillModel);
+    populateData();
 
     totalAmount = new QLineEdit;
     save = new QPushButton("Save");
@@ -80,7 +79,7 @@ void MediaBill::render()
     formHbox->addLayout(form);
     mainLayout->addLayout(formHbox);
 
-    mainLayout->addWidget(amountTable);
+    mainLayout->addWidget(mediaBillTableView);
 
     form = new QFormLayout;
     form->addRow("Total Amount", totalAmount);
@@ -102,13 +101,16 @@ void MediaBill::setupSignals()
         this->close();
     });
 
-    connect(amountTable, &QTableWidget::cellChanged, this, &MediaBill::cellChanged);
+//    connect(mediaBillTableView, &QTableWidget::cellChanged, this, &MediaBill::cellChanged);
 }
 
-void MediaBill::setValues(const QStringList paymentStrList)
+void MediaBill::setValues()
 {
-    roNo->setCurrentText(paymentStrList.at(0));
+    roNo->setCurrentText(QString::number(rono));
     roNo->setDisabled(true);
+
+    mediaBillModel->setFilter(QString("rono = %0").arg(rono));
+    mediaBillModel->select();
 //    date->setDate(QDate());
 //    client->setCurrentText(paymentStrList.at(2));
 //    caption->setText(paymentStrList.at(3));
@@ -124,51 +126,51 @@ void MediaBill::setValues(const QStringList paymentStrList)
 //    rate->setText(paymentStrList.at(13));
 //    netAmount->setText(paymentStrList.at(14));
 
-    auto rowsStr = paymentStrList.at(1).split('\n');
-    amountTable->clear();
-    for(auto r=0; r< rowsStr.size()-1; r++)
-    {
-        amountTable->setRowCount(r+1);
-        auto row = rowsStr.at(r).split(',');
-        amountTable->setItem(r, 0, new QTableWidgetItem(row.at(0)));
-        amountTable->setItem(r, 1, new QTableWidgetItem(row.at(1)));
-        amountTable->setItem(r, 2, new QTableWidgetItem(row.at(2)));
-    }
+//    auto rowsStr = paymentStrList.at(1).split('\n');
+//    mediaBillTableView->clear();
+//    for(auto r=0; r< rowsStr.size()-1; r++)
+//    {
+//        mediaBillTableView->setRowCount(r+1);
+//        auto row = rowsStr.at(r).split(',');
+//        mediaBillTableView->setItem(r, 0, new QTableWidgetItem(row.at(0)));
+//        mediaBillTableView->setItem(r, 1, new QTableWidgetItem(row.at(1)));
+//        mediaBillTableView->setItem(r, 2, new QTableWidgetItem(row.at(2)));
+//    }
 
-    amountTable->setHorizontalHeaderLabels(QStringList()<< "Media Bill"<< "Date"<< "Amount");
+//    mediaBillTableView->setHorizontalHeaderLabels(QStringList()<< "Media Bill"<< "Date"<< "Amount");
 
 //    totalAmount->setText(paymentStrList.at(16));
 }
 
 QStringList MediaBill::toStringList()
 {
-    QString rowStr;
-    for(auto row=0; row<amountTable->rowCount(); row++)
-    {
-        auto mediaBillNo = amountTable->item(row, 0);
-        auto date = amountTable->item(row, 1);
-        auto amount = amountTable->item(row, 2);
-        if(!amount)
-            break;;
-        rowStr += mediaBillNo->text()+','+ date->text() + ','+amount->text()+'\n';
-    }
+//    QString rowStr;
+//    for(auto row=0; row<mediaBillTableView->rowCount(); row++)
+//    {
+//        auto mediaBillNo = mediaBillTableView->item(row, 0);
+//        auto date = mediaBillTableView->item(row, 1);
+//        auto amount = mediaBillTableView->item(row, 2);
+//        if(!amount)
+//            break;;
+//        rowStr += mediaBillNo->text()+','+ date->text() + ','+amount->text()+'\n';
+//    }
 
-    QStringList strList;
+//    QStringList strList;
 
-    strList << roNo->currentText() << rowStr;
+//    strList << roNo->currentText() << rowStr;
 
-    return strList;
+//    return strList;
 }
 
-void MediaBill::tableWidgetSetup()
+void MediaBill::populateData()
 {
-    amountTable->setHorizontalHeaderLabels(QStringList()<< "Media Bill"<< "Date"<< "Amount");
+    mediaBillModel->query().exec();
 }
 
 void MediaBill::cellChanged(int row, int column)
 {
-    if((!amountTable->item(row, 0) || !amountTable->item(row, 1) || !amountTable->item(row, 2) ) || amountTable->rowCount() != row+1)
-        return;
+//    if((!mediaBillTableView->item(row, 0) || !mediaBillTableView->item(row, 1) || !mediaBillTableView->item(row, 2) ) || mediaBillTableView->rowCount() != row+1)
+//        return;
 
-    amountTable->setRowCount(amountTable->rowCount()+1);
+//    mediaBillTableView->setRowCount(mediaBillTableView->rowCount()+1);
 }

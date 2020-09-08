@@ -34,5 +34,8 @@ HEADERS += \
 
 INCLUDEPATH += include
 
-DESTDIR = $$PWD/build/
+DESTDIR = $$PWD/build/ \
+
+DISTFILES += .gitignore \
+            $$PWD/Data/DBMigratingTool/run.py
 

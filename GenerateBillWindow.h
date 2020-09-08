@@ -7,8 +7,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QTableView>
-#include <QStandardItem>
-#include <QStandardItemModel>
+#include <QSqlTableModel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
@@ -24,17 +23,20 @@ class GenerateBillWindow : public QDialog
     QPushButton *freshList;
     QVBoxLayout *mainLayout;
     QTableView *billListView;
-    QStandardItemModel *billDataModel;
+    QSqlQueryModel *billDataModel;
     AddGenerateBill *generateBill;
 
     void render();
     void setupSignals();
     void populateData();
+    void filterWithClient(const QString _client);
+    void filterWithStatus(const QString _status);
 
     IOHandler *io;
+    int islastSelectedMedia;
 
 public:
-    explicit GenerateBillWindow(QWidget *parent = nullptr);
+    explicit GenerateBillWindow(const QString _client="", const int invno = 0, const int rono = 0, QWidget *parent = nullptr);
     virtual ~GenerateBillWindow();
 
 signals:

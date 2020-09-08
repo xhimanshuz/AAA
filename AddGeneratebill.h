@@ -49,10 +49,14 @@ class AddGenerateBill : public QWidget
     IOHandler *io;
 
 public:
-    explicit AddGenerateBill(QWidget *parent = nullptr, const int roNo = 0, const QStringList billData = {});
+    explicit AddGenerateBill(QWidget *parent = nullptr, const int _invno = 0, const int rono = 0);
     virtual ~AddGenerateBill();
 
     void setValue(const QStringList billList);
+    void setValueFromRO(const QStringList roList);
+    QComboBox *getClients() const;
+    void clearValue();
+
 signals:
     void saveClicked();
 };

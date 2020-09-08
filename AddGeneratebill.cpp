@@ -1,14 +1,21 @@
 #include "AddGeneratebill.h"
 
-AddGenerateBill::AddGenerateBill(QWidget *parent, const int roNo, const QStringList billData): QWidget(parent)
+AddGenerateBill::AddGenerateBill(QWidget *parent, const int _invno, const int rono): QWidget(parent)
 {
     io = IOHandler::getInstance();
 
     render();
     setLayout(mainLayout);
 
-    if(!billData.isEmpty())
-        setValue(billData);
+    if(_invno != 0)
+        setValue(io->sql->getGenerateBillList(_invno));
+    else if(rono > 0)
+        setValueFromRO(io->sql->getROStringList(rono));
+}
+
+QComboBox *AddGenerateBill::getClients() const
+{
+    return clients;
 }
 
 void AddGenerateBill::render()
@@ -18,16 +25,20 @@ void AddGenerateBill::render()
     invoiceNo = new QLineEdit;
     date = new QDateEdit;
     clients = new QComboBox();
+    clients->addItems(io->sql->getClientList());
 
     grossAmt = new QLineEdit;
     discount = new QLineEdit;
     discountPerc = new QLineEdit;
     netPayableAmount = new QLineEdit;
     cgstPerc = new QComboBox;
+    cgstPerc->addItems(*io->sql->getGstPerc());
     CGST = new QLineEdit;
     sgstPerc = new QComboBox;
+    sgstPerc->addItems(*io->sql->getGstPerc());
     SGST = new QLineEdit;
     igstPerc = new QComboBox;
+    igstPerc->addItems(*io->sql->getGstPerc());
     IGST = new QLineEdit;
     invoiceAmount = new QLineEdit;
     remark = new QTextEdit;
@@ -96,19 +107,25 @@ void AddGenerateBill::render()
 void AddGenerateBill::setupSignal()
 {
     connect(save, &QPushButton::clicked, [this]{
-        io->dataEngine->insertGBillData(toStringList());
+        io->sql->insertGenerateBillList(toStringList());
         emit saveClicked();
     });
 }
 
 void AddGenerateBill::setValue(const QStringList billList)
 {
+    if(billList.isEmpty())
+    {
+        clearValue();
+        return;
+    }
     roNo->setText(billList.at(0));
     roNo->setDisabled(true);
     invoiceNo->setText(billList.at(1));
     invoiceNo->setEnabled(false);
     date->setDate(QDate());
     clients->setCurrentText(billList.at(3));
+    clients->setDisabled(true);
     grossAmt->setText(billList.at(4));
     discountPerc->setText(billList.at(5));
     discount->setText(billList.at(6));
@@ -123,11 +140,36 @@ void AddGenerateBill::setValue(const QStringList billList)
     remark->setText(billList.at(15));
 }
 
+void AddGenerateBill::setValueFromRO(const QStringList roList)
+{
+    clearValue();
+    roNo->setText(roList.at(1));
+    roNo->setDisabled(true);
+    invoiceNo->setText(QString::number(io->sql->getNewInvoiceCode()));
+    date->setDate(QDate());
+    clients->setCurrentText(roList.at(6));
+    clients->setDisabled(true);
+}
+
 QStringList AddGenerateBill::toStringList()
 {
     QStringList strList;
-    strList << roNo->text()<< invoiceNo->text()<< date->text() << clients->currentText()<< grossAmt->text() << discountPerc->text()<< netPayableAmount->text()<< cgstPerc->currentText()<<CGST->text()
-            << sgstPerc->currentText()<< SGST->text() << igstPerc->currentText()<< IGST->text()<< invoiceAmount->text()<< remark->toPlainText();
+    strList << roNo->text()
+            << invoiceNo->text()
+            << date->text()
+            << QString::number(io->sql->getClientCode(clients->currentText()))
+            << grossAmt->text()
+            << discountPerc->text()
+            << discount->text()
+            << netPayableAmount->text()
+            << cgstPerc->currentText()
+            << CGST->text()
+            << sgstPerc->currentText()
+            << SGST->text()
+            << igstPerc->currentText()
+            << IGST->text()
+            << invoiceAmount->text()
+            << remark->toPlainText();
 
     return strList;
 }
@@ -135,6 +177,29 @@ QStringList AddGenerateBill::toStringList()
 void AddGenerateBill::populateData()
 {
     clients->addItems(io->dataEngine->clientStringList());
+}
+
+void AddGenerateBill::clearValue()
+{
+    roNo->setText("");
+    roNo->setDisabled(false);
+    invoiceNo->setText("");
+    invoiceNo->setEnabled(false);
+    date->setDate(QDate());
+    clients->setCurrentText("");
+    clients->setEnabled(true);
+    grossAmt->setText("");
+    discountPerc->setText("");
+    discount->setText("");
+    netPayableAmount->setText("");
+    cgstPerc->setCurrentText("");
+    CGST->setText("");
+    sgstPerc->setCurrentText("");
+    SGST->setText("");
+    igstPerc->setCurrentText("");
+    IGST->setText("");
+    invoiceAmount->setText("");
+    remark->setText("");
 }
 
 

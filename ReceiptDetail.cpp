@@ -2,17 +2,17 @@
 
 
 
-ReceiptDetail::ReceiptDetail(QWidget *parent, int roNo)
+ReceiptDetail::ReceiptDetail(QWidget *parent, int _roNo): rono(_roNo)
 {
         io = IOHandler::getInstance();
 
     render();
     setLayout(mainLayout);
 
-    auto strList = io->dataEngine->receiptStringList(roNo);
 
-    if(!strList.empty())
-        setValues(strList);
+
+    if(rono != -1)
+        setValues();
 }
 
 
@@ -46,9 +46,12 @@ void ReceiptDetail::render()
     rate = new QLineEdit;
     netAmount = new QLineEdit;
 
-    amountTable = new QTableWidget(1,7);
-
-    tableWidgetSetup();
+    receiptTableView = new QTableView;
+    tableModel = io->sql->getReceiptModel();
+    receiptTableView->setModel(tableModel);
+    populateTable();
+//    receiptTableView->hideRow(0);
+//    receiptTableView->hideRow(2);
 
     totalAmount = new QLineEdit;
     balAmount = new QLineEdit;
@@ -80,7 +83,7 @@ void ReceiptDetail::render()
     formHbox->addLayout(form);
     mainLayout->addLayout(formHbox);
 
-    mainLayout->addWidget(amountTable);
+    mainLayout->addWidget(receiptTableView);
 
     form = new QFormLayout;
     form->addRow("Total Amount", totalAmount);
@@ -99,70 +102,52 @@ void ReceiptDetail::render()
 void ReceiptDetail::setupSignals()
 {
     connect(save, &QPushButton::clicked, [this]{
-        io->dataEngine->insertReceiptData(toStringList());
+        io->sql->getReceiptModel()->submitAll();
         this->close();
     });
 
-    connect(amountTable, &QTableWidget::cellChanged, this, &ReceiptDetail::cellChanged);
+//    connect(receiptTableView, &QTableWidget::cellChanged, this, &ReceiptDetail::cellChanged);
 }
 
-void ReceiptDetail::setValues(const QStringList paymentStrList)
+void ReceiptDetail::setValues()
 {
-    roNo->setCurrentText(paymentStrList.at(0));
-    roNo->setEnabled(false);
-
-    auto rowsStr = paymentStrList.at(1).split('\n');
-    amountTable->clear();
-    for(auto r=0; r< rowsStr.size()-1; r++)
-    {
-        amountTable->setRowCount(r+1);
-        auto row = rowsStr.at(r).split(',');
-        amountTable->setItem(r, 0, new QTableWidgetItem(row.at(0)));
-        amountTable->setItem(r, 1, new QTableWidgetItem(row.at(1)));
-        amountTable->setItem(r, 2, new QTableWidgetItem(row.at(2)));
-        amountTable->setItem(r, 3, new QTableWidgetItem(row.at(3)));
-        amountTable->setItem(r, 4, new QTableWidgetItem(row.at(4)));
-        amountTable->setItem(r, 5, new QTableWidgetItem(row.at(5)));
-        amountTable->setItem(r, 6, new QTableWidgetItem(row.at(6)));
-    }
-
-    amountTable->setHorizontalHeaderLabels(QStringList()<< "Recpt No." "Date"<< "Amount"<< "CashCheque"<< "Cheuque No."<< "Bank Name"<<"Remark"<< "Print");
-
+    tableModel->setFilter(QString("rono = %0").arg(rono));
+    tableModel->select();
 }
 
 QStringList ReceiptDetail::toStringList()
 {
-    QString rowStr;
-    for(auto row=0; row<amountTable->rowCount(); row++)
-    {
-        auto recptNo = amountTable->item(row, 0);
-        auto date = amountTable->item(row, 1);
-        auto amount = amountTable->item(row, 2);
-        auto cash = amountTable->item(row, 3);
-        auto chequeNo = amountTable->item(row, 4);
-        auto bankName = amountTable->item(row, 5);
-        auto remark = amountTable->item(row, 6);
+//    QString rowStr;
+//    for(auto row=0; row<receiptTableView->rowCount(); row++)
+//    {
+//        auto recptNo = receiptTableView->item(row, 0);
+//        auto date = receiptTableView->item(row, 1);
+//        auto amount = receiptTableView->item(row, 2);
+//        auto cash = receiptTableView->item(row, 3);
+//        auto chequeNo = receiptTableView->item(row, 4);
+//        auto bankName = receiptTableView->item(row, 5);
+//        auto remark = receiptTableView->item(row, 6);
 
-        if(!bankName)
-            break;;
-        rowStr += recptNo->text() +','+ date->text() + ','+ amount->text()+','+cash->text()+','+ chequeNo->text()+ ',' + bankName->text()+ ','+ remark->text()+'\n';
-    }
+//        if(!bankName)
+//            break;;
+//        rowStr += recptNo->text() +','+ date->text() + ','+ amount->text()+','+cash->text()+','+ chequeNo->text()+ ',' + bankName->text()+ ','+ remark->text()+'\n';
+//    }
 
-    QStringList strList;
-    strList << roNo->currentText() << rowStr;
-    return strList;
+//    QStringList strList;
+//    strList << roNo->currentText() << rowStr;
+//    return strList;
 }
 
-void ReceiptDetail::tableWidgetSetup()
+void ReceiptDetail::populateTable()
 {
-    amountTable->setHorizontalHeaderLabels(QStringList()<< "Recpt No." "Date"<< "Amount"<< "CashCheque"<< "Cheuque No."<< "Bank Name"<<"Remark"<< "Print");
+    io->sql->getReceiptModel()->query().exec();
 }
 
 void ReceiptDetail::cellChanged(int row, int column)
 {
-    if((!amountTable->item(row, 0) || !amountTable->item(row, 1) || !amountTable->item(row, 2) || !amountTable->item(row, 3) || !amountTable->item(row, 4)) || amountTable->rowCount() != row+1)
-        return;
+//    if((!receiptTableView->item(row, 0) || !receiptTableView->item(row, 1) || !receiptTableView->item(row, 2) || !receiptTableView->item(row, 3) || !receiptTableView->item(row, 4)) || receiptTableView->rowCount() != row+1)
+//        return;
 
-    amountTable->setRowCount(amountTable->rowCount()+1);
+//    receiptTableView->setRowCount(receiptTableView->rowCount()+1);
 }
 

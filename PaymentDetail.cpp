@@ -1,6 +1,6 @@
 #include "PaymentDetail.h"
 
-PaymentDetail::PaymentDetail(QWidget *parent, int roNo) : QDialog(parent)
+PaymentDetail::PaymentDetail(QWidget *parent, int roNo) : QDialog(parent), rono(roNo)
 {
     io = IOHandler::getInstance();
 
@@ -8,8 +8,10 @@ PaymentDetail::PaymentDetail(QWidget *parent, int roNo) : QDialog(parent)
     setLayout(mainLayout);
     QStringList strList = io->dataEngine->paymentStringList(roNo);
 
-    if(!strList.empty())
-        setValues(strList);
+//    io->sql->insertBlankRow(rono);
+
+    if(roNo != -1)
+        setValues();
 }
 
 void PaymentDetail::render()
@@ -37,9 +39,12 @@ void PaymentDetail::render()
     rate = new QLineEdit;
     netAmount = new QLineEdit;
 
-    amountTable = new QTableWidget(1,5);
-    amountTable->setHorizontalHeaderLabels(QStringList()<< "Date"<< "Amount"<< "CashCheque"<< "Cheuque No."<< "Bank Name");
-    tableWidgetSetup();
+    paymentTable = new QTableView();
+    paymentModel = io->sql->getPaymentModel();
+    paymentTable->setModel(paymentModel);
+//    paymentTable->hideColumn(0);
+    paymentTable->hideColumn(1);
+    populateData();
 
     totalAmount = new QLineEdit;
     balAmount = new QLineEdit;
@@ -71,7 +76,7 @@ void PaymentDetail::render()
     formHbox->addLayout(form);
     mainLayout->addLayout(formHbox);
 
-    mainLayout->addWidget(amountTable);
+    mainLayout->addWidget(paymentTable);
 
     form = new QFormLayout;
     form->addRow("Total Amount", totalAmount);
@@ -89,84 +94,47 @@ void PaymentDetail::render()
 
 void PaymentDetail::setupSignals()
 {
-    connect(save, &QPushButton::clicked, [this]{
-        io->dataEngine->insertPaymentData(toStringList());
-        this->close();
-    });
-
-    connect(amountTable, &QTableWidget::cellChanged, this, &PaymentDetail::cellChanged);
+    connect(save, &QPushButton::clicked, paymentModel, &QSqlTableModel::submitAll);//    connect(amountTable, &QTableWidget::cellChanged, this, &PaymentDetail::cellChanged);
 }
 
-void PaymentDetail::setValues(const QStringList paymentStrList)
+void PaymentDetail::setValues()
 {
-    roNo->setCurrentText(paymentStrList.at(0));
-    roNo->setDisabled(true);
-//    date->setDate(QDate());
-//    client->setCurrentText(paymentStrList.at(2));
-//    caption->setText(paymentStrList.at(3));
-//    dateOfPublicationTelecast->setText(paymentStrList.at(4));
-//    totalSizeDuration->setText(paymentStrList.at(5));
-//    premium->setText(paymentStrList.at(6));
-//    amount->setText(paymentStrList.at(7));
-//    mediaHouse->setCurrentText(paymentStrList.at(8));
-//    jobType->setCurrentText(paymentStrList.at(9));
-//    editionCentre->setText(paymentStrList.at(10));
-//    sizeDuration->setText(paymentStrList.at(11));
-//    guarantedPosition->setText(paymentStrList.at(12));
-//    rate->setText(paymentStrList.at(13));
-//    netAmount->setText(paymentStrList.at(14));
-
-    auto rowsStr = paymentStrList.at(1).split('\n');
-    amountTable->clear();
-    for(auto r=0; r< rowsStr.size()-1; r++)
-    {
-        amountTable->setRowCount(r+1);
-        auto row = rowsStr.at(r).split(',');
-        amountTable->setItem(r, 0, new QTableWidgetItem(row.at(0)));
-        amountTable->setItem(r, 1, new QTableWidgetItem(row.at(1)));
-        amountTable->setItem(r, 2, new QTableWidgetItem(row.at(2)));
-        amountTable->setItem(r, 3, new QTableWidgetItem(row.at(3)));
-        amountTable->setItem(r, 4, new QTableWidgetItem(row.at(4)));
-    }
-
-    amountTable->setHorizontalHeaderLabels(QStringList()<< "Date"<< "Amount"<< "CashCheque"<< "Cheuque No."<< "Bank Name");
-
-//    totalAmount->setText(paymentStrList.at(16));
-//    balAmount->setText(paymentStrList.at(17));
+   paymentModel->setFilter(QString("rono = %0").arg(rono));
+   paymentModel->select();
 }
 
 QStringList PaymentDetail::toStringList()
 {
-    QString rowStr;
-    for(auto row=0; row<amountTable->rowCount(); row++)
-    {
-        auto date = amountTable->item(row, 0);
-        auto amount = amountTable->item(row, 1);
-        auto cash = amountTable->item(row, 2);
-        auto chequeNo = amountTable->item(row, 3);
-        auto bankName = amountTable->item(row, 4);
-        if(!bankName)
-            break;;
-        rowStr += date->text() + ','+amount->text()+','+cash->text()+','+ chequeNo->text()+ ',' + bankName->text()+'\n';
-    }
+//    QString rowStr;
+//    for(auto row=0; row<amountTable->rowCount(); row++)
+//    {
+//        auto date = amountTable->item(row, 0);
+//        auto amount = amountTable->item(row, 1);
+//        auto cash = amountTable->item(row, 2);
+//        auto chequeNo = amountTable->item(row, 3);
+//        auto bankName = amountTable->item(row, 4);
+//        if(!bankName)
+//            break;;
+//        rowStr += date->text() + ','+amount->text()+','+cash->text()+','+ chequeNo->text()+ ',' + bankName->text()+'\n';
+//    }
 
-    QStringList strList;
-    strList << roNo->currentText()
-            << rowStr;
+//    QStringList strList;
+//    strList << roNo->currentText()
+//            << rowStr;
 
-    return strList;
+//    return strList;
 }
 
-void PaymentDetail::tableWidgetSetup()
+void PaymentDetail::populateData()
 {
+    paymentModel->query().exec();
+    paymentTable->resizeColumnsToContents();
+    paymentTable->viewport()->update();
 }
 
 void PaymentDetail::cellChanged(int row, int column)
 {
-    if((!amountTable->item(row, 0) || !amountTable->item(row, 1) || !amountTable->item(row, 2) || !amountTable->item(row, 3) || !amountTable->item(row, 4)) || amountTable->rowCount() != row+1)
-        return;
 
-    amountTable->setRowCount(amountTable->rowCount()+1);
 }
 
 PaymentDetail::~PaymentDetail()

@@ -18,6 +18,7 @@ class AddReleaseOrder: public QDialog
 {
     Q_OBJECT
 
+    int code;
     QLineEdit *roNo;
     QComboBox *mediaHousList;
     QComboBox *jobTypeList;
@@ -38,11 +39,11 @@ class AddReleaseOrder: public QDialog
     QLineEdit *amount;
     QLineEdit *netAmount;
     QComboBox *CGST;
-    QLineEdit *cgstRemark;
+    QLineEdit *cgstAmount;
     QComboBox *SGST;
-    QLineEdit *sgstRemark;
+    QLineEdit *sgstAmount;
     QComboBox *IGST;
-    QLineEdit *igstRemark;
+    QLineEdit *igstAmount;
     QLineEdit *roAmount;
     QPushButton *save;
     QPushButton *clear;

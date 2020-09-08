@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTableWidget>
+#include <QSqlTableModel>
 #include <QGroupBox>
 #include <QFormLayout>
 #include <QVBoxLayout>
@@ -20,6 +21,7 @@ class ReceiptDetail : public QDialog
 {
     Q_OBJECT
 
+    int rono;
     QComboBox *roNo;
     QDateEdit *date;
     QComboBox *client;
@@ -35,7 +37,8 @@ class ReceiptDetail : public QDialog
     QLineEdit *guarantedPosition;
     QLineEdit *rate;
     QLineEdit *netAmount;
-    QTableWidget *amountTable;
+    QTableView *receiptTableView;
+    QSqlTableModel *tableModel;
     QLineEdit *totalAmount;
     QLineEdit *balAmount;
     QPushButton *save;
@@ -46,14 +49,14 @@ class ReceiptDetail : public QDialog
 
     void render();
     void setupSignals();
-    void setValues(const QStringList paymentStrList);
+    void setValues();
     QStringList toStringList();
-    void tableWidgetSetup();
+    void populateTable();
 
 private slots:
     void cellChanged(int row, int column);
 public:
-    ReceiptDetail(QWidget *parent = nullptr, int roNo=0);
+    ReceiptDetail(QWidget *parent = nullptr, int roNo=-1);
     virtual ~ReceiptDetail();
 };
 

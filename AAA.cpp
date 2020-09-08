@@ -32,15 +32,23 @@ void AAA::render()
     searchDateTo = new QDateEdit;
     roInvNo = new QComboBox;
     mediaHouse = new QComboBox;
+    mediaHouse->setEditable(true);
+//    mediaHouse->completer()->setCompletionMode(QCompleter::CompletionMode::PopupCompletion);
 
     client = new QComboBox;
+    client->setEditable(true);
+//    client->completer()->setCompletionMode(QCompleter::CompletionMode::PopupCompletion);
     jobType = new QComboBox;
+//    jobType->completer()->setCompletionMode(QCompleter::CompletionMode::PopupCompletion);
+    jobType->setEditable(true);
     go = new QPushButton("Go");
 
     roTable = new QTableView;
-    roDataModel = new QStandardItemModel;
+    roDataModel = io->sql->getRoModel();
     roTable->setSelectionBehavior(QTableView::SelectionBehavior::SelectRows);
+    roTable->setEditTriggers(QTableView::NoEditTriggers);
     roTable->setModel(roDataModel);
+    roTable->hideColumn(0);
     populateData();
 
     newRO = new QPushButton("New RO");
@@ -81,6 +89,7 @@ void AAA::render()
 
 void AAA::setupSignals()
 {
+
     connect(newJobType, &QAction::triggered, [this]{
         JobType jobType;
         jobType.exec();
@@ -103,26 +112,28 @@ void AAA::setupSignals()
     });
 
     connect(receipt, &QAction::triggered, [this]{
-        ReceiptDetail receipt(this);
+        auto roNo = getRoNumber();
+        ReceiptDetail receipt(this, roNo);
         receipt.exec();
 
         updateRender();
     });
 
     connect(mediaBill, &QAction::triggered, [this]{
-        MediaBill mediabill(this);
+        auto roNo = getRoNumber();
+        MediaBill mediabill(this, roNo);
         mediabill.exec();
 
         updateRender();
     });
 
     connect(payment, &QAction::triggered, [this]{
-        PaymentDetail payment(this);
+        auto roNo = getRoNumber();
+        PaymentDetail payment(this, roNo);
         payment.exec();
 
         updateRender();
     });
-
 
 
     connect(newRO, &QPushButton::clicked, [this]{
@@ -133,14 +144,19 @@ void AAA::setupSignals()
     });
 
     connect(roTable, &QTableView::doubleClicked, [this](const QModelIndex &index) {
-        auto roNo = roDataModel->item(index.row(), 0)->text().toInt();
+        auto roNo = getRoNumber(index);
             AddReleaseOrder ro(roNo, this);
             ro.exec();
     });
 
-    connect(generateBill, &QAction::triggered, [](){
-        GenerateBillWindow gbw;;
+    connect(generateBill, &QAction::triggered, [this](){
+        auto index = roTable->currentIndex();
+        auto client = roDataModel->data(roDataModel->index(index.row(), 6)).toString();
+        auto invno = roDataModel->data(roDataModel->index(index.row(), 23)).toInt();
+        auto ro = getRoNumber();
+        GenerateBillWindow gbw(client, invno, ro, this);
         gbw.exec();
+        populateData();
     });
 }
 
@@ -149,29 +165,32 @@ void AAA::updateRender()
     roInvNo->clear();
     mediaHouse->clear();
     jobType->clear();
+    client->clear();
 
-    roInvNo->addItems(io->dataEngine->roStringList());
-    mediaHouse->addItems(io->dataEngine->mediaHouseStringList());
-    jobType->addItems(io->dataEngine->jobTypeStringList());
-
+    roInvNo->addItems(io->sql->getRoList());
+    mediaHouse->addItems(io->sql->getMediaHouseList());
+    jobType->addItems(io->sql->getJobTypeList());
+    client->addItems(io->sql->getClientList());
     populateData();
 }
 
 void AAA::populateData()
 {
-    roDataModel->clear();
-    roDataModel->setHorizontalHeaderLabels(QStringList()<<"RO No."<<"Media House"<< "Parties"<<"Job Type"<<"Caption"<<"HSN"<< "Net Amt"<<
-                                           "Ro Amt"<< "Media Bill"<< "Payment"<<"Bill No"<< "Bill Amt"<<"Rcpt No."
-                                           "Receipt");
-    for(auto ro: *io->dataEngine->ROMap)
-    {
-        roDataModel->appendRow(QList<QStandardItem*>() << new QStandardItem(ro.at(RO::RONO))
-                               << new QStandardItem(ro.at(RO::DATE)) << new QStandardItem(ro.at(RO::MEDIAHOUSELIST)) << new QStandardItem(ro.at(RO::CLIENTLIST))
-                               << new QStandardItem(ro.at(RO::JOBTYPELIST)) << new QStandardItem(ro.at(RO::CAPTION)) << new QStandardItem(ro.at(RO::HSNCODE))
-                               << new QStandardItem(ro.at(RO::NETAMOUNT)) << new QStandardItem(ro.at(RO::ROAMOUNT)) << new QStandardItem("MEDIA BILL")
-                               << new QStandardItem("PAYMENT") << new QStandardItem("BILL NO") << new QStandardItem("BILL AMT")
-                               << new QStandardItem("RCPT"));
-
-    }
-
+    io->sql->getRoModel()->query().exec();
+//    roTable->resizeRowsToContents();
+    roTable->resizeColumnsToContents();
+    roTable->setSortingEnabled(1);
+    roTable->viewport()->update();
 }
+
+int AAA::getRoNumber(const QModelIndex &index)
+{
+    return roDataModel->data(roDataModel->index(index.row(), 1)).toInt();
+}
+
+int AAA::getRoNumber()
+{
+    auto index = roTable->currentIndex();
+    return roDataModel->data(roDataModel->index(index.row(), 1)).toInt();
+}
+

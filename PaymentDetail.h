@@ -13,6 +13,7 @@
 #include <QHBoxLayout>
 #include <QDateEdit>
 #include <QLineEdit>
+#include <QSqlTableModel>
 
 #include "IOHandler/IOHandler.h"
 
@@ -20,6 +21,7 @@ class PaymentDetail : public QDialog
 {
     Q_OBJECT
 
+    int rono;
     QComboBox *roNo;
     QDateEdit *date;
     QComboBox *client;
@@ -35,7 +37,8 @@ class PaymentDetail : public QDialog
     QLineEdit *guarantedPosition;
     QLineEdit *rate;
     QLineEdit *netAmount;
-    QTableWidget *amountTable;
+    QTableView *paymentTable;
+    QSqlTableModel *paymentModel;
     QLineEdit *totalAmount;
     QLineEdit *balAmount;
     QPushButton *save;
@@ -46,9 +49,9 @@ class PaymentDetail : public QDialog
 
     void render();
     void setupSignals();
-    void setValues(const QStringList paymentStrList);
+    void setValues();
     QStringList toStringList();
-    void tableWidgetSetup();
+    void populateData();
 
 private slots:
     void cellChanged(int row, int column);

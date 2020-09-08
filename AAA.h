@@ -6,8 +6,7 @@
 #include <QToolBar>
 #include <QAction>
 #include <QTableView>
-#include <QStandardItem>
-#include <QStandardItemModel>
+#include <QSqlTableModel>
 #include <QDateEdit>
 #include <QLineEdit>
 #include <QComboBox>
@@ -17,6 +16,7 @@
 #include <QLabel>
 #include <QMenuBar>
 #include <QMenu>
+#include <QCompleter>
 
 #include "IOHandler/IOHandler.h"
 #include "JobType.h"
@@ -42,7 +42,7 @@ class AAA : public QMainWindow
     QAction *generateBill;
     QAction *mediaBill;
     QTableView *roTable;
-    QStandardItemModel *roDataModel;
+    QSqlTableModel *roDataModel;
     QDateEdit *searchDateFrom;
     QDateEdit *searchDateTo;
     QComboBox *roInvNo;
@@ -62,38 +62,10 @@ class AAA : public QMainWindow
     void updateRender();
 
     void populateData();
+    int getRoNumber(const QModelIndex &index);
+    int getRoNumber();
 public:
     explicit AAA(QWidget *parent = nullptr);
-
-    enum RO
-    {
-        RONO=0,
-        MEDIAHOUSELIST,
-        JOBTYPELIST,
-        EDITIONCENTRE,
-        SIZEDURATION,
-        GUARANTEDPOSITION,
-        PREMIUM,
-        PREMIUMREMRK,
-        RATE,
-        RATEREMARK,
-        DATE,
-        CLIENTLIST,
-        CAPTION,
-        DATEOFPUBLICATION,
-        TOTALSIZEDURATION,
-        REMARK,
-        HSNCODE,
-        AMOUNT,
-        NETAMOUNT,
-        CGST,
-        CGSTREMARK,
-        SGST,
-        SGSTREMARK,
-        IGST,
-        IGSTREMARK,
-        ROAMOUNT
-    };
 
 signals:
 

@@ -6,12 +6,12 @@ AddReleaseOrder::AddReleaseOrder(QWidget *parent): QDialog(parent)
     render();
 }
 
-AddReleaseOrder::AddReleaseOrder(const int roNo, QWidget *parent)
+AddReleaseOrder::AddReleaseOrder(const int roNo, QWidget *parent):QDialog(parent)
 {
     io = IOHandler::getInstance();
 
     render();
-    auto strList = io->dataEngine->roStringList(roNo);
+    auto strList = io->sql->getROStringList(roNo);
     if(!strList.isEmpty())
         setValues(strList);
 }
@@ -31,9 +31,9 @@ void AddReleaseOrder::render()
 
     roNo = new QLineEdit(this);
     mediaHousList = new QComboBox(this);
-    mediaHousList->addItems(io->dataEngine->mediaHouseStringList());
+    mediaHousList->addItems(io->sql->getMediaHouseList());
     jobTypeList = new QComboBox(this);
-    jobTypeList->addItems(io->dataEngine->jobTypeStringList());
+    jobTypeList->addItems(io->sql->getJobTypeList());
     editionCentre = new QLineEdit(this);
     sizeDuration = new QLineEdit(this);
     guarantedPosition = new QLineEdit(this);
@@ -44,7 +44,7 @@ void AddReleaseOrder::render()
     rateRemark = new QTextEdit(this);
     date = new QDateEdit(QDate::currentDate(), this);
     clientList = new QComboBox(this);
-    clientList->addItems(io->dataEngine->clientStringList());
+    clientList->addItems(io->sql->getClientList());
     caption = new QLineEdit(this);
     dateOfPublication = new QLineEdit(this);
     totalSizeDuration = new QLineEdit(this);
@@ -54,13 +54,13 @@ void AddReleaseOrder::render()
     netAmount = new QLineEdit(this);
     CGST = new QComboBox(this);
     CGST->addItems(gstList);
-    cgstRemark = new QLineEdit(this);
+    cgstAmount = new QLineEdit(this);
     SGST = new QComboBox(this);
     SGST->addItems(gstList);
-    sgstRemark = new QLineEdit(this);
+    sgstAmount = new QLineEdit(this);
     IGST = new QComboBox(this);
     IGST->addItems(gstList);
-    igstRemark = new QLineEdit(this);
+    igstAmount = new QLineEdit(this);
     roAmount = new QLineEdit(this);
     save = new QPushButton("Save", this);
     clear = new QPushButton("Clear", this);
@@ -98,17 +98,17 @@ void AddReleaseOrder::render()
 
     hbox = new QHBoxLayout;
     hbox->addWidget(CGST);
-    hbox->addWidget(cgstRemark);
+    hbox->addWidget(cgstAmount);
     form->addRow("CGST", hbox);
 
     hbox = new QHBoxLayout;
     hbox->addWidget(SGST);
-    hbox->addWidget(sgstRemark);
+    hbox->addWidget(sgstAmount);
     form->addRow("SGST", hbox);
 
     hbox = new QHBoxLayout;
     hbox->addWidget(IGST);
-    hbox->addWidget(igstRemark);
+    hbox->addWidget(igstAmount);
     form->addRow("IGST", hbox);
 
     form->addRow("RO Amount", roAmount);
@@ -131,47 +131,83 @@ void AddReleaseOrder::render()
 void AddReleaseOrder::setupSignal()
 {
     connect(save, &QPushButton::clicked, [this]{
-        io->dataEngine->insertROData(toStringList());
+        auto sl = toStringList();
+        auto size = sl.size();
+        io->sql->insertRoData(sl);
         this->close();
     });
 }
 
 QStringList AddReleaseOrder::toStringList()
 {
-    return {roNo->text(), mediaHousList->currentText(), jobTypeList->currentText(), editionCentre->text(),
-                sizeDuration->text(), guarantedPosition->text(), premium->text(), premiumRemark->toPlainText().toUtf8(),
-                rate->text(), rateRemark->toPlainText(), date->text(), clientList->currentText(), caption->text(), dateOfPublication->text(),
-                totalSizeDuration->text(), remarks->toPlainText(), hsnCode->text(), amount->text(),
-                netAmount->text(), CGST->currentText(), cgstRemark->text(), SGST->currentText(), sgstRemark->text(),
-                IGST->currentText(), igstRemark->text(), roAmount->text()};
+    return {
+                        QString::number(code),
+                        roNo->text(),
+                        date->text(),
+                        QString::number(io->sql->getMediaHouseCode(mediaHousList->currentText())),
+                        mediaHousList->currentText(),
+                        QString::number(io->sql->getClientCode(clientList->currentText())),
+                        clientList->currentText(),
+                        QString::number(io->sql->getJobTypeCode(jobTypeList->currentText())),
+                        jobTypeList->currentText(),
+                        caption->text(),
+                        editionCentre->text(),
+                        dateOfPublication->text(),
+                        sizeDuration->text(),
+                        totalSizeDuration->text(),
+                        guarantedPosition->text(),
+                        premium->text(),
+                        premiumRemark->toPlainText().toUtf8(),
+                        rate->text(),
+                        rateRemark->toPlainText(),
+                        amount->text(),
+                        netAmount->text(),
+                        remarks->toPlainText(),
+                        "Bill Amount",
+                        "Invoice No.",
+                        "Payment",
+                        "Receipt No.",
+                        "Receipt Amount",
+                        "MediaBill Amount",
+                        CGST->currentText(),
+                        cgstAmount->text(),
+                        SGST->currentText(),
+                        sgstAmount->text(),
+                        IGST->currentText(),
+                        igstAmount->text(),
+                        roAmount->text(),
+                        hsnCode->text()
+    };
 }
 
 void AddReleaseOrder::setValues(const QStringList detailList)
 {
-    roNo->setText(detailList.at(0));
-    mediaHousList->setCurrentText(detailList.at(1));
-    jobTypeList->setCurrentText(detailList.at(2));
-    editionCentre->setText(detailList.at(3));
-    sizeDuration->setText(detailList.at(4));
-    guarantedPosition->setText(detailList.at(5));
-    premium->setText(detailList.at(6));
-    premiumRemark->setText(detailList.at(7));
-    rate->setText(detailList.at(8));
-    rateRemark->setText(detailList.at(9));
+    code = detailList.at(0).toInt();
+    roNo->setText(detailList.at(1));
+    roNo->setDisabled(true);
     date->setDate(QDate()); // 10
-    clientList->setCurrentText(detailList.at(11));
-    caption->setText(detailList.at(12));
-    dateOfPublication->setText(detailList.at(13));
-    totalSizeDuration->setText(detailList.at(14));
-    remarks->setText(detailList.at(15));
-    hsnCode->setText(detailList.at(16));
-    amount->setText(detailList.at(17));
-    netAmount->setText(detailList.at(18));
-    CGST->setCurrentText(detailList.at(19));
-    cgstRemark->setText(detailList.at(20));
-    SGST->setCurrentText(detailList.at(21));
-    sgstRemark->setText(detailList.at(22));
-    IGST->setCurrentText(detailList.at(23));
-    igstRemark->setText(detailList.at(24));
-    roAmount->setText(detailList.at(25));
+    mediaHousList->setCurrentText(detailList.at(4));
+    clientList->setCurrentText(detailList.at(6));
+    jobTypeList->setCurrentText(detailList.at(8));
+    caption->setText(detailList.at(9));
+    editionCentre->setText(detailList.at(10));
+    dateOfPublication->setText(detailList.at(11));
+    sizeDuration->setText(detailList.at(12));
+    totalSizeDuration->setText(detailList.at(13));
+    guarantedPosition->setText(detailList.at(14));
+    premium->setText(detailList.at(15));
+    premiumRemark->setText(detailList.at(16));
+    rate->setText(detailList.at(17));
+    rateRemark->setText(detailList.at(18));
+    amount->setText(detailList.at(19));
+    netAmount->setText(detailList.at(20));
+    remarks->setText(detailList.at(21));
+    CGST->setCurrentText(detailList.at(28));
+    cgstAmount->setText(detailList.at(29));
+    SGST->setCurrentText(detailList.at(30));
+    sgstAmount->setText(detailList.at(31));
+    IGST->setCurrentText(detailList.at(32));
+    igstAmount->setText(detailList.at(33));
+    roAmount->setText(detailList.at(34));
+    hsnCode->setText(detailList.at(35));
 }

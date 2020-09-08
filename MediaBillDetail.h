@@ -20,6 +20,7 @@ class MediaBill : public QDialog
 {
     Q_OBJECT
 
+    int rono;
     QComboBox *roNo;
     QDateEdit *date;
     QComboBox *client;
@@ -35,7 +36,8 @@ class MediaBill : public QDialog
     QLineEdit *guarantedPosition;
     QLineEdit *rate;
     QLineEdit *netAmount;
-    QTableWidget *amountTable;
+    QTableView *mediaBillTableView;
+    QSqlTableModel *mediaBillModel;
     QLineEdit *totalAmount;
     QPushButton *save;
     QPushButton *clear;
@@ -45,9 +47,9 @@ class MediaBill : public QDialog
 
     void render();
     void setupSignals();
-    void setValues(const QStringList paymentStrList);
+    void setValues();
     QStringList toStringList();
-    void tableWidgetSetup();
+    void populateData();
 
 private slots:
     void cellChanged(int row, int column);
