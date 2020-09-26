@@ -16,6 +16,8 @@
 #include <QHeaderView>
 #include <QSet>
 #include <QMessageBox>
+#include <QRegExp>
+#include <QRegExpValidator>
 
 class JobType : public QDialog
 {

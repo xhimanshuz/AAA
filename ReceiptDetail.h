@@ -7,13 +7,14 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTableWidget>
-#include <QSqlTableModel>
 #include <QGroupBox>
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDateEdit>
 #include <QLineEdit>
+#include <QAction>
+#include <QMessageBox>
 
 #include "IOHandler/IOHandler.h"
 
@@ -37,22 +38,22 @@ class ReceiptDetail : public QDialog
     QLineEdit *guarantedPosition;
     QLineEdit *rate;
     QLineEdit *netAmount;
-    QTableView *receiptTableView;
-    QSqlTableModel *tableModel;
+    QTableWidget *receiptTableWidget;
     QLineEdit *totalAmount;
     QLineEdit *balAmount;
     QPushButton *save;
     QPushButton *clear;
     QVBoxLayout *mainLayout;
+    QAction *deleteRow;
 
     IOHandler *io;
 
     void render();
     void setupSignals();
     void setValues();
-    QStringList toStringList();
-    void populateTable();
-
+    QList<QStringList> toStringList();
+    void populateTable(QList<QStringList> list = {});
+    void insertNewRow();
 private slots:
     void cellChanged(int row, int column);
 public:

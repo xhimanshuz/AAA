@@ -17,7 +17,7 @@ class GenerateBillWindow : public QDialog
 {
     Q_OBJECT
 
-    QLineEdit *seachRoNo;
+    QComboBox *seachRoNo;
     QComboBox *mediaHouse;
     QComboBox *status;
     QPushButton *freshList;

@@ -1,6 +1,7 @@
 import csv
 import sqlite3
 from sqlite3 import Error
+import datetime
 
 database = "AAA.db"
 
@@ -25,6 +26,12 @@ def csvToList(fileStr):
             list.append(x)
         del list[0]
     return list
+
+def toDate(timeStr):
+    print(">> toDate", timeStr)
+    d = datetime.datetime.strptime(timeStr, "%d-%m-%Y %H:%M:%S")
+    return int(d.timestamp())
+
 
 def mediaHouse():
     mhl = csvToList("MediaHouse.csv")
@@ -72,7 +79,8 @@ def parties():
     conn = sqlite3.connect(database)
     cur = conn.cursor()
 
-    cur.execute("""CREATE TABLE "clients" (
+    cur.execute("""
+    CREATE TABLE "clients" (
 	"id"	INTEGER,
 	"name"	TEXT NOT NULL,
 	"contactperson"	TEXT,
@@ -119,6 +127,7 @@ def invoice():
     for i,x in enumerate(inv):
         inv[i][0] = toInt(inv[i][0])
         inv[i][2] = toInt(inv[i][2])
+        inv[i][4] = toDate(inv[i][4])
         inv[i][5] = toInt(inv[i][5])
         inv[i][6] = toInt(inv[i][6])
         inv[i][7] = toInt(inv[i][7])
@@ -147,7 +156,7 @@ def invoice():
     "type"	TEXT DEFAULT "",
     "number"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "invoiceremark"	TEXT DEFAULT "",
-    "date"	TEXT,
+    "date"	INTEGER,
     "bookno"	INTEGER DEFAULT 0,
     "rocode"	INTEGER DEFAULT 0,
     "rono"	INTEGER,
@@ -169,7 +178,8 @@ def invoice():
     "amountsgst"	REAL,
     "rateigst"	REAL,
     "amountigst"	REAL,
-    "finalamount"	REAL
+    "finalamount"	REAL,
+    FOREIGN KEY("rono") REFERENCES "ro"("number")
 );""")
 
     conn.commit()
@@ -177,7 +187,7 @@ def invoice():
     for i,x in enumerate(inv):
         print(f"[{i+1}][>>] {x}")
         cur.execute(f"""INSERT INTO "invoice"("id","type","number","invoiceremark","date","bookno","rocode","rono","gramount","otherch","otherchamount","taxrate","taxamount","leftamount","disrate","disamount","npamount","pcode","remark","totalsizeduration","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount") 
-        VALUES ({x[0]},"{x[1]}",{x[2]},"{x[3]}","{x[4]}",{x[5]},{x[6]},{x[7]},{x[8]},"{x[9]}","{x[10]}",{x[11]},{x[12]},{x[13]},{x[14]},{x[15]},{x[16]},{x[17]},"{x[18]}","{x[19]}",{x[20]},{x[21]},{x[22]},{x[23]},{x[24]},{x[25]},{x[26]});""")
+        VALUES ({x[0]},"{x[1]}",{x[2]},"{x[3]}",{x[4]},{x[5]},{x[6]},{x[7]},{x[8]},"{x[9]}","{x[10]}",{x[11]},{x[12]},{x[13]},{x[14]},{x[15]},{x[16]},{x[17]},"{x[18]}","{x[19]}",{x[20]},{x[21]},{x[22]},{x[23]},{x[24]},{x[25]},{x[26]});""")
 
     conn.commit()
     conn.close()
@@ -185,8 +195,10 @@ def invoice():
 def payment():
     pl = csvToList("Payment.csv")
     for i,x in enumerate(pl):
+        print(pl[i])
         pl[i][0] = toInt(pl[i][0])
         pl[i][1] = toInt(pl[i][1])
+        pl[i][2] = toDate(pl[i][2])
         pl[i][3] = toDouble(pl[i][3])
 
     conn = sqlite3.connect(database)
@@ -197,7 +209,7 @@ def payment():
 	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
 	"rocode"	INTEGER,
 	"rono"	INTEGER NOT NULL,
-	"date"	TEXT NOT NULL,
+        "date"	INTEGER NOT NULL,
 	"amount"	REAL NOT NULL,
 	"mode"	TEXT,
 	"chequeNo"	TEXT,
@@ -208,7 +220,7 @@ def payment():
 
     for i,x in enumerate(pl):
         print(f"[{i+1}][>>] {x}")
-        cur.execute(f"""INSERT INTO "payment"("id","rocode","rono","date","amount","mode","chequeNo","bankname") VALUES ({i},{x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}","{x[5]}","{x[6]}");""")
+        cur.execute(f"""INSERT INTO "payment"("id","rocode","rono","date","amount","mode","chequeNo","bankname") VALUES ({i},{x[0]},{x[1]},{x[2]},{x[3]},"{x[4]}","{x[5]}","{x[6]}");""")
     conn.commit()
     conn.close()
 
@@ -226,23 +238,32 @@ def receipt():
 
     cur.execute("""
     CREATE TABLE "receipt" (
-	"id"	INTEGER NOT NULL,
-	"number"	INTEGER,
-	"rocode"	INTEGER,
-	"rono"	INTEGER NOT NULL,
-	"rcptDate"	TEXT,
-	"rcptamount"	REAL,
-	"paymode"	TEXT,
-	"chqno"	TEXT,
-	"bankname"	TEXT,
-	"remark"	TEXT
-);
+            "id"	INTEGER,
+            "number"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "rocode"	INTEGER,
+            "rono"	INTEGER NOT NULL,
+            "rcptDate"	TEXT,
+            "rcptamount"	REAL,
+            "paymode"	TEXT,
+            "chqno"	TEXT,
+            "bankname"	TEXT,
+            "remark"	TEXT,
+            FOREIGN KEY("rono") REFERENCES "ro"("number")
+    );
     """)
+
     conn.commit()
     
+    print("\nRECEIPT\n-----------------------------------------\n",
+    """  [>>] ["id","number","rocode","rono","rcptDate","rcptamount","paymode","chqno","bankname","remark"] """)
     for i,x in enumerate(rl):
         print(f"[{i+1}][>>] {x}")
-        cur.execute(f"""INSERT INTO "receipt" ("id","number","rocode","rono","rcptDate","rcptamount","paymode","chqno","bankname","remark") VALUES ({x[0]},{x[1]},{x[2]},{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}");""")
+        try:
+            cur.execute(f"""INSERT INTO "receipt" ("id","number","rocode","rono","rcptDate","rcptamount","paymode","chqno","bankname","remark") VALUES ({x[0]},{x[1]},{x[2]},{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}");""")
+        except sqlite3.IntegrityError as e:
+            cur.execute(f"""INSERT INTO "receipt" ("id","rocode","rono","rcptDate","rcptamount","paymode","chqno","bankname","remark") VALUES ({x[0]},{x[2]},{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}");""")
+            print("Exception Occured: ", e)
+
     conn.commit()
     conn.close()
 
@@ -258,8 +279,8 @@ def mediaBill():
     conn.execute("""CREATE TABLE "mediaBill" (
 	"id"	TEXT ,
 	"date"	TEXT,
-	"rocode"	INTEGER NOT NULL,
-	"rono"	INTEGER,
+        "rocode"	INTEGER,
+        "rono"	NOT NULL,
 	"amount"	REAL
 );""")
 

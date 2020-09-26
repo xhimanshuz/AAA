@@ -42,6 +42,7 @@ void JobType::render()
     mainLayout->addLayout(hbox);
 
     addLineEdit = new QLineEdit(this);
+    addLineEdit->setValidator(new QRegExpValidator(QRegExp("(\\w+|\\d+)@\\w+\\D\\.(in|com|co\\.in)")));
     saveButton = new QPushButton(tr("INSERT"));
     modifyButton = new QPushButton(tr("Modify"));
     modifyButton->hide();

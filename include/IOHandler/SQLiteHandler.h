@@ -64,15 +64,18 @@ public:
     QStringList getRoList();
 
     QSqlTableModel *getPaymentModel() const;
-    bool insertPayment(QStringList dataList);
-    QStringList paymentStringList(int roNo);
-    bool insertBlankRow(int rono);
+    bool insertPayment(QList<QStringList> dataList, int rono);
+    QList<QStringList> getPaymentStringList(int roNo);
+    int getNewPaymentNumber();
 
     QSqlTableModel *getReceiptModel() const;
-    bool insertReceipt(QStringList dataList);
-    QStringList receiptStringList();
+    bool insertReceipt(QList<QStringList> dataList, int rono);
+    QList<QStringList> getReceiptStringList(int rono);
+    int getNewReceiptNumber();
 
     QSqlTableModel *getMediaBill() const;
+    QList<QStringList> getMediaBillList(int rono);
+    bool insertMediaBill(QList<QStringList> dataList, int rono);
 
 
     QSqlQueryModel *getGenerateBillModel() const;

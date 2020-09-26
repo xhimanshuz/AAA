@@ -203,7 +203,7 @@ QStringList DataEngine::jobTypeStringList()
 
 QStringList DataEngine::clientStringList()
 {
-    QStringList strList("");
+    QStringList strList;
     for(auto client= clientMap->begin(); client != clientMap->end(); ++client)
         strList<< client.key();
 

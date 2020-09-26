@@ -45,7 +45,7 @@ class AAA : public QMainWindow
     QSqlTableModel *roDataModel;
     QDateEdit *searchDateFrom;
     QDateEdit *searchDateTo;
-    QComboBox *roInvNo;
+    QComboBox *roNo;
     QComboBox *mediaHouse;
     QComboBox *client;
     QComboBox *jobType;

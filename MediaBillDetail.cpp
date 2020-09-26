@@ -29,25 +29,28 @@ void MediaBill::render()
     roNo->setEditable(true);
     date = new QDateEdit;
     client = new QComboBox;
-    client->addItems(io->dataEngine->clientStringList());
+    client->addItems(io->sql->getClientList());
     caption = new QLineEdit;
     dateOfPublicationTelecast = new QLineEdit;
     totalSizeDuration = new QLineEdit;
     premium = new QLineEdit;
     amount = new QLineEdit;
     mediaHouse = new QComboBox;
-    mediaHouse->addItems(io->dataEngine->mediaHouseStringList());
+    mediaHouse->addItems(io->sql->getMediaHouseList());
     jobType = new QComboBox;
-    jobType->addItems(io->dataEngine->jobTypeStringList());
+    jobType->addItems(io->sql->getJobTypeList());
     editionCentre = new QLineEdit;
     sizeDuration = new QLineEdit;
     guarantedPosition = new QLineEdit;
     rate = new QLineEdit;
     netAmount = new QLineEdit;
 
-    mediaBillTableView = new QTableView;
-    mediaBillModel = io->sql->getMediaBill();
-    mediaBillTableView->setModel(mediaBillModel);
+    mediaBillTableWidget = new QTableWidget(1, 3, this);
+    mediaBillTableWidget->setHorizontalHeaderLabels(QStringList()<< "MB. No."<<"Date"<<"Amount");
+//    mediaBillSModel = new QStandardItemModel;
+//    mediaBillModel = io->sql->getMediaBill();
+
+//    mediaBillTableView->setModel(mediaBillSModel);
     populateData();
 
     totalAmount = new QLineEdit;
@@ -79,7 +82,7 @@ void MediaBill::render()
     formHbox->addLayout(form);
     mainLayout->addLayout(formHbox);
 
-    mainLayout->addWidget(mediaBillTableView);
+    mainLayout->addWidget(mediaBillTableWidget);
 
     form = new QFormLayout;
     form->addRow("Total Amount", totalAmount);
@@ -91,17 +94,37 @@ void MediaBill::render()
     hbox->addStretch();
     mainLayout->addLayout(hbox);
 
+    deleteRow = new QAction;
+    deleteRow->setShortcut(Qt::Key::Key_Delete);
+    mediaBillTableWidget->addAction(deleteRow);
+
     setupSignals();
 }
 
 void MediaBill::setupSignals()
 {
     connect(save, &QPushButton::clicked, [this]{
-        io->dataEngine->insertMediaBillData(toStringList());
-        this->close();
+        QMessageBox msg(QMessageBox::Icon::Warning, "Warning!", "Do you want to Save Changes", QMessageBox::Yes | QMessageBox::No);
+        if(QMessageBox::Yes !=  msg.exec())
+            return;
+        io->sql->insertMediaBill(toStringList(), rono);
     });
 
-//    connect(mediaBillTableView, &QTableWidget::cellChanged, this, &MediaBill::cellChanged);
+    connect(mediaBillTableWidget, &QTableWidget::cellChanged, this, &MediaBill::cellChanged);
+
+    connect(deleteRow, &QAction::triggered, [this]()
+    {
+        QMessageBox msg(QMessageBox::Icon::Warning, "Warning!", "Do you want to delete", QMessageBox::Yes | QMessageBox::No);
+        if(QMessageBox::Yes !=  msg.exec())
+            return;
+        auto row = mediaBillTableWidget->currentRow();
+        if(!mediaBillTableWidget->item(1, 0) && !mediaBillTableWidget->item(1, 1) && !mediaBillTableWidget->item(1, 2) && (row == 1))
+            return;
+
+        mediaBillTableWidget->removeRow(row);
+        if(mediaBillTableWidget->rowCount() < 1)
+            mediaBillTableWidget->setRowCount(1);
+    });
 }
 
 void MediaBill::setValues()
@@ -109,68 +132,85 @@ void MediaBill::setValues()
     roNo->setCurrentText(QString::number(rono));
     roNo->setDisabled(true);
 
-    mediaBillModel->setFilter(QString("rono = %0").arg(rono));
-    mediaBillModel->select();
-//    date->setDate(QDate());
-//    client->setCurrentText(paymentStrList.at(2));
-//    caption->setText(paymentStrList.at(3));
-//    dateOfPublicationTelecast->setText(paymentStrList.at(4));
-//    totalSizeDuration->setText(paymentStrList.at(5));
-//    premium->setText(paymentStrList.at(6));
-//    amount->setText(paymentStrList.at(7));
-//    mediaHouse->setCurrentText(paymentStrList.at(8));
-//    jobType->setCurrentText(paymentStrList.at(9));
-//    editionCentre->setText(paymentStrList.at(10));
-//    sizeDuration->setText(paymentStrList.at(11));
-//    guarantedPosition->setText(paymentStrList.at(12));
-//    rate->setText(paymentStrList.at(13));
-//    netAmount->setText(paymentStrList.at(14));
+    auto list = io->sql->getMediaBillList(rono);
 
-//    auto rowsStr = paymentStrList.at(1).split('\n');
-//    mediaBillTableView->clear();
-//    for(auto r=0; r< rowsStr.size()-1; r++)
-//    {
-//        mediaBillTableView->setRowCount(r+1);
-//        auto row = rowsStr.at(r).split(',');
-//        mediaBillTableView->setItem(r, 0, new QTableWidgetItem(row.at(0)));
-//        mediaBillTableView->setItem(r, 1, new QTableWidgetItem(row.at(1)));
-//        mediaBillTableView->setItem(r, 2, new QTableWidgetItem(row.at(2)));
-//    }
+    populateData(list);
 
-//    mediaBillTableView->setHorizontalHeaderLabels(QStringList()<< "Media Bill"<< "Date"<< "Amount");
-
-//    totalAmount->setText(paymentStrList.at(16));
+    auto strList = io->sql->getROStringList(rono);
+    date->setDate(QDate());
+    date->setReadOnly(true);
+    client->setCurrentText(strList.at(6));
+    client->setDisabled(true);
+    caption->setText(strList.at(9));
+    caption->setReadOnly(true);
+    dateOfPublicationTelecast->setText(strList.at(11));
+    dateOfPublicationTelecast->setReadOnly(true);
+    totalSizeDuration->setText(strList.at(13));
+    totalSizeDuration->setReadOnly(true);
+    premium->setText(strList.at(15));
+    premium->setReadOnly(true);
+    amount->setText(strList.at(19));
+    amount->setReadOnly(true);
+    mediaHouse->setCurrentText(strList.at(4));
+    mediaHouse->setDisabled(true);
+    jobType->setCurrentText(strList.at(8));
+    jobType->setDisabled(true);
+    editionCentre->setText(strList.at(10));
+    editionCentre->setReadOnly(true);
+    sizeDuration->setText(strList.at(12));
+    sizeDuration->setReadOnly(true);
+    guarantedPosition->setText(strList.at(14));
+    guarantedPosition->setReadOnly(true);
+    rate->setText(strList.at(17));
+    rate->setReadOnly(true);
+    netAmount->setText(strList.at(20));
+    netAmount->setReadOnly(true);
 }
 
-QStringList MediaBill::toStringList()
+QList<QStringList> MediaBill::toStringList()
 {
-//    QString rowStr;
-//    for(auto row=0; row<mediaBillTableView->rowCount(); row++)
-//    {
-//        auto mediaBillNo = mediaBillTableView->item(row, 0);
-//        auto date = mediaBillTableView->item(row, 1);
-//        auto amount = mediaBillTableView->item(row, 2);
-//        if(!amount)
-//            break;;
-//        rowStr += mediaBillNo->text()+','+ date->text() + ','+amount->text()+'\n';
-//    }
+    QList<QStringList> list;
+    for(auto r=0; r< mediaBillTableWidget->rowCount()-1; r++)
+    {
+        QStringList strList;
+        for(auto c=0; c< mediaBillTableWidget->columnCount(); c++)
+        {
+            if(mediaBillTableWidget->item(r, c))
+                strList << mediaBillTableWidget->item(r, c)->text();
+            else
+                strList << "";
+        }
+        list << strList;
+    }
 
-//    QStringList strList;
-
-//    strList << roNo->currentText() << rowStr;
-
-//    return strList;
+    return list;
 }
 
-void MediaBill::populateData()
+void MediaBill::populateData(QList<QStringList> list)
 {
-    mediaBillModel->query().exec();
+    for(auto r=0; r< list.size(); r++)
+    {
+        for(auto c=0; c<list.at(r).size(); c++)
+        {
+            auto l = list.at(r);
+            mediaBillTableWidget->setItem(r, c, new QTableWidgetItem(l.at(c)));
+        }
+     }
+
+}
+
+void MediaBill::insertNewRow()
+{
+    mediaBillTableWidget->setRowCount(mediaBillTableWidget->rowCount()+1);
 }
 
 void MediaBill::cellChanged(int row, int column)
 {
-//    if((!mediaBillTableView->item(row, 0) || !mediaBillTableView->item(row, 1) || !mediaBillTableView->item(row, 2) ) || mediaBillTableView->rowCount() != row+1)
-//        return;
+    if(!mediaBillTableWidget->item(row, 0) || !mediaBillTableWidget->item(row, 1) ||!mediaBillTableWidget->item(row, 2))
+        return;
 
-//    mediaBillTableView->setRowCount(mediaBillTableView->rowCount()+1);
+    if(column+1 != mediaBillTableWidget->columnCount())
+        return;
+
+    insertNewRow();
 }

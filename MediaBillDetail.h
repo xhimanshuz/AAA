@@ -13,6 +13,8 @@
 #include <QHBoxLayout>
 #include <QDateEdit>
 #include <QLineEdit>
+#include <QStandardItemModel>
+#include <QAction>
 
 #include "IOHandler/IOHandler.h"
 
@@ -36,20 +38,21 @@ class MediaBill : public QDialog
     QLineEdit *guarantedPosition;
     QLineEdit *rate;
     QLineEdit *netAmount;
-    QTableView *mediaBillTableView;
-    QSqlTableModel *mediaBillModel;
+    QTableWidget *mediaBillTableWidget;
     QLineEdit *totalAmount;
     QPushButton *save;
     QPushButton *clear;
     QVBoxLayout *mainLayout;
 
     IOHandler *io;
+    QAction *deleteRow;
 
     void render();
     void setupSignals();
     void setValues();
-    QStringList toStringList();
-    void populateData();
+    QList<QStringList> toStringList();
+    void populateData(QList<QStringList> list = {});
+    void insertNewRow();
 
 private slots:
     void cellChanged(int row, int column);

@@ -24,7 +24,9 @@ void GenerateBillWindow::render()
 {
     mainLayout = new QVBoxLayout;
 
-    seachRoNo = new QLineEdit;
+    seachRoNo = new QComboBox;
+    seachRoNo->addItems(io->sql->getRoList());
+    seachRoNo->setEditable(true);
     mediaHouse = new QComboBox;
     mediaHouse->addItems(io->sql->getMediaHouseList());
     status = new QComboBox;

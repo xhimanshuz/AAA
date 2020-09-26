@@ -30,26 +30,26 @@ void ReceiptDetail::render()
     roNo->setEditable(true);
     date = new QDateEdit;
     client = new QComboBox;
-    client->addItems(io->dataEngine->clientStringList());
+    client->addItems(io->sql->getClientList());
     caption = new QLineEdit;
     dateOfPublicationTelecast = new QLineEdit;
     totalSizeDuration = new QLineEdit;
     premium = new QLineEdit;
     amount = new QLineEdit;
     mediaHouse = new QComboBox;
-    mediaHouse->addItems(io->dataEngine->mediaHouseStringList());
+    mediaHouse->addItems(io->sql->getMediaHouseList());
     jobType = new QComboBox;
-    jobType->addItems(io->dataEngine->jobTypeStringList());
+    jobType->addItems(io->sql->getJobTypeList());
     editionCentre = new QLineEdit;
     sizeDuration = new QLineEdit;
     guarantedPosition = new QLineEdit;
     rate = new QLineEdit;
     netAmount = new QLineEdit;
 
-    receiptTableView = new QTableView;
-    tableModel = io->sql->getReceiptModel();
-    receiptTableView->setModel(tableModel);
+    receiptTableWidget = new QTableWidget(1, 6);
+    receiptTableWidget->setHorizontalHeaderLabels(QStringList() << "Date"<<"Amount"<<"Mode"<<"Cheque No."<<"Bank Name"<<"Remark");
     populateTable();
+
 //    receiptTableView->hideRow(0);
 //    receiptTableView->hideRow(2);
 
@@ -83,7 +83,7 @@ void ReceiptDetail::render()
     formHbox->addLayout(form);
     mainLayout->addLayout(formHbox);
 
-    mainLayout->addWidget(receiptTableView);
+    mainLayout->addWidget(receiptTableWidget);
 
     form = new QFormLayout;
     form->addRow("Total Amount", totalAmount);
@@ -96,58 +96,123 @@ void ReceiptDetail::render()
     hbox->addStretch();
     mainLayout->addLayout(hbox);
 
+    deleteRow = new QAction();
+    deleteRow->setShortcut(Qt::Key::Key_Delete);
+    receiptTableWidget->addAction(deleteRow);
+
     setupSignals();
 }
 
 void ReceiptDetail::setupSignals()
 {
     connect(save, &QPushButton::clicked, [this]{
-        io->sql->getReceiptModel()->submitAll();
-        this->close();
+        QMessageBox msg(QMessageBox::Icon::Warning, "Warning!", "Do you want to Save Changes", QMessageBox::Yes | QMessageBox::No);
+        if(QMessageBox::Yes !=  msg.exec())
+            return;
+        io->sql->insertReceipt(toStringList(), rono);
     });
 
-//    connect(receiptTableView, &QTableWidget::cellChanged, this, &ReceiptDetail::cellChanged);
+    connect(receiptTableWidget, &QTableWidget::cellChanged, this, &ReceiptDetail::cellChanged);
+    connect(deleteRow, &QAction::triggered, [this]()
+    {
+        QMessageBox msg(QMessageBox::Icon::Warning, "Warning!", "Do you want to delete", QMessageBox::Yes | QMessageBox::No);
+        if(QMessageBox::Yes !=  msg.exec())
+            return;
+        auto row = receiptTableWidget->currentRow();
+        if(!receiptTableWidget->item(1, 0) && !receiptTableWidget->item(1, 1) && !receiptTableWidget->item(1, 2) && !receiptTableWidget->item(1, 3) && !receiptTableWidget->item(1, 4) && (row == 1))
+        {
+            return;
+        }
+        receiptTableWidget->removeRow(row);
+        if(receiptTableWidget->rowCount() < 1)
+            receiptTableWidget->setRowCount(1);
+    });
 }
 
 void ReceiptDetail::setValues()
 {
-    tableModel->setFilter(QString("rono = %0").arg(rono));
-    tableModel->select();
+    roNo->setCurrentText(QString::number(rono));
+
+    auto list = io->sql->getReceiptStringList(rono);
+
+    populateTable(list);
+
+    auto strList = io->sql->getROStringList(rono);
+    date->setDate(QDate());
+    date->setReadOnly(true);
+    client->setCurrentText(strList.at(6));
+    client->setDisabled(true);
+    caption->setText(strList.at(9));
+    caption->setReadOnly(true);
+    dateOfPublicationTelecast->setText(strList.at(11));
+    dateOfPublicationTelecast->setReadOnly(true);
+    totalSizeDuration->setText(strList.at(13));
+    totalSizeDuration->setReadOnly(true);
+    premium->setText(strList.at(15));
+    premium->setReadOnly(true);
+    amount->setText(strList.at(19));
+    amount->setReadOnly(true);
+    mediaHouse->setCurrentText(strList.at(4));
+    mediaHouse->setDisabled(true);
+    jobType->setCurrentText(strList.at(8));
+    jobType->setDisabled(true);
+    editionCentre->setText(strList.at(10));
+    editionCentre->setReadOnly(true);
+    sizeDuration->setText(strList.at(12));
+    sizeDuration->setReadOnly(true);
+    guarantedPosition->setText(strList.at(14));
+    guarantedPosition->setReadOnly(true);
+    rate->setText(strList.at(17));
+    rate->setReadOnly(true);
+    netAmount->setText(strList.at(20));
+    netAmount->setReadOnly(true);
 }
 
-QStringList ReceiptDetail::toStringList()
+QList<QStringList> ReceiptDetail::toStringList()
 {
-//    QString rowStr;
-//    for(auto row=0; row<receiptTableView->rowCount(); row++)
-//    {
-//        auto recptNo = receiptTableView->item(row, 0);
-//        auto date = receiptTableView->item(row, 1);
-//        auto amount = receiptTableView->item(row, 2);
-//        auto cash = receiptTableView->item(row, 3);
-//        auto chequeNo = receiptTableView->item(row, 4);
-//        auto bankName = receiptTableView->item(row, 5);
-//        auto remark = receiptTableView->item(row, 6);
+    QList<QStringList> list;
+    for(auto r=0; r< receiptTableWidget->rowCount()-1; r++)
+    {
+        QStringList strList;
+        for(auto c=0; c< receiptTableWidget->columnCount(); c++)
+        {
+            if(receiptTableWidget->item(r, c))
+                strList << receiptTableWidget->item(r, c)->text();
+            else
+                strList << "";
+        }
+        list << strList;
+    }
 
-//        if(!bankName)
-//            break;;
-//        rowStr += recptNo->text() +','+ date->text() + ','+ amount->text()+','+cash->text()+','+ chequeNo->text()+ ',' + bankName->text()+ ','+ remark->text()+'\n';
-//    }
-
-//    QStringList strList;
-//    strList << roNo->currentText() << rowStr;
-//    return strList;
+    return list;
 }
 
-void ReceiptDetail::populateTable()
+void ReceiptDetail::populateTable(QList<QStringList> list)
 {
-    io->sql->getReceiptModel()->query().exec();
+    for(auto r=0; r< list.size(); r++)
+    {
+        auto l = list.at(r);
+        for(auto c=0; c<list.at(r).size(); c++)
+        {
+            receiptTableWidget->setItem(r, c, new QTableWidgetItem(l.at(c)));
+        }
+    }
+}
+
+void ReceiptDetail::insertNewRow()
+{
+    receiptTableWidget->setRowCount(receiptTableWidget->rowCount()+1);
+    receiptTableWidget->viewport()->update();
 }
 
 void ReceiptDetail::cellChanged(int row, int column)
 {
-//    if((!receiptTableView->item(row, 0) || !receiptTableView->item(row, 1) || !receiptTableView->item(row, 2) || !receiptTableView->item(row, 3) || !receiptTableView->item(row, 4)) || receiptTableView->rowCount() != row+1)
-//        return;
+    if(!receiptTableWidget->item(row, 0) || !receiptTableWidget->item(row, 1) || !receiptTableWidget->item(row, 2) || !receiptTableWidget->item(row, 3) || !receiptTableWidget->item(row, 4) )
+        return;
 
-//    receiptTableView->setRowCount(receiptTableView->rowCount()+1);
+    if(row+1 != receiptTableWidget->rowCount())
+        return;
+
+    insertNewRow();
 }
 

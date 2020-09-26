@@ -30,7 +30,8 @@ void AAA::render()
 
     searchDateFrom = new QDateEdit;
     searchDateTo = new QDateEdit;
-    roInvNo = new QComboBox;
+    roNo = new QComboBox;
+    roNo->setEditable(true);
     mediaHouse = new QComboBox;
     mediaHouse->setEditable(true);
 //    mediaHouse->completer()->setCompletionMode(QCompleter::CompletionMode::PopupCompletion);
@@ -64,7 +65,7 @@ void AAA::render()
     hbox->addWidget(new QLabel("To"));
     hbox->addWidget(searchDateTo, 1);
     hbox->addWidget(new QLabel("RO/Inv No."));
-    hbox->addWidget(roInvNo, 1);
+    hbox->addWidget(roNo, 1);
     hbox->addWidget(new QLabel("Media House"));
     hbox->addWidget(mediaHouse, 1);
     hbox->addWidget(new QLabel("Client"));
@@ -158,16 +159,62 @@ void AAA::setupSignals()
         gbw.exec();
         populateData();
     });
+
+    connect(mediaHouse, &QComboBox::currentTextChanged, [this](const QString &mediaHouse){
+        if(mediaHouse.isEmpty())
+        {
+            populateData();
+            return ;
+        }
+        io->sql->getRoModel()->setFilter(QString("mhname = '%0'").arg(mediaHouse));
+        populateData();
+    });
+
+    connect(client, &QComboBox::currentTextChanged, [this](const QString &client){
+        if(client.isEmpty())
+        {
+            io->sql->getRoModel()->setFilter("");
+            populateData();
+            return ;
+        }
+
+        io->sql->getRoModel()->setFilter(QString("pname = '%0'").arg(client));
+        populateData();
+    });
+
+    connect(jobType, &QComboBox::currentTextChanged, [this](const QString &jobType){
+        if(jobType.isEmpty())
+        {
+            io->sql->getRoModel()->setFilter("");
+            populateData();
+            return ;
+        }
+
+        io->sql->getRoModel()->setFilter(QString("jobtypename = '%0'").arg(jobType));
+        populateData();
+    });
+
+    connect(roNo, &QComboBox::currentTextChanged, [this](const QString &ronumber){
+        if(ronumber.isEmpty())
+        {
+            io->sql->getRoModel()->setFilter("");
+            populateData();
+            return ;
+        }
+
+        io->sql->getRoModel()->setFilter(QString("number = %0").arg(ronumber.toInt()));
+        populateData();
+    });
 }
 
 void AAA::updateRender()
 {
-    roInvNo->clear();
+    roNo->clear();
     mediaHouse->clear();
     jobType->clear();
     client->clear();
 
-    roInvNo->addItems(io->sql->getRoList());
+    roNo->addItems(io->sql->getRoList());
     mediaHouse->addItems(io->sql->getMediaHouseList());
     jobType->addItems(io->sql->getJobTypeList());
     client->addItems(io->sql->getClientList());

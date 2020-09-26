@@ -30,6 +30,8 @@ void AddReleaseOrder::render()
     mainLayout->addWidget(new QLabel("<h1>Add New Release Order</h1>"));
 
     roNo = new QLineEdit(this);
+    roNo->setText(QString::number(io->sql->getNewRoNumber()));
+    roNo->setReadOnly(true);
     mediaHousList = new QComboBox(this);
     mediaHousList->addItems(io->sql->getMediaHouseList());
     jobTypeList = new QComboBox(this);
@@ -141,9 +143,9 @@ void AddReleaseOrder::setupSignal()
 QStringList AddReleaseOrder::toStringList()
 {
     return {
-                        QString::number(code),
+                        QString::number(0),
                         roNo->text(),
-                        date->text(),
+                        QString::number(date->dateTime().toSecsSinceEpoch()),
                         QString::number(io->sql->getMediaHouseCode(mediaHousList->currentText())),
                         mediaHousList->currentText(),
                         QString::number(io->sql->getClientCode(clientList->currentText())),

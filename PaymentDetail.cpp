@@ -10,7 +10,7 @@ PaymentDetail::PaymentDetail(QWidget *parent, int roNo) : QDialog(parent), rono(
 
 //    io->sql->insertBlankRow(rono);
 
-    if(roNo != -1)
+    if(roNo > 0)
         setValues();
 }
 
@@ -23,27 +23,25 @@ void PaymentDetail::render()
     roNo->setEditable(true);
     date = new QDateEdit;
     client = new QComboBox;
-    client->addItems(io->dataEngine->clientStringList());
+    client->addItems(io->sql->getClientList());
     caption = new QLineEdit;
     dateOfPublicationTelecast = new QLineEdit;
     totalSizeDuration = new QLineEdit;
     premium = new QLineEdit;
     amount = new QLineEdit;
     mediaHouse = new QComboBox;
-    mediaHouse->addItems(io->dataEngine->mediaHouseStringList());
+    mediaHouse->addItems(io->sql->getMediaHouseList());
     jobType = new QComboBox;
-    jobType->addItems(io->dataEngine->jobTypeStringList());
+    jobType->addItems(io->sql->getJobTypeList());
     editionCentre = new QLineEdit;
     sizeDuration = new QLineEdit;
     guarantedPosition = new QLineEdit;
     rate = new QLineEdit;
     netAmount = new QLineEdit;
 
-    paymentTable = new QTableView();
-    paymentModel = io->sql->getPaymentModel();
-    paymentTable->setModel(paymentModel);
-//    paymentTable->hideColumn(0);
-    paymentTable->hideColumn(1);
+    paymentTable = new QTableWidget(1, 5);
+    paymentTable->setHorizontalHeaderLabels(QStringList()<< "Date"<< "Amount"<<"Mode"<<"Cheque No."<<"Bank Name");
+
     populateData();
 
     totalAmount = new QLineEdit;
@@ -89,52 +87,124 @@ void PaymentDetail::render()
     hbox->addStretch();
     mainLayout->addLayout(hbox);
 
+    deleteRow = new QAction;
+    deleteRow->setShortcut(Qt::Key::Key_Delete);
+    paymentTable->addAction(deleteRow);
+
     setupSignals();
 }
 
 void PaymentDetail::setupSignals()
 {
-    connect(save, &QPushButton::clicked, paymentModel, &QSqlTableModel::submitAll);//    connect(amountTable, &QTableWidget::cellChanged, this, &PaymentDetail::cellChanged);
+    connect(save, &QPushButton::clicked, [this]{
+        QMessageBox msg(QMessageBox::Icon::Warning, "Warning!", "Do you want to Save Changes", QMessageBox::Yes | QMessageBox::No);
+        if(QMessageBox::Yes !=  msg.exec())
+            return;
+        io->sql->insertPayment(toStringList(), rono);
+    });
+
+    connect(paymentTable, &QTableWidget::cellChanged, this, &PaymentDetail::cellChanged);
+    connect(deleteRow, &QAction::triggered, [this]()
+    {
+        QMessageBox msg(QMessageBox::Icon::Warning, "Warning!", "Do you want to delete", QMessageBox::Yes | QMessageBox::No);
+        if(QMessageBox::Yes !=  msg.exec())
+            return;
+        auto row = paymentTable->currentRow();
+        if(!paymentTable->item(1, 0) && !paymentTable->item(1, 1) && !paymentTable->item(1, 2) && !paymentTable->item(1, 3) && !paymentTable->item(1, 4) && (row == 1))
+            return;
+
+        paymentTable->removeRow(row);
+        if(paymentTable->rowCount() < 1)
+            paymentTable->setRowCount(1);
+    });
 }
 
 void PaymentDetail::setValues()
 {
-   paymentModel->setFilter(QString("rono = %0").arg(rono));
-   paymentModel->select();
+    roNo->setCurrentText(QString::number(rono));
+    roNo->setDisabled(true);
+
+    auto list = io->sql->getPaymentStringList(rono);
+
+    populateData(list);
+
+    auto strList = io->sql->getROStringList(rono);
+    date->setDate(QDate());
+    date->setReadOnly(true);
+    client->setCurrentText(strList.at(6));
+    client->setDisabled(true);
+    caption->setText(strList.at(9));
+    caption->setReadOnly(true);
+    dateOfPublicationTelecast->setText(strList.at(11));
+    dateOfPublicationTelecast->setReadOnly(true);
+    totalSizeDuration->setText(strList.at(13));
+    totalSizeDuration->setReadOnly(true);
+    premium->setText(strList.at(15));
+    premium->setReadOnly(true);
+    amount->setText(strList.at(19));
+    amount->setReadOnly(true);
+    mediaHouse->setCurrentText(strList.at(4));
+    mediaHouse->setDisabled(true);
+    jobType->setCurrentText(strList.at(8));
+    jobType->setDisabled(true);
+    editionCentre->setText(strList.at(10));
+    editionCentre->setReadOnly(true);
+    sizeDuration->setText(strList.at(12));
+    sizeDuration->setReadOnly(true);
+    guarantedPosition->setText(strList.at(14));
+    guarantedPosition->setReadOnly(true);
+    rate->setText(strList.at(17));
+    rate->setReadOnly(true);
+    netAmount->setText(strList.at(20));
+    netAmount->setReadOnly(true);
 }
 
-QStringList PaymentDetail::toStringList()
+QList<QStringList> PaymentDetail::toStringList()
 {
-//    QString rowStr;
-//    for(auto row=0; row<amountTable->rowCount(); row++)
-//    {
-//        auto date = amountTable->item(row, 0);
-//        auto amount = amountTable->item(row, 1);
-//        auto cash = amountTable->item(row, 2);
-//        auto chequeNo = amountTable->item(row, 3);
-//        auto bankName = amountTable->item(row, 4);
-//        if(!bankName)
-//            break;;
-//        rowStr += date->text() + ','+amount->text()+','+cash->text()+','+ chequeNo->text()+ ',' + bankName->text()+'\n';
-//    }
+    QList<QStringList> list;
+    for(auto r=0; r< paymentTable->rowCount()-1; r++)
+    {
+        QStringList strList;
+        for(auto c=0; c< paymentTable->columnCount(); c++)
+        {
+            if(paymentTable->item(r, c))
+                strList << paymentTable->item(r, c)->text();
+            else
+                strList << "";
+        }
+        list << strList;
+    }
 
-//    QStringList strList;
-//    strList << roNo->currentText()
-//            << rowStr;
-
-//    return strList;
+    return list;
 }
 
-void PaymentDetail::populateData()
+void PaymentDetail::populateData(QList<QStringList> list)
 {
-    paymentModel->query().exec();
-    paymentTable->resizeColumnsToContents();
+    for(auto r=0; r< list.size(); r++)
+    {
+        auto l = list.at(r);
+        for(auto c=0; c<list.at(r).size(); c++)
+        {
+            paymentTable->setItem(r, c, new QTableWidgetItem(l.at(c)));
+        }
+    }
+}
+
+void PaymentDetail::insertNewRow()
+{
+    paymentTable->setRowCount(paymentTable->rowCount()+1);
     paymentTable->viewport()->update();
 }
 
 void PaymentDetail::cellChanged(int row, int column)
 {
+    if(!paymentTable->item(row, 0) || !paymentTable->item(row, 1) || !paymentTable->item(row, 2) || !paymentTable->item(row, 3) || !paymentTable->item(row, 4) )
+        return;
 
+    if(row+1 != paymentTable->rowCount())
+        return;
+
+    insertNewRow();
 }
 
 PaymentDetail::~PaymentDetail()

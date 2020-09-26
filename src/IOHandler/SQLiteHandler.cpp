@@ -323,7 +323,7 @@ bool SQLiteHandler::insertRoData(QStringList dataList)
     query->exec(QString("SELECT number FROM ro WHERE number = %0").arg(dataList.at(1)));
     if(!query->next())
     {
-        query->prepare("INSERT INTO ro (code, date, mhcode, mhname, pcode, pname, jobtypecode, jobtypename, caption, editCentre, doPubtel, sizeduration, totalsizeduation, guarantedpos, premium, strpre, amount, netAmount, remarks, billAmount, invno, payamount, recptno, recptamount, mbamount, ratecgst, amountcgst, ratesgst, amountsgst, rateigst, amountigst, finalamount, hsncode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ");
+        query->prepare("INSERT INTO ro (code,number,date,mhcode,mhname,pcode,pname,jobtypecode,jobtypename,caption,editCentre,doPubtel,sizeduration,totalsizeduration,guarantedpos,premium,strPre,rate,strRate,amount,netAmount,remarks,billAmount,invno,payamount,recptno,recptamount,mbamount,ratecgst,amountcgst,ratesgst,amountsgst,rateigst,amountigst,finalamount,hsncode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         query->bindValue(0, dataList.at(0));
         for(auto i=2; i< 36; i++)
         {
@@ -399,44 +399,115 @@ QSqlTableModel *SQLiteHandler::getPaymentModel() const
     return paymentModel;
 }
 
-bool SQLiteHandler::insertPayment(QStringList dataList)
+bool SQLiteHandler::insertPayment(QList<QStringList> dataList, int rono)
 {
+    if(!query->exec(QString("DELETE FROM payment WHERE rono = %0;").arg(rono)))
+    {
+        qDebug()<<"Error in deleting in Receipt: "<< query->lastError();
+        return false;
+    }
 
+    for(auto strList: dataList)
+    {
+        query->prepare("INSERT INTO payment (date, amount, mode, chequeNo, bankname, rono) VALUES (:date, :amount, :mode, :chequeNo, :bankname, :rono);");
+        query->bindValue(":date", strList.at(0));
+        query->bindValue(":amount", strList.at(1).toDouble());
+        query->bindValue(":mode", strList.at(2));
+        query->bindValue(":chequeNo", strList.at(3));
+        query->bindValue(":bankname", strList.at(4));
+        query->bindValue(":rono", rono);
+        if(!query->exec())
+        {
+            qDebug()<<"Error in Inserting values in payment " << query->lastError();
+            return false;
+        }
+    }
+    return true;
 }
 
-QStringList SQLiteHandler::paymentStringList(int roNo)
+QList<QStringList> SQLiteHandler::getPaymentStringList(int rono)
 {
-//    query->prepare("SELECT * FROM payment WHERE rono = ?");
-//    query->addBindValue(roNo);
-//    if(!query->exec())
-//    {
-//        qDebug()<< query->lastError();
-//        return;
-//    }
+    query->exec(QString("SELECT date, amount, mode, chequeNo, bankname FROM payment WHERE rono = %0;").arg(rono));
 
-//    QStringList strList;
-//    while(query->next())
-//    {
+    QList<QStringList> list;
+    while(query->next())
+    {
+        QStringList strList;
+        strList << query->value(0).toString() << QString::number(query->value(1).toDouble()) << query->value(2).toString()<< query->value(3).toString()<< query->value(4).toString();
+        list.append(strList);
+    }
 
-//    }
-
+    return list;
 }
 
-bool SQLiteHandler::insertBlankRow(int rono)
+int SQLiteHandler::getNewPaymentNumber()
 {
-//    query->prepare("INSERT INTO payment(rono,date,amount,mode,chequeNo,bankname) VALUES (?,'','',NULL,NULL,NULL)");
-//    query->addBindValue(rono);
-//    if(!query->exec())
-//    {
-//        qDebug()<<query->lastError();
-//        return false;
-//    }
-//    return true;
+    query->exec("SELECT MAX(id) FROM payment;");
+
+    if(!query->next())
+        return -1;
+
+    auto number = query->value(0).toInt();
+    return number+1;
 }
+
 
 QSqlTableModel *SQLiteHandler::getReceiptModel() const
 {
     return receiptModel;
+}
+
+bool SQLiteHandler::insertReceipt(QList<QStringList> dataList, int rono)
+{
+    if(!query->exec(QString("DELETE FROM receipt WHERE rono = %0;").arg(rono)))
+    {
+        qDebug()<<"Error in deleting in Receipt: "<< query->lastError();
+        return false;
+    }
+
+    for(auto strList: dataList)
+    {
+        query->prepare("INSERT INTO receipt (rcptdate, rcptamount, paymode, chqno, bankname, remark, rono) VALUES (:date, :amount, :paymode, :chqno, :bankname, :remark, :rono);");
+        query->bindValue(":date", strList.at(0));
+        query->bindValue(":amount", strList.at(1).toDouble());
+        query->bindValue(":paymode", strList.at(2));
+        query->bindValue(":chqno", strList.at(3));
+        query->bindValue(":bankname", strList.at(4));
+        query->bindValue(":remark", strList.at(5));
+        query->bindValue(":rono", rono);
+        if(!query->exec())
+        {
+            qDebug()<<"Error in Inserting values in receipt " << query->lastError();
+            return false;
+        }
+    }
+    return true;
+
+}
+
+QList<QStringList> SQLiteHandler::getReceiptStringList(int rono)
+{
+    query->exec(QString("SELECT rcptdate, rcptamount, paymode, chqno, bankname, remark  FROM receipt WHERE rono = %0;").arg(rono));
+
+    QList<QStringList> list;
+    while(query->next())
+    {
+        QStringList strList;
+        strList << query->value(0).toString() << QString::number(query->value(1).toDouble()) << query->value(2).toString() << query->value(3).toString()<< query->value(4).toString()
+                   << query->value(5).toString();
+        list.append(strList);
+    }
+
+    return list;
+}
+
+int SQLiteHandler::getNewReceiptNumber()
+{
+    query->exec("SELECT MAX(number) FROM receipt;");
+    if(!query->next())
+        return -1;
+    auto number = query->value(0).toInt();
+    return number+1;
 }
 
 QSqlTableModel *SQLiteHandler::getMediaBill() const
@@ -444,6 +515,44 @@ QSqlTableModel *SQLiteHandler::getMediaBill() const
     return mediaBillModel;
 }
 
+QList<QStringList> SQLiteHandler::getMediaBillList(int rono)
+{
+    query->exec(QString("SELECT id, date, amount FROM mediaBill WHERE rono = %0").arg(rono));
+
+    QList<QStringList> list;
+    while(query->next())
+    {
+        QStringList strList;
+        strList << query->value(0).toString() << query->value(1).toString() << QString::number(query->value(2).toDouble());
+        list.append(strList);
+    }
+
+    return list;
+}
+
+bool SQLiteHandler::insertMediaBill(QList<QStringList> dataList, int rono)
+{
+    if(!query->exec(QString("DELETE FROM mediaBill WHERE rono = %0;").arg(rono)))
+    {
+        qDebug()<<"Error in deleting in Receipt: "<< query->lastError();
+        return false;
+    }
+
+    for(auto strList: dataList)
+    {
+        query->prepare("INSERT INTO mediaBill (id, date, amount, rono) VALUES (:id, :date, :amount, :rono);");
+        query->bindValue(":id", strList.at(0));
+        query->bindValue(":date", strList.at(1));
+        query->bindValue(":amount", strList.at(2).toDouble());
+        query->bindValue(":rono", rono);
+        if(!query->exec())
+        {
+            qDebug()<<"Error in Inserting values in mediaBill " << query->lastError();
+            return false;
+        }
+    }
+    return true;
+}
 
 
 QSqlQueryModel *SQLiteHandler::getGenerateBillModel() const
