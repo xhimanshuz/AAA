@@ -424,9 +424,9 @@ def main():
     ro()
     receipt()
     invoice()
-#jobType()
-#parties()
-#payment()
+    jobType()
+    parties()
+    payment()
 
 main()
 conn.close()
