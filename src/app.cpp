@@ -1,6 +1,8 @@
 #include <QApplication>
 
 #include "AAA.h"
+//#include "ui_roform.h"
+
 
 int main(int argc, char **argv)
 {

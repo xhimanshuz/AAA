@@ -20,13 +20,13 @@
 
 #include "IOHandler/IOHandler.h"
 #include "JobType.h"
-#include "PaymentDetail.h"
-#include "ReceiptDetail.h"
+#include "MediaPaymentDetail.h"
+#include "PaymentReceiptDetail.h"
 #include "MediaBillDetail.h"
 #include "ReleaseOrder/AddReleaseOrder.h"
 #include "UserUI/UserWindow.h"
 #include "ReleaseOrder/AddReleaseOrder.h"
-#include "GenerateBillWindow.h"
+#include "InvoiceWindow.h"
 
 class AAA : public QMainWindow
 {
@@ -37,9 +37,9 @@ class AAA : public QMainWindow
     QAction *newJobType;
     QAction *newMediaHouse;
     QAction *newClient;
-    QAction *payment;
-    QAction *receipt;
-    QAction *generateBill;
+    QAction *mediaPaymentButton;
+    QAction *paymentReceipt;
+    QAction *invoiceButton;
     QAction *mediaBill;
     QTableView *roTable;
     QSqlTableModel *roDataModel;

@@ -1,13 +1,16 @@
-QT += widgets sql
+QT += widgets sql printsupport
 
 SOURCES += \
     AAA.cpp \
-    AddGeneratebill.cpp \
-    GenerateBillWindow.cpp \
+    AddInvoice.cpp \
+    InvoiceWindow.cpp \
     MediaBillDetail.cpp \
-    PaymentDetail.cpp \
-    ReceiptDetail.cpp \
+    MediaPaymentDetail.cpp \
+    PaymentReceiptDetail.cpp \
+    PopplerInterface.cpp \
+    pdftroninterface.cpp \
     src/ReleaseOrder/AddReleaseOrder.cpp \
+    src/ReleaseOrder/roform.cpp \
     src/UserUI/NewUser.cpp \
     src/UserUI/UserWindow.cpp \
     src/IOHandler/DataEngine.cpp \
@@ -18,11 +21,14 @@ SOURCES += \
 
 HEADERS += \
     AAA.h \
-    AddGeneratebill.h \
-    GenerateBillWindow.h \
+    AddInvoice.h \
+    CustomItemDelegate.h \
+    InvoiceWindow.h \
     MediaBillDetail.h \
-    PaymentDetail.h \
-    ReceiptDetail.h \
+    MediaPaymentDetail.h \
+    PaymentReceiptDetail.h \
+    PopplerInterface.h \
+    PrintInterface.h \
     include/IOHandler/SQLiteHandler.h \
     include/ReleaseOrder/AddReleaseOrder.h \
     include/UserUI/NewUser.h \
@@ -30,12 +36,22 @@ HEADERS += \
     include/AbstractUser.h \
     include/IOHandler/DataEngine.h \
     include/IOHandler/IOHandler.h \
-    include/JobType.h
+    include/JobType.h \
+    pdftroninterface.h \
+    src/ReleaseOrder/roform.h
 
-INCLUDEPATH += include
+INCLUDEPATH += include \
+               $$PWD/PDFTron/Headers \
+                /usr/include/poppler/
 
 DESTDIR = $$PWD/build/ \
 
 DISTFILES += .gitignore \
             $$PWD/Data/DBMigratingTool/run.py
+
+LIBS += -L$$PWD/PDFTron/Lib  -lPDFNetC -lstdc++ -lpthread -lm -lc -lPDFNetC -lstdc++ -lpthread -lm -lc -lpoppler-qt5
+
+
+RESOURCES += \
+    Resource.qrc
 

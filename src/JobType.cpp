@@ -42,7 +42,7 @@ void JobType::render()
     mainLayout->addLayout(hbox);
 
     addLineEdit = new QLineEdit(this);
-    addLineEdit->setValidator(new QRegExpValidator(QRegExp("(\\w+|\\d+)@\\w+\\D\\.(in|com|co\\.in)")));
+//    addLineEdit->setValidator();
     saveButton = new QPushButton(tr("INSERT"));
     modifyButton = new QPushButton(tr("Modify"));
     modifyButton->hide();
@@ -123,6 +123,7 @@ void JobType::signalSetup()
 void JobType::updateData()
 {
     io->sql->getJobTypeModel()->query().exec();
+    jobListView->setSortingEnabled(true);
 }
 
 QString JobType::jobListCurrentData()

@@ -11,7 +11,8 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QStandardItem>
-
+#include <QRegExpValidator>
+#include <QRegExp>
 #include <IOHandler/IOHandler.h>
 
 enum class USER_TYPE
@@ -55,6 +56,7 @@ public:
     const QStringList toStringList();
 
     QPushButton *getSaveButton() const;
+    void setValidator();
 
 signals:
 

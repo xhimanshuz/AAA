@@ -11,6 +11,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
+#include <QPainter>
+#include <QPrinter>
+#include <QFileDialog>
+#include <QRegExpValidator>
 
 #include "IOHandler/IOHandler.h"
 
@@ -48,6 +52,7 @@ class AddReleaseOrder: public QDialog
     QPushButton *save;
     QPushButton *clear;
     QVBoxLayout *mainLayout;
+    QPushButton *printButton;
 
     IOHandler *io;
 
@@ -55,6 +60,7 @@ class AddReleaseOrder: public QDialog
     void setupSignal();
     QStringList toStringList();
     void setValues(const QStringList detailList);
+    void setValidator();
 public:
     explicit AddReleaseOrder(QWidget *parent = nullptr);
     AddReleaseOrder(const int roNo, QWidget *parent = nullptr);

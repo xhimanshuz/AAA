@@ -21,12 +21,12 @@ void AAA::render()
     newJobType = new QAction("New Job Type");
     newMediaHouse = new QAction("New Media House");
     newClient = new QAction("New Client");
-    payment = new QAction("Payment");
-    receipt = new QAction("Receipt");
-    generateBill = new QAction("Generate Bill");
+    mediaPaymentButton = new QAction("Media Payment");
+    paymentReceipt = new QAction("Payment Receipt");
+    invoiceButton = new QAction("Invoice");
     mediaBill = new QAction("Media Bill");
 
-    toolBar->addActions(QList<QAction*>()<< newJobType << newMediaHouse << newClient << payment << receipt << generateBill << mediaBill);
+    toolBar->addActions(QList<QAction*>()<< newJobType << newMediaHouse << newClient << mediaPaymentButton << invoiceButton  << paymentReceipt  << mediaBill);
 
     searchDateFrom = new QDateEdit;
     searchDateTo = new QDateEdit;
@@ -112,9 +112,9 @@ void AAA::setupSignals()
         updateRender();
     });
 
-    connect(receipt, &QAction::triggered, [this]{
+    connect(paymentReceipt, &QAction::triggered, [this]{
         auto roNo = getRoNumber();
-        ReceiptDetail receipt(this, roNo);
+        PaymentReceiptDetail receipt(this, roNo);
         receipt.exec();
 
         updateRender();
@@ -128,9 +128,9 @@ void AAA::setupSignals()
         updateRender();
     });
 
-    connect(payment, &QAction::triggered, [this]{
+    connect(mediaPaymentButton, &QAction::triggered, [this]{
         auto roNo = getRoNumber();
-        PaymentDetail payment(this, roNo);
+        MediaPaymentDetail payment(this, roNo);
         payment.exec();
 
         updateRender();
@@ -150,12 +150,12 @@ void AAA::setupSignals()
             ro.exec();
     });
 
-    connect(generateBill, &QAction::triggered, [this](){
+    connect(invoiceButton, &QAction::triggered, [this](){
         auto index = roTable->currentIndex();
         auto client = roDataModel->data(roDataModel->index(index.row(), 6)).toString();
-        auto invno = roDataModel->data(roDataModel->index(index.row(), 23)).toInt();
+        auto invno = roDataModel->data(roDataModel->index(index.row(), 23)).toString().split(",");
         auto ro = getRoNumber();
-        GenerateBillWindow gbw(client, invno, ro, this);
+        InvoiceWindow gbw(client, invno, ro, this);
         gbw.exec();
         populateData();
     });

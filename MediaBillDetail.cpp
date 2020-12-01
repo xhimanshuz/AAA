@@ -16,7 +16,7 @@ MediaBill::MediaBill(QWidget *parent, const int _roNo):QDialog(parent), rono(_ro
     render();
     setLayout(mainLayout);
 
-    if(rono != -1)
+    if(rono > 0)
         setValues();
 }
 
@@ -99,7 +99,7 @@ void MediaBill::render()
     mediaBillTableWidget->addAction(deleteRow);
 
     setupSignals();
-}
+    setValidator();}
 
 void MediaBill::setupSignals()
 {
@@ -202,6 +202,15 @@ void MediaBill::populateData(QList<QStringList> list)
 void MediaBill::insertNewRow()
 {
     mediaBillTableWidget->setRowCount(mediaBillTableWidget->rowCount()+1);
+}
+
+void MediaBill::setValidator()
+{
+    amount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    premium->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    rate->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    netAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    totalAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
 }
 
 void MediaBill::cellChanged(int row, int column)

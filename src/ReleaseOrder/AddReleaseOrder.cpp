@@ -1,4 +1,9 @@
 #include "ReleaseOrder/AddReleaseOrder.h"
+#include "roform.h"
+#include "PrintInterface.h"
+#include "pdftroninterface.h"
+
+PrintInterface *PrintInterface::instance = nullptr;
 
 AddReleaseOrder::AddReleaseOrder(QWidget *parent): QDialog(parent)
 {
@@ -38,6 +43,7 @@ void AddReleaseOrder::render()
     jobTypeList->addItems(io->sql->getJobTypeList());
     editionCentre = new QLineEdit(this);
     sizeDuration = new QLineEdit(this);
+//    sizeDuration->setValidator(new QRegExpValidator(QRegExp("\\d*{4}")));
     guarantedPosition = new QLineEdit(this);
     premium = new QLineEdit(this);
     premiumRemark = new QTextEdit(this);
@@ -66,6 +72,7 @@ void AddReleaseOrder::render()
     roAmount = new QLineEdit(this);
     save = new QPushButton("Save", this);
     clear = new QPushButton("Clear", this);
+    printButton = new QPushButton("Print", this);
 
     QFormLayout *form = new QFormLayout;
     form->addRow("RO No", roNo);
@@ -122,12 +129,15 @@ void AddReleaseOrder::render()
     hbox->addStretch();
     hbox->addWidget(save);
     hbox->addWidget(clear);
+    hbox->addWidget(printButton);
     hbox->addStretch();
     mainLayout->addLayout(hbox);
     mainLayout->addStretch();
 
+
     setLayout(mainLayout);
     setupSignal();
+    setValidator();
 }
 
 void AddReleaseOrder::setupSignal()
@@ -137,6 +147,11 @@ void AddReleaseOrder::setupSignal()
         auto size = sl.size();
         io->sql->insertRoData(sl);
         this->close();
+    });
+
+    connect(printButton, &QPushButton::clicked, [this]{
+        for(auto mpList: io->sql->getMediaPaymentStringListByRono(roNo->text().toInt()))
+            PDFTronInterface::get()->printRO(toStringList(), mpList);
     });
 }
 
@@ -212,4 +227,23 @@ void AddReleaseOrder::setValues(const QStringList detailList)
     igstAmount->setText(detailList.at(33));
     roAmount->setText(detailList.at(34));
     hsnCode->setText(detailList.at(35));
+}
+
+void AddReleaseOrder::setValidator()
+{
+//    roNo->setValidator(new QRegExpValidator(QRegExp("\\d+")));
+//    caption->setValidator(new QRegExpValidator(QRegExp("\\d+")));
+//    editionCentre->setValidator(new QRegExpValidator(QRegExp("\\w+")));
+//    sizeDuration->setValidator(new QRegExpValidator(QRegExp()));
+//    totalSizeDuration->setValidator(new QRegExpValidator(QRegExp()));
+//    guarantedPosition->setValidator(new QRegExpValidator(QRegExp()));
+    premium->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    rate->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    amount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    netAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    cgstAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    sgstAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    igstAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    roAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+    hsnCode->setValidator(new QRegExpValidator(QRegExp("\\d+")));
 }

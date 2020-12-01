@@ -63,25 +63,28 @@ public:
     int getNewRoCode() const;
     QStringList getRoList();
 
-    QSqlTableModel *getPaymentModel() const;
-    bool insertPayment(QList<QStringList> dataList, int rono);
-    QList<QStringList> getPaymentStringList(int roNo);
-    int getNewPaymentNumber();
+    QSqlTableModel *getMediaPaymentModel() const;
+    bool insertMediaPayment(QList<QStringList> dataList, int rono);
+    QList<QStringList> getMediaPaymentStringListByRono(int roNo);
+    int getNewMediaPaymentNumber();
+    QStringList getMediaPaymentStringList(int mpId);
 
-    QSqlTableModel *getReceiptModel() const;
-    bool insertReceipt(QList<QStringList> dataList, int rono);
-    QList<QStringList> getReceiptStringList(int rono);
-    int getNewReceiptNumber();
+    QSqlTableModel *getPaymentReceiptModel() const;
+    bool insertPaymentReceipt(QList<QStringList> dataList, int rono);
+    QList<QStringList> getPaymentReceiptStringListByRO(int rono);
+    QStringList getPaymentReceiptStringList(int prNo);
+    int getNewPaymentReceiptNumber();
 
     QSqlTableModel *getMediaBill() const;
     QList<QStringList> getMediaBillList(int rono);
     bool insertMediaBill(QList<QStringList> dataList, int rono);
 
 
-    QSqlQueryModel *getGenerateBillModel() const;
-    QStringList getGenerateBillList(const int invno);
-    bool insertGenerateBillList(QStringList strList);
+    QSqlQueryModel *getInvoiceModel() const;
+    QStringList getInvoiceList(const int invno);
+    bool insertInvoiceList(QStringList strList);
     int getNewInvoiceCode();
+    QList<QStringList> getInvoiceListByRoNo(const int rono);
     QStringList *getGstPerc() const;
 
 signals:

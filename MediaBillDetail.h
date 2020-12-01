@@ -15,6 +15,8 @@
 #include <QLineEdit>
 #include <QStandardItemModel>
 #include <QAction>
+#include <QRegExpValidator>
+#include <QRegExp>
 
 #include "IOHandler/IOHandler.h"
 
@@ -53,7 +55,7 @@ class MediaBill : public QDialog
     QList<QStringList> toStringList();
     void populateData(QList<QStringList> list = {});
     void insertNewRow();
-
+    void setValidator();
 private slots:
     void cellChanged(int row, int column);
 public:

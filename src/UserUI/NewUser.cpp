@@ -5,6 +5,14 @@ QPushButton *NewUser::getSaveButton() const
     return save;
 }
 
+void NewUser::setValidator()
+{
+    phone->setInputMask("+\\91-999-999-9999");
+    email->setValidator(new QRegExpValidator(QRegExp("(\\w+|\\d+)\\.?(\\w+|\\d+)@\\w+\\D\\.(in|com|co\\.in)")));
+    pinCode->setValidator(new QRegExpValidator(QRegExp("\\d+")));
+    gstin->setValidator(new QRegExpValidator(QRegExp("\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[1-9]{1}Z[A-Z]{1}")));
+}
+
 NewUser::NewUser(USER_TYPE _type, QWidget *parent) : QWidget(parent), type(_type)
 {
     render();
@@ -34,8 +42,10 @@ void NewUser::render()
 
     contactPerson = new QLineEdit;
     phone = new QLineEdit;
+
     email = new QLineEdit;
     address = new QTextEdit;
+    address->setTabChangesFocus(true);
     city = new QComboBox;
     city->setEditable(true);
     state = new QComboBox;
@@ -64,6 +74,7 @@ void NewUser::render()
     mainLayout->addLayout(form);
 
     signalSetup();
+    setValidator();
 }
 
 void NewUser::setUpStyleSheet()

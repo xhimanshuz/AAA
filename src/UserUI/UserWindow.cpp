@@ -17,10 +17,10 @@ void UserWindow::render()
     usersList = new QTableView(this);
     modelData = (type == USER_TYPE::MEDIA_HOUSE)?io->sql->getMediaHouseModel():io->sql->getClietModel();
     usersList->setModel(modelData);
-    usersList->setEditTriggers(QTableView::EditTrigger::NoEditTriggers);
-    usersList->setSelectionMode(QTableView::SelectionMode::SingleSelection);
+//    usersList->setEditTriggers(QTableView::EditTrigger::NoEditTriggers);
+//    usersList->setSelectionMode(QTableView::SelectionMode::SingleSelection);
     populateData();
-    usersList->setSelectionBehavior(QTableView::SelectRows);
+//    usersList->setSelectionBehavior(QTableView::SelectRows);
     usersList->horizontalHeader()->setStretchLastSection(true);
 //    usersList->setSi
 
@@ -95,5 +95,6 @@ void UserWindow::populateData()
 {
     (type == USER_TYPE::MEDIA_HOUSE)? io->sql->getMediaHouseModel()->query().exec() : io->sql->getClietModel()->query().exec();
     usersList->resizeColumnsToContents();
+    usersList->setSortingEnabled(true);
     usersList->viewport()->update();
 }
