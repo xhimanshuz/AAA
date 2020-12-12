@@ -15,6 +15,8 @@
 #include <QPrinter>
 #include <QFileDialog>
 #include <QRegExpValidator>
+#include <QDoubleSpinBox>
+#include <QToolButton>
 
 #include "IOHandler/IOHandler.h"
 
@@ -53,6 +55,15 @@ class AddReleaseOrder: public QDialog
     QPushButton *clear;
     QVBoxLayout *mainLayout;
     QPushButton *printButton;
+    QDoubleSpinBox *discountPer;
+    QLineEdit *discount;
+    QString billAmount;
+    QString invoiceNo;
+    QString payment;
+    QString recptNo;
+    QString receiptAmount;
+    QString mediaBillAmount;
+    QPushButton *calculateRoAmount;
 
     IOHandler *io;
 

@@ -36,3 +36,5 @@
 # PDFTron Lib Data
 PDFTron/
 PDFTron/*
+
+Makefile

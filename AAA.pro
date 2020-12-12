@@ -1,16 +1,15 @@
 QT += widgets sql printsupport
 
 SOURCES += \
-    AAA.cpp \
-    AddInvoice.cpp \
-    InvoiceWindow.cpp \
-    MediaBillDetail.cpp \
-    MediaPaymentDetail.cpp \
-    PaymentReceiptDetail.cpp \
-    PopplerInterface.cpp \
-    pdftroninterface.cpp \
+    src/AAA.cpp \
+    src/Invoice/AddInvoice.cpp \
+    src/Invoice/InvoiceWindow.cpp \
+    src/MediaBillDetail.cpp \
+    src/MediaPaymentDetail.cpp \
+    src/PaymentReceiptDetail.cpp \
+    src/PopplerInterface.cpp \
+    src/pdftroninterface.cpp \
     src/ReleaseOrder/AddReleaseOrder.cpp \
-    src/ReleaseOrder/roform.cpp \
     src/UserUI/NewUser.cpp \
     src/UserUI/UserWindow.cpp \
     src/IOHandler/DataEngine.cpp \
@@ -20,15 +19,15 @@ SOURCES += \
     src/app.cpp
 
 HEADERS += \
-    AAA.h \
-    AddInvoice.h \
-    CustomItemDelegate.h \
-    InvoiceWindow.h \
-    MediaBillDetail.h \
-    MediaPaymentDetail.h \
-    PaymentReceiptDetail.h \
-    PopplerInterface.h \
-    PrintInterface.h \
+    include/AAA.h \
+    include/AddInvoice.h \
+    include/CustomItemDelegate.h \
+    include/InvoiceWindow.h \
+    include/MediaBillDetail.h \
+    include/MediaPaymentDetail.h \
+    include/PaymentReceiptDetail.h \
+    include/PopplerInterface.h \
+    include/PrintInterface.h \
     include/IOHandler/SQLiteHandler.h \
     include/ReleaseOrder/AddReleaseOrder.h \
     include/UserUI/NewUser.h \
@@ -37,8 +36,7 @@ HEADERS += \
     include/IOHandler/DataEngine.h \
     include/IOHandler/IOHandler.h \
     include/JobType.h \
-    pdftroninterface.h \
-    src/ReleaseOrder/roform.h
+    include/pdftroninterface.h
 
 INCLUDEPATH += include \
                $$PWD/PDFTron/Headers \

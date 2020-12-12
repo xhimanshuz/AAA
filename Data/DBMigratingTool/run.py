@@ -22,9 +22,10 @@ def toDouble(value):
 
 def csvToList(fileStr):
     list = []
-    with open(fileStr, 'r') as f:
+    with open(fileStr, 'r', encoding='utf-8') as f:
         cr = csv.reader(f)
         for x in cr:
+            # print(x)
             list.append(x)
         del list[0]
     return list
@@ -189,11 +190,11 @@ def invoice():
     "pcode"	INTEGER,
     "remark"	TEXT,
     "totalsizeduration"	TEXT DEFAULT "",
-    "ratecgst"	REAL,
+    "ratecgst"	TEXT,
     "amountcgst"	REAL,
-    "ratesgst"	REAL,
+    "ratesgst"	TEXT,
     "amountsgst"	REAL,
-    "rateigst"	REAL,
+    "rateigst"	TEXT,
     "amountigst"	REAL,
     "finalamount"	REAL,
     FOREIGN KEY("rono") REFERENCES "ro"("number")
@@ -204,7 +205,7 @@ def invoice():
     for i,x in enumerate(inv):
         print(f"[{i+1}][>>] {x}")
         cur.execute(f"""INSERT INTO "invoice"("id","type","number","invoiceremark","date","bookno","rocode","rono","gramount","otherch","otherchamount","taxrate","taxamount","leftamount","disrate","disamount","npamount","pcode","remark","totalsizeduration","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount") 
-        VALUES ({x[0]},"{x[1]}",{x[2]},"{x[3]}","{x[4]}",{x[5]},{x[6]},{x[7]},{x[8]},"{x[9]}","{x[10]}",{x[11]},{x[12]},{x[13]},{x[14]},{x[15]},{x[16]},{x[17]},"{x[18]}","{x[19]}",{x[20]},{x[21]},{x[22]},{x[23]},{x[24]},{x[25]},{x[26]});""")
+        VALUES ({x[0]},"{x[1]}",{x[2]},"{x[3]}","{x[4]}",{x[5]},{x[6]},{x[7]},{x[8]},"{x[9]}","{x[10]}",{x[11]},{x[12]},{x[13]},{x[14]},{x[15]},{x[16]},{x[17]},"{x[18]}","{x[19]}","{x[20]}",{x[21]},"{x[22]}",{x[23]},"{x[24]}",{x[25]},{x[26]});""")
         addInvoiceToRO(x[7], x[2])
 
     conn.commit()
@@ -368,44 +369,45 @@ def ro():
 
     cur.execute("""
 CREATE TABLE "ro" (
-	"code"	INTEGER NOT NULL,
-	"number"	INTEGER NOT NULL PRIMARY KEY UNIQUE,
-	"date"	TEXT,
-	"mhcode"	INTEGER,
-	"mhname"	TEXT,
-	"pcode"	INTEGER,
-	"pname"	TEXT,
-	"jobtypecode"	INTEGER,
-	"jobtypename"	TEXT,
-	"caption"	TEXT,
-	"editCentre"	TEXT,
-	"doPubtel"	TEXT,
-	"sizeduration"	TEXT,
+        "code"                  INTEGER,
+        "number"                INTEGER NOT NULL PRIMARY KEY UNIQUE,
+        "date"                  TEXT,
+        "mhcode"                INTEGER,
+        "mhname"                TEXT,
+        "pcode"                 INTEGER,
+        "pname"                 TEXT,
+        "jobtypecode"           INTEGER,
+        "jobtypename"           TEXT,
+        "caption"               TEXT,
+        "editCentre"            TEXT,
+        "doPubtel"              TEXT,
+        "sizeduration"          TEXT,
 	"totalsizeduration"	TEXT,
-	"guarantedpos"	TEXT,
-	"premium"	REAL,
-	"strPre"	TEXT,
-	"rate"	REAL,
-	"strRate"	TEXT,
-	"amount"	REAL,
-	"netAmount"	REAL,
-	"remarks"	TEXT,
-	"billAmount"	REAL,
-    "invno"	TEXT,
-	"payamount"	REAL,
-	"recptno"	TEXT,
-	"recptamount"	REAL,
-	"mbamount"	REAL,
-	"ratecgst"	REAL,
-	"amountcgst"	REAL,
-	"ratesgst"	REAL,
-	"amountsgst"	REAL,
-	"rateigst"	REAL,
-	"amountigst"	REAL,
-	"finalamount"	REAL,
-        "hsncode"	INTEGER,
-        FOREIGN KEY("jobtypecode") REFERENCES "jobtypecode"("id"),
-        FOREIGN KEY("mhcode") REFERENCES "mediaHouse"("id")
+        "guarantedpos"          TEXT,
+        "premium"               REAL,
+        "strPre"                TEXT,
+        "rate"                  REAL,
+        "strRate"               TEXT,
+        "amount"                REAL,
+        "netAmount"             REAL,
+        "remarks"               TEXT,
+        "billAmount"            REAL,
+        "invno"                 TEXT,
+        "payamount"             REAL,
+        "recptno"               TEXT,
+        "recptamount"           REAL,
+        "mbamount"              REAL,
+        "ratecgst"              TEXT,
+        "amountcgst"            REAL,
+        "ratesgst"              TEXT,
+        "amountsgst"            REAL,
+        "rateigst"              TEXT,
+        "amountigst"            REAL,
+        "finalamount"           REAL,
+        "hsncode"               INTEGER,
+        "disPerc"               REAL DEFAULT 0.0,
+    FOREIGN KEY("jobtypecode") REFERENCES "jobtypecode"("id"),
+    FOREIGN KEY("mhcode") REFERENCES "mediaHouse"("id")
 );
     """)
 #    FOREIGN KEY("invno") REFERENCES "invoice"("number"),
@@ -414,7 +416,7 @@ CREATE TABLE "ro" (
 #    FOREIGN KEY("recptno") REFERENCES "payment_receipt"("number")
     for i,x in enumerate(rl):
         print(f"[{i+1}][>>] {x}")
-        cur.execute(f"""INSERT INTO "ro" ("code","number","date","mhcode","mhname","pcode","pname","jobtypecode","jobtypename","caption","editCentre","doPubtel","sizeduration","totalsizeduration","guarantedpos","premium","strPre","rate","strRate","amount","netAmount","remarks","billAmount","invno","payamount","recptno","recptamount","mbamount","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount","hsncode") VALUES ({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},"{x[16]}",{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},"",{x[24]},"",{x[26]},{x[27]},{x[28]},{x[29]},{x[30]},{x[31]},{x[32]},{x[33]},{x[34]},{x[35]});""")
+        cur.execute(f"""INSERT INTO "ro" ("code","number","date","mhcode","mhname","pcode","pname","jobtypecode","jobtypename","caption","editCentre","doPubtel","sizeduration","totalsizeduration","guarantedpos","premium","strPre","rate","strRate","amount","netAmount","remarks","billAmount","invno","payamount","recptno","recptamount","mbamount","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount","hsncode") VALUES ({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},"{x[16]}",{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},"",{x[24]},"",{x[26]},{x[27]},"{x[28]}",{x[29]},"{x[30]}",{x[31]},"{x[32]}",{x[33]},{x[34]},{x[35]});""")
     conn.commit()                                                                                                                                                                                                                                                                                                                                                                                                                                                #({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},{x[16]},{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},{x[23]},{x[24]},{x[25]},{x[26]},{x[27]},{x[28]},{x[29]},{x[30]},{x[31]},{x[32]},{x[33]},{x[34]},{x[35]})
 #    
     
@@ -427,6 +429,7 @@ def main():
     jobType()
     parties()
     payment()
+    mediaHouse()
 
 main()
 conn.close()

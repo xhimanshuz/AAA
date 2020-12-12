@@ -181,7 +181,7 @@ int SQLiteHandler::getMediaHouseCode(const QString mediaHouseName)
 
 QStringList SQLiteHandler::getMediaHouseList()
 {
-    query->exec("SELECT name FROM mediaHouse");
+    query->exec("SELECT name FROM mediaHouse order by name");
     QStringList strList;
     strList << "";
     while(query->next())
@@ -304,7 +304,7 @@ const QString SQLiteHandler::getClientName(const int pcode)
 
 QStringList SQLiteHandler::getClientList()
 {
-    query->exec("SELECT name FROM clients");
+    query->exec("SELECT name FROM clients order by name");
     QStringList strList;
     strList << "";
     while(query->next())
@@ -323,27 +323,31 @@ bool SQLiteHandler::insertRoData(QStringList dataList)
     query->exec(QString("SELECT number FROM ro WHERE number = %0").arg(dataList.at(1)));
     if(!query->next())
     {
-        query->prepare("INSERT INTO ro (code,number,date,mhcode,mhname,pcode,pname,jobtypecode,jobtypename,caption,editCentre,doPubtel,sizeduration,totalsizeduration,guarantedpos,premium,strPre,rate,strRate,amount,netAmount,remarks,billAmount,invno,payamount,recptno,recptamount,mbamount,ratecgst,amountcgst,ratesgst,amountsgst,rateigst,amountigst,finalamount,hsncode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        query->prepare("INSERT INTO ro (code,number,date,mhcode,mhname,pcode,pname,jobtypecode,jobtypename,caption,editCentre,doPubtel,sizeduration,totalsizeduration,guarantedpos,premium,strPre,rate,strRate,amount,netAmount,remarks,billAmount,invno,payamount,recptno,recptamount,mbamount,ratecgst,amountcgst,ratesgst,amountsgst,rateigst,amountigst,finalamount,hsncode,disPerc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         query->bindValue(0, dataList.at(0));
-        for(auto i=2; i< 36; i++)
+        for(auto i=2; i< dataList.size(); i++)
         {
             query->bindValue(i, dataList.at(i));
         }
     }
     else
     {
-        query->prepare("UPDATE ro SET code = :code, number = :number, date = :date, mhcode = :mhcode, mhname = :mhname, pcode = :pcode, pname = :pname, jobtypecode = :jobtypecode, jobtypename = :jobtypename, caption = :caption, editCentre = :editCentre, doPubtel = :doPubtel, sizeduration = :sizeduration, totalsizeduration = :totalsizeduration, guarantedpos = :guarantedpos, premium = :premium, strPre = :strPre, rate = :rate, strRate = :strRate, amount = :amount, netAmount = :netAmount, remarks = :remarks, billAmount = :billAmount, invno = :invno, payamount = :payamount, recptno = :recptno, recptamount = :recptamount, mbamount = :mbamount, ratecgst = :ratecgst, amountcgst = :amountcgst, ratesgst = :ratesgst, amountsgst = :amountsgst, rateigst = :rateigst, amountigst = :amountigst, finalamount = :finalamount, hsncode = :hsncode WHERE code = ?");
+        query->prepare("UPDATE ro SET code = :code, number = :number, date = :date, mhcode = :mhcode, mhname = :mhname, pcode = :pcode, pname = :pname, jobtypecode = :jobtypecode, jobtypename = :jobtypename, caption = :caption, editCentre = :editCentre, doPubtel = :doPubtel, sizeduration = :sizeduration, totalsizeduration = :totalsizeduration, guarantedpos = :guarantedpos, premium = :premium, strPre = :strPre, rate = :rate, strRate = :strRate, amount = :amount, netAmount = :netAmount, remarks = :remarks, billAmount = :billAmount, invno = :invno, payamount = :payamount, recptno = :recptno, recptamount = :recptamount, mbamount = :mbamount, ratecgst = :ratecgst, amountcgst = :amountcgst, ratesgst = :ratesgst, amountsgst = :amountsgst, rateigst = :rateigst, amountigst = :amountigst, finalamount = :finalamount, hsncode = :hsncode, disPerc = :disPerc WHERE number = ?");
 
-        for(auto i = 0; i< 36; i++)
+        int i{0};
+        for(; i< 37; i++)
         {
-            query->bindValue(i, dataList.at(i));
+            query->addBindValue(dataList.at(i));
         }
-        query->bindValue(36, dataList.at(1));
-        auto s = query->lastQuery();
+        query->addBindValue(dataList.at(1));
+//        auto s = query->lastQuery();
+
     }
     if(!query->exec())
     {
-        qDebug()<< query->lastError();
+        auto q = query->lastQuery().toStdString();
+        auto error = query->lastError().text();
+        qDebug()<< error;
         return false;
     }
     return true;
@@ -352,7 +356,7 @@ bool SQLiteHandler::insertRoData(QStringList dataList)
 
 const QStringList SQLiteHandler::getROStringList(const int id)
 {
-    query->exec(QString("SELECT * FROM ro WHERE number = %0").arg(id));
+    query->exec(QString("SELECT * FROM ro WHERE number = %0 order by number").arg(id));
     if(!query->next())
     {
         qDebug()<< query->lastError();
@@ -360,7 +364,7 @@ const QStringList SQLiteHandler::getROStringList(const int id)
     }
 
     QStringList strList;
-    for(auto i=0; i<36; i++)
+    for(auto i=0; i<37; i++)
         strList << query->value(i).toString();
 
     return strList;
@@ -385,7 +389,7 @@ int SQLiteHandler::getNewRoCode() const
 
 QStringList SQLiteHandler::getRoList()
 {
-    query->exec("SELECT number FROM ro");
+    query->exec("SELECT number FROM ro order by number");
     QStringList strList;
     strList << "";
     while(query->next())
@@ -453,7 +457,7 @@ int SQLiteHandler::getNewMediaPaymentNumber()
 
 QStringList SQLiteHandler::getMediaPaymentStringList(int mpId)
 {
-    query->exec(QString("SELECT id, date, amount, mode, chequeNo, bankname FROM media_payment WHERE id = %0;").arg(mpId));
+    query->exec(QString("SELECT id, date, amount, mode, chequeNo, bankname FROM media_payment WHERE id = %0 order by id").arg(mpId));
 
     QStringList list;
     if(query->next())
@@ -520,7 +524,7 @@ QList<QStringList> SQLiteHandler::getPaymentReceiptStringListByRO(int rono)
 
 QStringList SQLiteHandler::getPaymentReceiptStringList(int prNo)
 {
-     query->exec(QString("SELECT number, rcptdate, rcptamount, paymode, chqno, bankname, remark  FROM payment_receipt WHERE number = %0;").arg(prNo));
+     query->exec(QString("SELECT number, rcptdate, rcptamount, paymode, chqno, bankname, remark  FROM payment_receipt WHERE number = %0 order by number;").arg(prNo));
      if(!query->next())
          return {};
      QStringList strList = QStringList() << query->value(0).toString()<< query->value(1).toString() << QString::number(query->value(2).toDouble()) << query->value(3).toString() << query->value(4).toString()<< query->value(5).toString()
@@ -544,7 +548,7 @@ QSqlTableModel *SQLiteHandler::getMediaBill() const
 
 QList<QStringList> SQLiteHandler::getMediaBillList(int rono)
 {
-    query->exec(QString("SELECT id, date, amount FROM mediaBill WHERE rono = %0").arg(rono));
+    query->exec(QString("SELECT id, date, amount FROM mediaBill WHERE rono = %0 order by id;").arg(rono));
 
     QList<QStringList> list;
     while(query->next())
@@ -589,7 +593,7 @@ QSqlQueryModel *SQLiteHandler::getInvoiceModel() const
 
 QStringList SQLiteHandler::getInvoiceList(const int invno)
 {
-    query->exec(QString("SELECT rono, number, date, pcode, gramount, disrate, disamount, npamount, ratecgst, amountcgst, ratesgst, amountsgst, rateigst, amountigst, finalamount, invoiceremark, totalsizeduration FROM invoice WHERE number = %0").arg(invno));
+    query->exec(QString("SELECT rono, number, date, pcode, gramount, disrate, disamount, npamount, ratecgst, amountcgst, ratesgst, amountsgst, rateigst, amountigst, finalamount, remark, totalsizeduration FROM invoice WHERE number = %0 order by number").arg(invno));
     if(!query->next())
     {
         qDebug()<<"Error for invoice id: "<< invno<< query->lastError();
@@ -608,6 +612,8 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
     auto rateigst = QString::number(query->value(12).toDouble());
     auto amountigst = QString::number(query->value(13).toDouble());
     auto finalamount = QString::number(query->value(14).toDouble());
+    auto remark = query->value(15).toString();
+    auto totSizeDur = query->value(16).toString();
 
     QStringList strList;
     strList << query->value(0).toString()
@@ -625,8 +631,8 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
             << rateigst
             << amountigst
             << finalamount
-            << query->value(15).toString()
-            << query->value(16).toString();
+            << remark
+            << totSizeDur;
 
     return strList;
 
@@ -741,7 +747,7 @@ QStringList *SQLiteHandler::getGstPerc() const
 
 void SQLiteHandler::setUpModels()
 {
-    gstPerc = new QStringList(QStringList()<< "2.5"<<"5.0"<<"6.0"<<"12.0"<<"9.0"<<"18.0"<<"14.0"<<"28.0");
+    gstPerc = new QStringList(QStringList()<< ""<< "2.5"<<"5.0"<<"6.0"<<"12.0"<<"9.0"<<"18.0"<<"14.0"<<"28.0");
 
     jobTypeModel = new QSqlQueryModel;
     jobTypeModel->setQuery("SELECT name from jobType ORDER BY name");
@@ -817,6 +823,7 @@ void SQLiteHandler::setUpModels()
     roModel->setHeaderData(33, Qt::Horizontal, "Amount IGST");
     roModel->setHeaderData(34, Qt::Horizontal, "Final Amount");
     roModel->setHeaderData(35, Qt::Horizontal, "HSN CODE");
+    roModel->setHeaderData(36, Qt::Horizontal, "Discount %");
 
     paymentModel = new QSqlTableModel;
     paymentModel->setTable("payment");

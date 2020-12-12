@@ -1,5 +1,4 @@
 #include "ReleaseOrder/AddReleaseOrder.h"
-#include "roform.h"
 #include "PrintInterface.h"
 #include "pdftroninterface.h"
 
@@ -28,7 +27,7 @@ AddReleaseOrder::~AddReleaseOrder()
 
 void AddReleaseOrder::render()
 {
-    QStringList gstList = {"2.5%", "6%","9%", "14%", "5%", "12%", "18%", "28%"};
+    QStringList gstList = *io->sql->getGstPerc();
     mainLayout = new QVBoxLayout;
     auto mainHBox = new QHBoxLayout;
 
@@ -63,16 +62,24 @@ void AddReleaseOrder::render()
     CGST = new QComboBox(this);
     CGST->addItems(gstList);
     cgstAmount = new QLineEdit(this);
+    cgstAmount->setReadOnly(true);
     SGST = new QComboBox(this);
     SGST->addItems(gstList);
     sgstAmount = new QLineEdit(this);
+    sgstAmount->setReadOnly(true);
     IGST = new QComboBox(this);
     IGST->addItems(gstList);
     igstAmount = new QLineEdit(this);
+    igstAmount->setReadOnly(true);
     roAmount = new QLineEdit(this);
     save = new QPushButton("Save", this);
     clear = new QPushButton("Clear", this);
     printButton = new QPushButton("Print", this);
+    discountPer = new QDoubleSpinBox;
+    discountPer->setRange(0,100);
+    discount = new QLineEdit("0.00");
+    discount->setPlaceholderText("Discount Amount");
+    calculateRoAmount = new QPushButton("Calculate");
 
     QFormLayout *form = new QFormLayout;
     form->addRow("RO No", roNo);
@@ -103,7 +110,13 @@ void AddReleaseOrder::render()
     form->addRow("Remark", remarks);
     form->addRow("HSN Code", hsnCode);
     form->addRow("Amount", amount);
-    form->addRow("Net Amount", netAmount);
+
+    hbox = new QHBoxLayout;
+    hbox->addWidget(new QLabel("Discount"));
+    hbox->addWidget(discountPer);
+    hbox->addWidget(discount);
+    hbox->addWidget(netAmount);
+    form->addRow("Net Amount", hbox);
 
     hbox = new QHBoxLayout;
     hbox->addWidget(CGST);
@@ -120,7 +133,10 @@ void AddReleaseOrder::render()
     hbox->addWidget(igstAmount);
     form->addRow("IGST", hbox);
 
-    form->addRow("RO Amount", roAmount);
+    hbox = new QHBoxLayout;
+    hbox->addWidget(roAmount);
+    hbox->addWidget(calculateRoAmount);
+    form->addRow("RO Amount", hbox);
     mainHBox->addLayout(form);
 
     mainLayout->addLayout(mainHBox);
@@ -153,6 +169,83 @@ void AddReleaseOrder::setupSignal()
         for(auto mpList: io->sql->getMediaPaymentStringListByRono(roNo->text().toInt()))
             PDFTronInterface::get()->printRO(toStringList(), mpList);
     });
+
+    connect(CGST, &QComboBox::currentTextChanged, [this](const QString taxNumber){
+        QString tax = taxNumber;
+        if(tax.isEmpty())
+            tax = QString::number(0);
+        else
+            IGST->setCurrentIndex(0);
+        auto cgstAmt = (tax.toDouble()/100)*netAmount->text().toDouble();
+        cgstAmount->setText(QString::number(cgstAmt));
+        roAmount->setText(QString::number(netAmount->text().toDouble()+cgstAmt + sgstAmount->text().toDouble()));
+    });
+
+    connect(SGST, &QComboBox::currentTextChanged, [this](const QString taxNumber){
+        QString tax = taxNumber;
+        if(tax.isEmpty())
+            tax = QString::number(0);
+        else
+            IGST->setCurrentIndex(0);
+        auto sgstAmt = (tax.toDouble()/100)*netAmount->text().toDouble();
+        sgstAmount->setText(QString::number(sgstAmt));
+        roAmount->setText(QString::number(netAmount->text().toDouble() + sgstAmt + cgstAmount->text().toDouble()));
+    });
+
+    connect(IGST, &QComboBox::currentTextChanged, [this](const QString taxNumber){
+        QString tax = taxNumber;
+        if(tax.isEmpty())
+        {
+            igstAmount->setText(QString::number(0));
+            return;
+        }
+
+        SGST->setCurrentIndex(0);
+        CGST->setCurrentIndex(0);
+        auto igstAmt = (tax.toDouble()/100)*netAmount->text().toDouble();
+        igstAmount->setText(QString::number(igstAmt));
+        roAmount->setText(QString::number(netAmount->text().toDouble()+igstAmt));
+    });
+
+    connect(discountPer, qOverload<double>(&QDoubleSpinBox::valueChanged), [=](double perc){
+        if(discount->hasFocus() || netAmount->hasFocus())
+            return;
+        auto disAmount = (perc/100)*amount->text().toDouble();
+        discount->setText(QString::number(disAmount));
+        if(!netAmount->hasFocus())
+            netAmount->setText(QString::number(amount->text().toDouble() - disAmount));
+    });
+
+    connect(discount, &QLineEdit::textChanged, [=](const QString value){
+        if(discountPer->hasFocus())
+            return;
+        auto disPer = (value.toDouble()/amount->text().toDouble()) * 100;
+        discountPer->setValue(disPer);
+        if(!netAmount->hasFocus())
+            netAmount->setText(QString::number(amount->text().toDouble()-value.toDouble()));
+    });
+
+    connect(amount, &QLineEdit::textChanged, [=](const QString){
+//        discount->setText(discount->text());
+        discountPer->valueChanged(discountPer->value());
+        discount->textChanged(discount->text());
+    });
+
+    connect(netAmount, &QLineEdit::textChanged, [=](const QString value){
+        if(discount->hasFocus() || discountPer->hasFocus())
+            return;
+        auto disA = amount->text().toDouble() - netAmount->text().toDouble();
+        discount->setText(QString::number(disA));
+    });
+
+    connect(calculateRoAmount, &QPushButton::clicked, [=]{
+        netAmount->textChanged(netAmount->text());
+        netAmount->setText(netAmount->text());
+        CGST->currentTextChanged(CGST->currentText());
+        SGST->currentTextChanged(SGST->currentText());
+        IGST->currentTextChanged(IGST->currentText());
+    });
+
 }
 
 QStringList AddReleaseOrder::toStringList()
@@ -180,12 +273,12 @@ QStringList AddReleaseOrder::toStringList()
                         amount->text(),
                         netAmount->text(),
                         remarks->toPlainText(),
-                        "Bill Amount",
-                        "Invoice No.",
-                        "Payment",
-                        "Receipt No.",
-                        "Receipt Amount",
-                        "MediaBill Amount",
+                        billAmount, //
+                        invoiceNo,
+                        payment,
+                        recptNo,
+                        receiptAmount,
+                        mediaBillAmount,
                         CGST->currentText(),
                         cgstAmount->text(),
                         SGST->currentText(),
@@ -193,7 +286,8 @@ QStringList AddReleaseOrder::toStringList()
                         IGST->currentText(),
                         igstAmount->text(),
                         roAmount->text(),
-                        hsnCode->text()
+                        hsnCode->text(),
+                        QString::number(discountPer->value())
     };
 }
 
@@ -216,17 +310,26 @@ void AddReleaseOrder::setValues(const QStringList detailList)
     premiumRemark->setText(detailList.at(16));
     rate->setText(detailList.at(17));
     rateRemark->setText(detailList.at(18));
-    amount->setText(detailList.at(19));
-    netAmount->setText(detailList.at(20));
+    amount->setText(QString::number(detailList.at(19).toDouble()));
+    netAmount->setText(QString::number(detailList.at(20).toDouble()));
     remarks->setText(detailList.at(21));
+
+    billAmount = detailList.at(22);
+    invoiceNo = detailList.at(23);
+    payment = detailList.at(24);
+    recptNo = detailList.at(25);
+    receiptAmount = detailList.at(26);
+    mediaBillAmount = detailList.at(27);
+
     CGST->setCurrentText(detailList.at(28));
-    cgstAmount->setText(detailList.at(29));
+//    cgstAmount->setText(detailList.at(29));
     SGST->setCurrentText(detailList.at(30));
-    sgstAmount->setText(detailList.at(31));
+//    sgstAmount->setText(detailList.at(31));
     IGST->setCurrentText(detailList.at(32));
-    igstAmount->setText(detailList.at(33));
-    roAmount->setText(detailList.at(34));
+//    igstAmount->setText(detailList.at(33));
+//    roAmount->setText(QString::number(detailList.at(34).toDouble()));
     hsnCode->setText(detailList.at(35));
+//    discountPer->setValue(detailList.at(36).toDouble()); // It should be disable because old values don't have discount feature
 }
 
 void AddReleaseOrder::setValidator()
@@ -246,4 +349,5 @@ void AddReleaseOrder::setValidator()
     igstAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
     roAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
     hsnCode->setValidator(new QRegExpValidator(QRegExp("\\d+")));
+    discount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
 }
