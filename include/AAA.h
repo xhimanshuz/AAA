@@ -17,6 +17,9 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QCompleter>
+#include <QToolButton>
+#include <QDate>
+#include <QGraphicsBlurEffect>
 
 #include "IOHandler/IOHandler.h"
 #include "JobType.h"
@@ -45,6 +48,8 @@ class AAA : public QMainWindow
     QSqlTableModel *roDataModel;
     QDateEdit *searchDateFrom;
     QDateEdit *searchDateTo;
+    QToolButton *dateSearchButton;
+    QToolButton *dateClearButton;
     QComboBox *roNo;
     QComboBox *mediaHouse;
     QComboBox *client;

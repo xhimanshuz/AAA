@@ -28,8 +28,16 @@ void AAA::render()
 
     toolBar->addActions(QList<QAction*>()<< newJobType << newMediaHouse << newClient << mediaPaymentButton << invoiceButton  << paymentReceipt  << mediaBill);
 
-    searchDateFrom = new QDateEdit;
-    searchDateTo = new QDateEdit;
+    searchDateFrom = new QDateEdit(QDate::currentDate(), this);
+    searchDateFrom->setDisplayFormat("yyyy-MM-dd");
+    searchDateFrom->setCalendarPopup(true);
+    searchDateTo = new QDateEdit(QDate::currentDate(), this);
+    searchDateTo->setDisplayFormat("yyyy-MM-dd");
+    searchDateTo->setCalendarPopup(true);
+    dateSearchButton = new QToolButton;
+    dateSearchButton->setText("⏲");
+    dateClearButton = new QToolButton;
+    dateClearButton->setText("⌫");
     roNo = new QComboBox;
     roNo->setEditable(true);
     mediaHouse = new QComboBox;
@@ -40,7 +48,7 @@ void AAA::render()
     client->setEditable(true);
 //    client->completer()->setCompletionMode(QCompleter::CompletionMode::PopupCompletion);
     jobType = new QComboBox;
-//    jobType->completer()->setCompletionMode(QCompleter::CompletionMode::PopupCompletion);
+
     jobType->setEditable(true);
     go = new QPushButton("Go");
 
@@ -48,6 +56,7 @@ void AAA::render()
     roDataModel = io->sql->getRoModel();
     roTable->setSelectionBehavior(QTableView::SelectionBehavior::SelectRows);
     roTable->setEditTriggers(QTableView::NoEditTriggers);
+    roTable->setSelectionMode(QTableView::SelectionMode::SingleSelection);
     roTable->setModel(roDataModel);
     roTable->hideColumn(0);
     populateData();
@@ -60,10 +69,12 @@ void AAA::render()
     mainLayout->addWidget(toolBar);
 
     QHBoxLayout *hbox = new QHBoxLayout;
-    hbox->addWidget(new QLabel("Search Date From"));
+    hbox->addWidget(new QLabel("Date From"));
     hbox->addWidget(searchDateFrom, 1);
     hbox->addWidget(new QLabel("To"));
     hbox->addWidget(searchDateTo, 1);
+    hbox->addWidget(dateSearchButton);
+    hbox->addWidget(dateClearButton);
     hbox->addWidget(new QLabel("RO/Inv No."));
     hbox->addWidget(roNo, 1);
     hbox->addWidget(new QLabel("Media House"));
@@ -205,6 +216,22 @@ void AAA::setupSignals()
         io->sql->getRoModel()->setFilter(QString("number = %0").arg(ronumber.toInt()));
         populateData();
     });
+
+    connect(dateSearchButton, &QToolButton::clicked, [=]{
+
+        auto fromDate = searchDateFrom->text();
+        auto toDate = searchDateTo->text();
+        io->sql->getRoModel()->setFilter(QString("date >= '%0' and date <= '%1'").arg(fromDate).arg(toDate));
+        populateData();
+    });
+
+    connect(dateClearButton, &QToolButton::clicked, [=]{
+        auto date = QDate::currentDate().toString("yyyy-MM-dd");
+        io->sql->getRoModel()->setFilter(QString("date < '%0'").arg(date));
+        populateData();
+    });
+
+
 }
 
 void AAA::updateRender()

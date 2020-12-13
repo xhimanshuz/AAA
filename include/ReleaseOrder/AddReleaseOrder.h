@@ -43,6 +43,8 @@ class AddReleaseOrder: public QDialog
     QTextEdit *remarks;
     QLineEdit *hsnCode;
     QLineEdit *amount;
+    QDoubleSpinBox *discountPer;
+    QLineEdit *discount;
     QLineEdit *netAmount;
     QComboBox *CGST;
     QLineEdit *cgstAmount;
@@ -55,8 +57,6 @@ class AddReleaseOrder: public QDialog
     QPushButton *clear;
     QVBoxLayout *mainLayout;
     QPushButton *printButton;
-    QDoubleSpinBox *discountPer;
-    QLineEdit *discount;
     QString billAmount;
     QString invoiceNo;
     QString payment;

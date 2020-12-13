@@ -1,5 +1,19 @@
 #include "UserUI/NewUser.h"
 
+NewUser::NewUser(QString username, QStringList userDetail, USER_TYPE _type, QWidget *parent): QWidget(parent), type(_type), id{0}
+{
+    render();
+    setLayout(mainLayout);
+
+    setValues(userDetail);
+    save->click();
+}
+
+NewUser::~NewUser()
+{
+
+}
+
 QPushButton *NewUser::getSaveButton() const
 {
     return save;
@@ -17,20 +31,6 @@ NewUser::NewUser(USER_TYPE _type, QWidget *parent) : QWidget(parent), type(_type
 {
     render();
     this->setLayout(mainLayout);
-}
-
-NewUser::NewUser(QString username, QStringList userDetail, USER_TYPE _type, QWidget *parent): QWidget(parent), type(_type), id{0}
-{
-    render();
-    setLayout(mainLayout);
-
-    setValues(userDetail);
-    save->click();
-}
-
-NewUser::~NewUser()
-{
-
 }
 
 void NewUser::render()
@@ -86,7 +86,7 @@ void NewUser::setValues(const QStringList &strList)
 {
     id = strList.at(0).toInt();
     userName->setText(strList.at(1));
-    userName->setDisabled(true);
+    userName->setReadOnly(true);
     contactPerson->setText(strList[2]);
     phone->setText(strList[3]);
     email->setText(strList[4]);
@@ -100,7 +100,7 @@ void NewUser::setValues(const QStringList &strList)
 void NewUser::setValues(const QList<QVariant> &items)
 {
     userName->setText(items.at(0).toString());
-    userName->setDisabled(true);
+    userName->setReadOnly(true);
     contactPerson->setText(items.at(1).toString());
     phone->setText(items.at(2).toString());
     email->setText(items.at(3).toString());
@@ -126,14 +126,15 @@ void NewUser::signalSetup()
     });
 
     connect(clear, &QPushButton::clicked, this, &NewUser::clearValues);
+    connect(this, &NewUser::addNewClick, this, &NewUser::clearValues);
 
 }
 
 void NewUser::clearValues()
 {
     id = 0;
-    if(!userName->isEnabled())
-        userName->setEnabled(true);
+    if(userName->isReadOnly())
+        userName->setReadOnly(false);
     userName->clear();
     contactPerson->clear();
     phone->clear();

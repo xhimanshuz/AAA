@@ -58,6 +58,10 @@ void AddReleaseOrder::render()
     remarks = new QTextEdit(this);
     hsnCode = new QLineEdit(this);
     amount = new QLineEdit(this);
+    discountPer = new QDoubleSpinBox;
+    discountPer->setRange(0,100);
+    discount = new QLineEdit("0.00");
+    discount->setPlaceholderText("Discount Amount");
     netAmount = new QLineEdit(this);
     CGST = new QComboBox(this);
     CGST->addItems(gstList);
@@ -75,10 +79,6 @@ void AddReleaseOrder::render()
     save = new QPushButton("Save", this);
     clear = new QPushButton("Clear", this);
     printButton = new QPushButton("Print", this);
-    discountPer = new QDoubleSpinBox;
-    discountPer->setRange(0,100);
-    discount = new QLineEdit("0.00");
-    discount->setPlaceholderText("Discount Amount");
     calculateRoAmount = new QPushButton("Calculate");
 
     QFormLayout *form = new QFormLayout;

@@ -67,14 +67,14 @@ namespace CustomItemDelegate
         QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
         {
             auto dateEdit = new QDateEdit(parent);
-            dateEdit->setDisplayFormat("dd/MM/yyyy");
+            dateEdit->setDisplayFormat("yyyy-MM-dd");
             return dateEdit;
         }
 
         void setEditorData(QWidget* editor, const QModelIndex &index) const override
         {
             auto value = index.model()->data(index, Qt::EditRole).toString();
-            qobject_cast<QDateEdit*>(editor)->setDate(QDate::fromString(value, "dd/MM/yyyy"));
+            qobject_cast<QDateEdit*>(editor)->setDate(QDate::fromString(value, "yyyy-MM-dd"));
         }
 
         void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override

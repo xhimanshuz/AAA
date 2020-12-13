@@ -15,6 +15,10 @@ void UserWindow::render()
     searchButton = new QPushButton(">>", this);
 
     usersList = new QTableView(this);
+    usersList->setSelectionBehavior(QTableView::SelectionBehavior::SelectRows);
+    usersList->setEditTriggers(QTableView::NoEditTriggers);
+    usersList->setSelectionMode(QTableView::SelectionMode::SingleSelection);
+    usersList->horizontalHeader()->setStretchLastSection(true);
     modelData = (type == USER_TYPE::MEDIA_HOUSE)?io->sql->getMediaHouseModel():io->sql->getClietModel();
     usersList->setModel(modelData);
 //    usersList->setEditTriggers(QTableView::EditTrigger::NoEditTriggers);
@@ -86,6 +90,8 @@ void UserWindow::setupSignal()
         usersList->clearSelection();
     });
 
+    connect(addNew, &QPushButton::clicked, newUserWidget, &NewUser::addNewClick);
+
 //    connect(io->sql->getMediaHouseModel(), &QSqlTableModel::dataChanged, [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>()){
 //        populateData();
 //    });
@@ -94,7 +100,8 @@ void UserWindow::setupSignal()
 void UserWindow::populateData()
 {
     (type == USER_TYPE::MEDIA_HOUSE)? io->sql->getMediaHouseModel()->query().exec() : io->sql->getClietModel()->query().exec();
-    usersList->resizeColumnsToContents();
     usersList->setSortingEnabled(true);
+    usersList->resizeColumnsToContents();
+
     usersList->viewport()->update();
 }

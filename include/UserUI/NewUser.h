@@ -59,7 +59,7 @@ public:
     void setValidator();
 
 signals:
-
+    void addNewClick();
 };
 
 #endif // NEWUSER_H

@@ -2,6 +2,7 @@
 
 InvoiceWindow::InvoiceWindow(const QString _client, const QStringList invno, const int rono, QWidget *parent) : QDialog(parent), islastSelectedMedia(false)
 {
+    this->resize(parent->size().width()*0.8, parent->size().height()*0.8);
     io = IOHandler::getInstance();
 
     addInvoice = new AddInvoice(this, invno.at(0).toInt(), rono);
@@ -40,6 +41,7 @@ void InvoiceWindow::render()
     billListView->setSelectionBehavior(QTableView::SelectRows);
     billListView->setSelectionMode(QTableView::SelectionMode::SingleSelection);
     billListView->setEditTriggers(QTableView::NoEditTriggers);
+    billListView->horizontalHeader()->setStretchLastSection(true);
     billDataModel = io->sql->getInvoiceModel();
     billListView->setModel(billDataModel);
     populateData();

@@ -250,7 +250,7 @@ bool SQLiteHandler::insertClientRow(const QStringList &strList)
     }
     else // else do INSERT
     {
-        query->prepare("INSERT INTO clients (name, contactPerson, phone, email, address, city, state, GST, SC) VALUES (:name, :contactPerson, :phone, :email, :address, :city, :state, :GST, :SC)");
+        query->prepare("INSERT INTO clients (name, contactPerson, phone, email, address, city, state, GST, pincode) VALUES (:name, :contactPerson, :phone, :email, :address, :city, :state, :GST, :pincode)");
         query->bindValue(":name", strList.at(1));
         query->bindValue(":contactPerson", strList.at(2));
         query->bindValue(":phone", strList.at(3));
@@ -259,13 +259,15 @@ bool SQLiteHandler::insertClientRow(const QStringList &strList)
         query->bindValue(":city", strList.at(6));
         query->bindValue(":state", strList.at(7));
         query->bindValue(":GST", strList.at(8));
-        query->bindValue(":SC", strList.at(9));
+        query->bindValue(":pincode", strList.at(9));
     }
     if(auto result = query->exec())
         return result;
     else
+    {
+        auto error = query->lastError().text();
         qDebug()<< query->lastError();
-    exit(-1);
+    }
 }
 
 bool SQLiteHandler::removeClientRow(const int id)
@@ -787,6 +789,7 @@ void SQLiteHandler::setUpModels()
     roModel->setTable("ro");
     roModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
     roModel->select();
+    roModel->setFilter("mhcode != 0");
     roModel->setHeaderData(0, Qt::Horizontal, "Code");
     roModel->setHeaderData(1, Qt::Horizontal, "Ro No.");
     roModel->setHeaderData(2, Qt::Horizontal, "date");

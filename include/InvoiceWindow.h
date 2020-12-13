@@ -10,6 +10,7 @@
 #include <QSqlTableModel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QHeaderView>
 
 #include "AddInvoice.h"
 

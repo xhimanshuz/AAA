@@ -36,7 +36,7 @@ def toDate(timeStr):
 #    print(">> toDate", timeStr)
 #    d = datetime.datetime.strptime("30-7-2020 0:00:00", "%d-%m-%Y 0:00:00")
     d = datetime.datetime.strptime(timeStr, "%d-%m-%Y %H:%M:%S")
-    return datetime.datetime.strftime(d, "%d/%m/%Y")
+    return datetime.datetime.strftime(d, "%Y-%m-%d")
 
 
 def mediaHouse():
@@ -48,7 +48,7 @@ def mediaHouse():
 
     cur.execute("""
     CREATE TABLE "mediaHouse" (
-	"id"	INT,
+        "id"	INTEGER,
 	"name"	TEXT NOT NULL,
     "contactPerson" TEXT,
 	"phone"	TEXT,
@@ -58,7 +58,7 @@ def mediaHouse():
 	"state"	TEXT,
 	"GST"	TEXT,
 	"SC"	TEXT,
-	PRIMARY KEY("id")
+        PRIMARY KEY("id" AUTOINCREMENT)
 );
     """)
     conn.commit()
@@ -95,7 +95,7 @@ def parties():
 	"state"	TEXT,
 	"gst"	TEXT,
 	"pincode"	INTEGER,
-	PRIMARY KEY("id")
+        PRIMARY KEY("id" AUTOINCREMENT)
 );""" )
     conn.commit()
 
