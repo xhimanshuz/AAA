@@ -1,4 +1,9 @@
-QT += widgets sql printsupport
+QT += widgets sql
+
+#CONFIG += -static
+
+#QMAKE_CXXFLAGS += -static
+
 
 SOURCES += \
     src/AAA.cpp \
@@ -7,8 +12,6 @@ SOURCES += \
     src/MediaBillDetail.cpp \
     src/MediaPaymentDetail.cpp \
     src/PaymentReceiptDetail.cpp \
-    src/PopplerInterface.cpp \
-    src/pdftroninterface.cpp \
     src/ReleaseOrder/AddReleaseOrder.cpp \
     src/UserUI/NewUser.cpp \
     src/UserUI/UserWindow.cpp \
@@ -16,7 +19,8 @@ SOURCES += \
     src/IOHandler/IOHandler.cpp \
     src/IOHandler/SQLiteHandler.cpp \
     src/JobType.cpp \
-    src/app.cpp
+    src/app.cpp \
+    src/pdftroninterface.cpp
 
 HEADERS += \
     include/AAA.h \
@@ -26,8 +30,6 @@ HEADERS += \
     include/MediaBillDetail.h \
     include/MediaPaymentDetail.h \
     include/PaymentReceiptDetail.h \
-    include/PopplerInterface.h \
-    include/PrintInterface.h \
     include/IOHandler/SQLiteHandler.h \
     include/ReleaseOrder/AddReleaseOrder.h \
     include/UserUI/NewUser.h \
@@ -39,15 +41,14 @@ HEADERS += \
     include/pdftroninterface.h
 
 INCLUDEPATH += include \
-               $$PWD/PDFTron/Headers \
-                /usr/include/poppler/
+               $$PWD/PDFTron/Win32/Headers
 
 DESTDIR = $$PWD/build/ \
 
 DISTFILES += .gitignore \
             $$PWD/Data/DBMigratingTool/run.py
 
-LIBS += -L$$PWD/PDFTron/Lib  -lPDFNetC -lstdc++ -lpthread -lm -lc -lPDFNetC -lstdc++ -lpthread -lm -lc -lpoppler-qt5
+LIBS += -L$$PWD/PDFTron/Win32/Lib  -lPDFNetC
 
 
 RESOURCES += \

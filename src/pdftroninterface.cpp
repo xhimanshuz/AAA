@@ -4,7 +4,7 @@
 
 PDFTronInterface* PDFTronInterface::instance = nullptr;
 
-PDFTronInterface::PDFTronInterface(): pdfApplication("evince")
+PDFTronInterface::PDFTronInterface(): pdfApplication("SlimPDF Reader\\SlimPDF Reader.exe")
 {
     PDFNet::Initialize();
     process = new QProcess();

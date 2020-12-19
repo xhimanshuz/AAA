@@ -1,8 +1,6 @@
 #include "ReleaseOrder/AddReleaseOrder.h"
-#include "PrintInterface.h"
 #include "pdftroninterface.h"
 
-PrintInterface *PrintInterface::instance = nullptr;
 
 AddReleaseOrder::AddReleaseOrder(QWidget *parent): QDialog(parent)
 {
@@ -207,7 +205,7 @@ void AddReleaseOrder::setupSignal()
         roAmount->setText(QString::number(netAmount->text().toDouble()+igstAmt));
     });
 
-    connect(discountPer, qOverload<double>(&QDoubleSpinBox::valueChanged), [=](double perc){
+    connect(discountPer, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [=](double perc){
         if(discount->hasFocus() || netAmount->hasFocus())
             return;
         auto disAmount = (perc/100)*amount->text().toDouble();

@@ -163,7 +163,7 @@ void AddInvoice::setupSignal()
     connect(invNoRemove, &QToolButton::clicked, this, &AddInvoice::removeInvoice);
 
 
-    connect(discountPerc, &QDoubleSpinBox::textChanged, [=](const QString number){
+    connect(discountPerc, QOverload<const QString&>::of(&QDoubleSpinBox::valueChanged), [=](const QString number){
         if(discount->hasFocus())
             return;
         auto discountAmount = grossAmt->text().toDouble() * ((number.toDouble()/100));

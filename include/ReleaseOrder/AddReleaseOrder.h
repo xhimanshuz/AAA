@@ -12,7 +12,6 @@
 #include <QHBoxLayout>
 #include <QFormLayout>
 #include <QPainter>
-#include <QPrinter>
 #include <QFileDialog>
 #include <QRegExpValidator>
 #include <QDoubleSpinBox>
