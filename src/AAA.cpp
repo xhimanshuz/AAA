@@ -58,7 +58,10 @@ void AAA::render()
     roTable->setEditTriggers(QTableView::NoEditTriggers);
     roTable->setSelectionMode(QTableView::SelectionMode::SingleSelection);
     roTable->setModel(roDataModel);
-    roTable->hideColumn(0);
+    for(auto i: {0, 3,4, 5,7,9,10,11,12,13,14,15,16,17,18,21,28,29,30,31,32,33,35,36})
+        roTable->hideColumn(i);
+    roTable->horizontalHeader()->setStretchLastSection(true);
+
     populateData();
 
     newRO = new QPushButton("New RO");

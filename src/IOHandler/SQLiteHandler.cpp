@@ -796,7 +796,7 @@ void SQLiteHandler::setUpModels()
     roModel->setHeaderData(3, Qt::Horizontal, "M.H. Code");
     roModel->setHeaderData(4, Qt::Horizontal, "M.H. Name");
     roModel->setHeaderData(5, Qt::Horizontal, "Client Code");
-    roModel->setHeaderData(6, Qt::Horizontal, "Client Name.");
+    roModel->setHeaderData(6, Qt::Horizontal, "Client Name");
     roModel->setHeaderData(7, Qt::Horizontal, "Job Type ID");
     roModel->setHeaderData(8, Qt::Horizontal, "Job Type");
     roModel->setHeaderData(9, Qt::Horizontal, "Caption");
@@ -824,7 +824,7 @@ void SQLiteHandler::setUpModels()
     roModel->setHeaderData(31, Qt::Horizontal, "Amount SGST");
     roModel->setHeaderData(32, Qt::Horizontal, "Rate IGST");
     roModel->setHeaderData(33, Qt::Horizontal, "Amount IGST");
-    roModel->setHeaderData(34, Qt::Horizontal, "Final Amount");
+    roModel->setHeaderData(34, Qt::Horizontal, "RO Amount");
     roModel->setHeaderData(35, Qt::Horizontal, "HSN CODE");
     roModel->setHeaderData(36, Qt::Horizontal, "Discount %");
 

@@ -39,17 +39,25 @@ HEADERS += \
     include/IOHandler/IOHandler.h \
     include/JobType.h \
     include/pdftroninterface.h
+win32 {
+    message(Building for Windows)
+    PDFTRON_DIR = PDFTron/Win32
+}
+unix {
+    message(Building for Unix)
+    PDFTRON_DIR = PDFTron
+}
+message(PdfTron Dir = $$PWD/$$PDFTRON_DIR )
 
 INCLUDEPATH += include \
-               $$PWD/PDFTron/Win32/Headers
+               $$PWD/$$PDFTRON_DIR/Headers
 
 DESTDIR = $$PWD/build/ \
 
 DISTFILES += .gitignore \
             $$PWD/Data/DBMigratingTool/run.py
 
-LIBS += -L$$PWD/PDFTron/Win32/Lib  -lPDFNetC
-
+LIBS += -L$$PWD/$$PDFTRON_DIR/Lib  -lPDFNetC
 
 RESOURCES += \
     Resource.qrc

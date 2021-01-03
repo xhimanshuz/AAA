@@ -158,7 +158,6 @@ void AddReleaseOrder::setupSignal()
 {
     connect(save, &QPushButton::clicked, [this]{
         auto sl = toStringList();
-        auto size = sl.size();
         io->sql->insertRoData(sl);
         this->close();
     });

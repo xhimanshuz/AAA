@@ -34,7 +34,8 @@ void MediaPaymentDetail::render()
     sizeDuration = new QLineEdit;
     guarantedPosition = new QLineEdit;
     rate = new QLineEdit;
-    netAmount = new QLineEdit;
+    netAmount = new QLineEdit(this);
+    roAmount = new QLineEdit(this);
 
     paymentTable = new QTableWidget(0, 8);
     insertNewRow();
@@ -71,6 +72,7 @@ void MediaPaymentDetail::render()
     form->addRow("Guaranted Position", guarantedPosition);
     form->addRow("Rate", rate);
     form->addRow("Net Amount", netAmount);
+    form->addRow("RO Amount", roAmount);
     formHbox->addLayout(form);
     mainLayout->addLayout(formHbox);
 
@@ -157,6 +159,8 @@ void MediaPaymentDetail::setValues()
     rate->setReadOnly(true);
     netAmount->setText(strList.at(20));
     netAmount->setReadOnly(true);
+    roAmount->setText(strList.at(34));
+    roAmount->setReadOnly(true);
 
     auto list = io->sql->getMediaPaymentStringListByRono(rono);
     populateData(list);
@@ -282,9 +286,9 @@ void MediaPaymentDetail::setTotalAmount()
         auto value = paymentTable->item(row, 2)->text().toInt();
         totalAmountValue += value;
     }
-    auto na = netAmount->text().toDouble();
+    auto na = roAmount->text().toDouble();
     totalAmount->setText(QString::number(totalAmountValue));
-    balAmount->setText(QString::number(totalAmountValue - netAmount->text().toDouble()));
+    balAmount->setText(QString::number(totalAmountValue - roAmount->text().toDouble()));
 }
 
 void MediaPaymentDetail::cellChanged(int row, int column)

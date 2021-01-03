@@ -98,9 +98,9 @@ void InvoiceWindow::filterWithClient(const QString _client)
 {
     addInvoice->getClients()->setCurrentText(_client);
     if(status->currentText() == "Pending")
-        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE pname = '%0' AND invno = '' ").arg(_client));
+        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE pname = '%0' AND invno = '' ").arg(_client));
     else
-        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE pname = '%0' AND invno != '' ").arg(_client));
+        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE pname = '%0' AND invno != '' ").arg(_client));
 
     seachRoNo->setCurrentIndex(0);
     populateData();
@@ -114,11 +114,11 @@ void InvoiceWindow::filterWithStatus(const QString _status)
         auto mhname = mediaHouse->currentText();
         if(_status == "Pending")
         {
-            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE mhname = '%0' AND invno = ''").arg(mhname));
+            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE mhname = '%0' AND invno = ''").arg(mhname));
         }
         else
         {
-            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE mhname = '%0'").arg(mhname));
+            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE mhname = '%0'").arg(mhname));
         }
     }
     else
@@ -126,11 +126,11 @@ void InvoiceWindow::filterWithStatus(const QString _status)
         auto pname = addInvoice->getClients()->currentText();
         if(_status == "Pending")
         {
-            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE pname = '%0' AND invno = ''").arg(pname));
+            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE pname = '%0' AND invno = ''").arg(pname));
         }
         else
         {
-            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE pname = '%0'").arg(pname));
+            billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE pname = '%0'").arg(pname));
         }
     }
     populateData();
@@ -142,9 +142,9 @@ void InvoiceWindow::filterWithRO(const QString _ro)
         return;
 //    generateBill->getClients()->setCurrentText(_ro);
     if(status->currentText() == "Pending")
-        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE number = %0 AND invno = '';").arg(_ro));
+        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE number = %0 AND invno = '';").arg(_ro));
     else
-        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, netAmount, hsncode FROM ro WHERE number = %0  AND invno != ''").arg(_ro));
+        billDataModel->setQuery(QString("SELECT number, invno, mhname, pname, jobtypename, finalamount, netAmount, payamount FROM ro WHERE number = %0  AND invno != ''").arg(_ro));
 
     populateData();
 }

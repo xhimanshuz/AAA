@@ -120,8 +120,18 @@ namespace CustomItemDelegate
         {
             QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
             auto value = comboBox->currentText();
+            if(value == "CASH")
+            {
+                model->setData(index.siblingAtColumn(4), "---", Qt::EditRole);
+                model->setData(index.siblingAtColumn(5), "---", Qt::EditRole);
+            }
 
             model->setData(index, value, Qt::EditRole);
+
+        }
+
+        void currentValueChanged(const QString currentValue)
+        {
 
         }
     };

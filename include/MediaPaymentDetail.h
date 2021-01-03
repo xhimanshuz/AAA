@@ -43,6 +43,7 @@ class MediaPaymentDetail : public QDialog
     QLineEdit *guarantedPosition;
     QLineEdit *rate;
     QLineEdit *netAmount;
+    QLineEdit *roAmount;
     QTableWidget *paymentTable;
     QLineEdit *totalAmount;
     QLineEdit *balAmount;

@@ -40,3 +40,9 @@ PDFTron/*
 Makefile
 
 .qmake.stash
+
+./*.db
+
+build/
+build/*
+
