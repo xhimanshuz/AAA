@@ -646,7 +646,7 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
     if(!query->next())
     {
         qDebug() << "[!] "<<strList.at(1).toInt()<<" Invoice number doesn't exist, so, Inserting new one!" << query->lastError();
-        query->prepare("INSERT INTO invoice ('rono','date', 'pcode', 'gramount', 'disrate','disamount', 'npamount', 'ratecgst','amountcgst','ratesgst','amountsgst','rateigst','amountigst','finalamount', 'invoiceremark') VALUES (:rono,:date,:pcode,:gramount,:disrate,:disamount,:npamount,:ratecgst,:amountcgst,:ratesgst,:amountsgst,:rateigst,:amountigst,:finalamount,:invoiceremark)");
+        query->prepare("INSERT INTO invoice ('rono','date', 'pcode', 'gramount', 'disrate','disamount', 'npamount', 'ratecgst','amountcgst','ratesgst','amountsgst','rateigst','amountigst','finalamount', 'remark', 'totalsizeduration') VALUES (:rono,:date,:pcode,:gramount,:disrate,:disamount,:npamount,:ratecgst,:amountcgst,:ratesgst,:amountsgst,:rateigst,:amountigst,:finalamount,:remark,:totalsizeduration)");
         query->bindValue(":rono", strList.at(0).toInt());
         query->bindValue(":date", strList.at(2));
         query->bindValue(":pcode", strList.at(3).toInt());
@@ -661,12 +661,13 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
         query->bindValue(":rateigst", strList.at(12).toDouble());
         query->bindValue(":amountigst", strList.at(13).toDouble());
         query->bindValue(":finalamount", strList.at(14).toDouble());
-        query->bindValue(":invoiceremark", strList.at(15));
+        query->bindValue(":remark", strList.at(15));
+        query->bindValue(":totalsizeduration", strList.at(16));
     }
     else
     {
         qDebug()<<"[!] "<< strList.at(1).toInt()<<" Invoice number doesn't exist, so, Updating Existing one!";
-        query->prepare("UPDATE invoice SET rono=:rono, date=:date, pcode=:pcode, gramount=:gramount, disrate=:disrate, disamount=:disamount, npamount=:npamount, ratecgst=:ratecgst, amountcgst=:amountcgst, ratesgst=:ratesgst, amountsgst=:amountsgst, rateigst=:rateigst, amountigst=:amountigst, finalamount=:finalamount, invoiceremark=:invoiceremark  WHERE number = :number");
+        query->prepare("UPDATE invoice SET rono=:rono, date=:date, pcode=:pcode, gramount=:gramount, disrate=:disrate, disamount=:disamount, npamount=:npamount, ratecgst=:ratecgst, amountcgst=:amountcgst, ratesgst=:ratesgst, amountsgst=:amountsgst, rateigst=:rateigst, amountigst=:amountigst, finalamount=:finalamount, remark=:remark, totalsizeduration=:totalsizeduration WHERE number = :number");
         query->bindValue(":rono", strList.at(0).toInt());
         query->bindValue(":date", strList.at(2));
         query->bindValue(":pcode", strList.at(3).toInt());
@@ -681,8 +682,9 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
         query->bindValue(":rateigst", strList.at(12).toDouble());
         query->bindValue(":amountigst", strList.at(13).toDouble());
         query->bindValue(":finalamount", strList.at(14).toDouble());
-        query->bindValue(":invoiceremark", strList.at(15));
+        query->bindValue(":remark", strList.at(15));
         query->bindValue(":number", strList.at(1).toInt());
+        query->bindValue(":totalsizeduration", strList.at(16));
 //        query->exec();
     }
     if(!query->exec())

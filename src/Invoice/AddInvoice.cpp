@@ -54,9 +54,11 @@ void AddInvoice::render()
     igstPerc->addItems(*io->sql->getGstPerc());
     IGST = new QLineEdit;
     IGST->setReadOnly(true);
+    calculateInvoiceAmount = new QPushButton("Calculate", this);
     invoiceAmount = new QLineEdit;
     invoiceAmount->setReadOnly(true);
     remark = new QTextEdit;
+    remark->setTabChangesFocus(true);
     totSizeDuration = new QLineEdit;
     save = new QPushButton("Save");
     remove = new QPushButton("Remove");
@@ -109,6 +111,7 @@ void AddInvoice::render()
     hbox = new QHBoxLayout;
     hbox->addStretch();
     hbox->addWidget(invoiceAmount);
+    hbox->addWidget(calculateInvoiceAmount);
     form->addRow("Invoice Amount", hbox);
 
     form->addRow("Remark", remark);
@@ -162,21 +165,38 @@ void AddInvoice::setupSignal()
     connect(invNoAdd, &QToolButton::clicked, this, &AddInvoice::addNewInvoice);
     connect(invNoRemove, &QToolButton::clicked, this, &AddInvoice::removeInvoice);
 
+    connect(grossAmt, &QLineEdit::textChanged, [=](const QString amount){
+        if(!grossAmt->hasFocus())
+            return;
+        emit discountPerc->textChanged(discountPerc->text());
+        auto netAmount = amount.toDouble() - discount->text().toDouble();
+        netPayableAmount->setText(QString::number(netAmount));
+    });
 
-    connect(discountPerc, QOverload<const QString&>::of(&QDoubleSpinBox::valueChanged), [=](const QString number){
+    connect(netPayableAmount, &QLineEdit::textChanged, [&](const QString amount){
+        if(!netPayableAmount->hasFocus())
+            return;
+        auto disPerc = (netPayableAmount->text().toDouble()/grossAmt->text().toDouble()) * 100;
+        emit discountPerc->textChanged(QString::number(disPerc));
+    });
+
+    connect(discountPerc, &QDoubleSpinBox::textChanged, [=](const QString number){
         if(discount->hasFocus())
             return;
+
         auto discountAmount = grossAmt->text().toDouble() * ((number.toDouble()/100));
         discount->setText(QString::number(discountAmount));
-        netPayableAmount->setText(QString::number(grossAmt->text().toDouble()-discountAmount));
+        if(!netPayableAmount->hasFocus())
+            netPayableAmount->setText(QString::number(grossAmt->text().toDouble()-discountAmount));
     });
 
     connect(discount, &QLineEdit::textChanged, [=](const QString number){
         if(discountPerc->hasFocus())
             return;
-        auto perc = (number.toDouble()/grossAmt->text().toDouble())*100;
+        auto perc = (number.toDouble() / grossAmt->text().toDouble())*100;
         discountPerc->setValue(perc);
-        netPayableAmount->setText(QString::number(grossAmt->text().toDouble()-number.toDouble()));
+        if(!netPayableAmount->hasFocus())
+            netPayableAmount->setText(QString::number(grossAmt->text().toDouble()-number.toDouble()));
     });
 
     connect(cgstPerc, &QComboBox::currentTextChanged, [=](const QString taxNumber){
@@ -218,7 +238,12 @@ void AddInvoice::setupSignal()
     });
 
     connect(clients, &QComboBox::currentTextChanged, this, &AddInvoice::currentClientChanged);
-
+    connect(calculateInvoiceAmount, &QPushButton::clicked, this, [&]{
+        emit netPayableAmount->textChanged(netPayableAmount->text());
+        emit cgstPerc->currentTextChanged(cgstPerc->currentText());
+        emit sgstPerc->currentTextChanged(sgstPerc->currentText());
+        emit igstPerc->currentTextChanged(igstPerc->currentText());
+    });
 }
 
 void AddInvoice::setValue(const QStringList billList)

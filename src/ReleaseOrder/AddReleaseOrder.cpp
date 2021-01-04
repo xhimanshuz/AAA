@@ -44,16 +44,21 @@ void AddReleaseOrder::render()
     guarantedPosition = new QLineEdit(this);
     premium = new QLineEdit(this);
     premiumRemark = new QTextEdit(this);
+    premiumRemark->setTabChangesFocus(true);
 //    premiumRemark->setSizePolicy(QSizePolicy::QSizePolicy::Fixed,QSizePolicy::Preferred);
     rate = new QLineEdit(this);
     rateRemark = new QTextEdit(this);
+    rateRemark->setTabChangesFocus(true);
     date = new QDateEdit(QDate::currentDate(), this);
+    date->setDisplayFormat("dd/MM/yyyy");
+    date->setCalendarPopup(true);
     clientList = new QComboBox(this);
     clientList->addItems(io->sql->getClientList());
     caption = new QLineEdit(this);
     dateOfPublication = new QLineEdit(this);
     totalSizeDuration = new QLineEdit(this);
     remarks = new QTextEdit(this);
+    remarks->setTabChangesFocus(true);
     hsnCode = new QLineEdit(this);
     amount = new QLineEdit(this);
     discountPer = new QDoubleSpinBox;
@@ -231,7 +236,7 @@ void AddReleaseOrder::setupSignal()
     connect(netAmount, &QLineEdit::textChanged, [=](const QString value){
         if(discount->hasFocus() || discountPer->hasFocus())
             return;
-        auto disA = amount->text().toDouble() - netAmount->text().toDouble();
+        auto disA = amount->text().toDouble() - value.toDouble();
         discount->setText(QString::number(disA));
     });
 
@@ -250,7 +255,7 @@ QStringList AddReleaseOrder::toStringList()
     return {
                         QString::number(0),
                         roNo->text(),
-                        QString::number(date->dateTime().toSecsSinceEpoch()),
+                        date->text(),
                         QString::number(io->sql->getMediaHouseCode(mediaHousList->currentText())),
                         mediaHousList->currentText(),
                         QString::number(io->sql->getClientCode(clientList->currentText())),

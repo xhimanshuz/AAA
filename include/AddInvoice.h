@@ -42,6 +42,7 @@ class AddInvoice : public QWidget
     QLineEdit *SGST;
     QComboBox *igstPerc;
     QLineEdit *IGST;
+    QPushButton *calculateInvoiceAmount;
     QLineEdit *invoiceAmount;
     QTextEdit *remark;
     QLineEdit *totSizeDuration;

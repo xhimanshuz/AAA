@@ -257,6 +257,7 @@ void AAA::populateData()
 //    roTable->resizeRowsToContents();
     roTable->resizeColumnsToContents();
     roTable->setSortingEnabled(1);
+    roTable->sortByColumn(1, Qt::SortOrder::DescendingOrder);
     roTable->viewport()->update();
 }
 
