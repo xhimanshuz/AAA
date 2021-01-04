@@ -176,7 +176,7 @@ void AddInvoice::setupSignal()
     connect(netPayableAmount, &QLineEdit::textChanged, [&](const QString amount){
         if(!netPayableAmount->hasFocus())
             return;
-        auto disPerc = (netPayableAmount->text().toDouble()/grossAmt->text().toDouble()) * 100;
+        auto disPerc = (1-(netPayableAmount->text().toDouble()/grossAmt->text().toDouble())) * 100;
         emit discountPerc->textChanged(QString::number(disPerc));
     });
 
@@ -354,7 +354,7 @@ void AddInvoice::clearValue()
 //    invoiceNo->setCurrentText("");
 //    invoiceNo->setEnabled(false);
     date->setDate(QDate::currentDate());
-    clients->setCurrentText(QString::number(0));
+    clients->setCurrentIndex(0);
     grossAmt->setText(QString::number(0));
     discount->setText(QString::number(0));
     netPayableAmount->setText(QString::number(0));
