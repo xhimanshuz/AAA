@@ -41,7 +41,7 @@ Makefile
 
 .qmake.stash
 
-./*.db
+*.db
 
 build/
 build/*
