@@ -1,4 +1,5 @@
 #include "InvoiceWindow.h"
+#include <QDebug>
 
 InvoiceWindow::InvoiceWindow(const QString _client, const QStringList invno, const int rono, QWidget *parent) : QDialog(parent), islastSelectedMedia(false)
 {
@@ -71,9 +72,10 @@ void InvoiceWindow::setupSignals()
     connect(addInvoice, &AddInvoice::saveClicked, this, &InvoiceWindow::populateData);
     connect(addInvoice, &AddInvoice::currentClientChanged, this, &InvoiceWindow::filterWithClient);
 
-    connect(billListView, &QTableView::clicked, [this](const QModelIndex &index){
+    connect(billListView, &QTableView::doubleClicked, [this](const QModelIndex &index){
         auto invoice = billDataModel->data(billDataModel->index(index.row(), 1)).toInt();
         auto ro = billDataModel->data(billDataModel->index(index.row(), 0)).toInt();
+        qDebug()<< "Invoice"<< invoice;
         if(invoice > 0)
             addInvoice->setValue(io->sql->getInvoiceList(invoice));
         else

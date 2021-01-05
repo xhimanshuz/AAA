@@ -1,6 +1,6 @@
 QT += widgets sql
 
-#CONFIG += -static
+CONFIG += static
 
 #QMAKE_CXXFLAGS += -static
 
@@ -39,6 +39,7 @@ HEADERS += \
     include/IOHandler/IOHandler.h \
     include/JobType.h \
     include/pdftroninterface.h
+message($$QMAKE_HOST.arch == x86_64)
 win32 {
     message(Building for Windows)
     PDFTRON_DIR = PDFTron/Win32

@@ -603,6 +603,10 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
     }
 
 //    auto gramount = query->value(4).toDouble();
+    auto rono = query->value(0).toString();
+    auto number = query->value(1).toString();
+    auto date = query->value(2).toString();
+    auto pcode = query->value(3).toString();
     auto gramount = QString::number(query->value(4).toDouble());
     auto disrate = QString::number(query->value(5).toDouble());
     auto disamount = QString::number(query->value(6).toDouble());
@@ -618,10 +622,10 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
     auto totSizeDur = query->value(16).toString();
 
     QStringList strList;
-    strList << query->value(0).toString()
-            << query->value(1).toString()
-            << query->value(2).toString()
-            << getClientName(query->value(3).toInt())
+    strList << rono
+            << number
+            << date
+            << getClientName(pcode.toInt())
             << gramount
             << disrate
             << disamount
@@ -636,6 +640,7 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
             << remark
             << totSizeDur;
 
+    qDebug()<< __FUNCTION__ << strList;
     return strList;
 
 }
