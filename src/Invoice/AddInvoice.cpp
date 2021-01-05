@@ -1,6 +1,5 @@
 #include "AddInvoice.h"
 #include "pdftroninterface.h"
-#include <QDebug>
 
 AddInvoice::AddInvoice(QWidget *parent, int _invno, int _rono): QWidget(parent), io{IOHandler::getInstance()}, latestInvoiceCode(io->sql->getNewInvoiceCode())
 {
@@ -256,8 +255,6 @@ void AddInvoice::setValue(const QStringList billList)
         return;
     }
     roNo->setText(billList.at(0));
-    qDebug()<< __FUNCTION__<< billList[0]<< roNo->text();
-    qDebug()<< __FUNCTION__ << billList;
 
     date->setDate(QDate::fromString(billList.at(2), "dd/MM/yyyy"));
     clients->setCurrentText(billList.at(3));
@@ -282,7 +279,6 @@ void AddInvoice::setValueFromRO(const QStringList roList)
 //    clearValue();
     addNewInvoice();
     roNo->setText(roList.at(1));
-    qDebug()<< __FUNCTION__ << roList[1]<< roNo->text();
     clients->setCurrentText(roList.at(6));
     totSizeDuration->setText(roList.at(13));
     grossAmt->setText(roList.at(19));

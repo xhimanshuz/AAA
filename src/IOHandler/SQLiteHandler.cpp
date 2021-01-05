@@ -640,7 +640,6 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
             << remark
             << totSizeDur;
 
-    qDebug()<< __FUNCTION__ << strList;
     return strList;
 
 }
