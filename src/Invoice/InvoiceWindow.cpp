@@ -33,6 +33,7 @@ void InvoiceWindow::render()
     seachRoNo->setInsertPolicy(QComboBox::InsertPolicy::NoInsert);
     mediaHouse = new QComboBox;
     mediaHouse->addItems(io->sql->getMediaHouseList());
+    clients = addInvoice->getClients();
     status = new QComboBox;
     status->addItems(QStringList()<< "Pending"<< "All");
     freshList = new QPushButton("Fresh List");
@@ -52,6 +53,8 @@ void InvoiceWindow::render()
     hbox->addWidget(seachRoNo);
     hbox->addWidget(new QLabel("Media House"));
     hbox->addWidget(mediaHouse);
+    hbox->addWidget(new QLabel("Clients"));
+    hbox->addWidget(clients);
     hbox->addWidget(status);
     hbox->addWidget(freshList);
     hbox->addStretch();
@@ -69,7 +72,7 @@ void InvoiceWindow::setupSignals()
 {
     connect(seachRoNo, &QComboBox::currentTextChanged, this, &InvoiceWindow::filterWithRO);
     connect(addInvoice, &AddInvoice::saveClicked, this, &InvoiceWindow::populateData);
-    connect(addInvoice, &AddInvoice::currentClientChanged, this, &InvoiceWindow::filterWithClient);
+    connect(clients, &QComboBox::currentTextChanged, this, &InvoiceWindow::filterWithClient);
 
     connect(billListView, &QTableView::clicked, [this](const QModelIndex &index){
         auto invoice = billDataModel->data(billDataModel->index(index.row(), 1)).toInt();

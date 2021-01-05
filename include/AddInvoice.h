@@ -32,6 +32,7 @@ class AddInvoice : public QWidget
     QComboBox *invoiceNo;
     QDateEdit *date;
     QComboBox *clients;
+    QLineEdit *clientsEdit;
     QLineEdit *grossAmt;
     QDoubleSpinBox *discountPerc;
     QLineEdit *discount;

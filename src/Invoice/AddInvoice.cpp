@@ -32,8 +32,8 @@ void AddInvoice::render()
     clients->addItems(io->sql->getClientList());
     clients->setEditable(true);
     clients->setInsertPolicy(QComboBox::InsertPolicy::NoInsert);
-//    clientEdit = new QLineEdit;
-//    clientEdit->setReadOnly(true);
+    clientsEdit = new QLineEdit;
+    clientsEdit->setReadOnly(true);
 
     grossAmt = new QLineEdit;
     discount = new QLineEdit;
@@ -77,7 +77,7 @@ void AddInvoice::render()
     form->addRow("Invoice", hbox);
     form->addRow("Invoice Date", date);
 
-    form->addRow("Parties", clients);
+    form->addRow("Parties", clientsEdit);
     form->addRow("Gross Amt", grossAmt);
     hbox = new QHBoxLayout;
     hbox->addWidget(discountPerc);
@@ -237,7 +237,6 @@ void AddInvoice::setupSignal()
         invoiceAmount->setText(QString::number(netPayableAmount->text().toDouble()+igstAmount));
     });
 
-    connect(clients, &QComboBox::currentTextChanged, this, &AddInvoice::currentClientChanged);
     connect(calculateInvoiceAmount, &QPushButton::clicked, this, [&]{
         emit netPayableAmount->textChanged(netPayableAmount->text());
         emit cgstPerc->currentTextChanged(cgstPerc->currentText());
@@ -258,6 +257,7 @@ void AddInvoice::setValue(const QStringList billList)
 
     date->setDate(QDate::fromString(billList.at(2), "dd/MM/yyyy"));
     clients->setCurrentText(billList.at(3));
+    clientsEdit->setText(billList.at(3));
     grossAmt->setText(billList.at(4));
     discountPerc->setValue(billList.at(5).toDouble());
 //    discount->setText(billList.at(6));
@@ -280,6 +280,7 @@ void AddInvoice::setValueFromRO(const QStringList roList)
     addNewInvoice();
     roNo->setText(roList.at(1));
     clients->setCurrentText(roList.at(6));
+    clientsEdit->setText(roList[6]);
     totSizeDuration->setText(roList.at(13));
     grossAmt->setText(roList.at(19));
     discountPerc->setValue(0);
@@ -311,7 +312,7 @@ QStringList AddInvoice::toStringList()
     strList << roNo->text()
             << invoiceNo->currentText()
             << date->text()
-            << QString::number(io->sql->getClientCode(clients->currentText()))
+            << QString::number(io->sql->getClientCode(clientsEdit->text()))
             << grossAmt->text()
             << discountPerc->text()
             << discount->text()
@@ -354,7 +355,7 @@ void AddInvoice::clearValue()
 //    invoiceNo->setCurrentText("");
 //    invoiceNo->setEnabled(false);
     date->setDate(QDate::currentDate());
-    clients->setCurrentIndex(0);
+    clientsEdit->setText("");
     grossAmt->setText(QString::number(0));
     discount->setText(QString::number(0));
     netPayableAmount->setText(QString::number(0));

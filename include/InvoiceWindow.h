@@ -26,6 +26,7 @@ class InvoiceWindow : public QDialog
     QTableView *billListView;
     QSqlQueryModel *billDataModel;
     AddInvoice *addInvoice;
+    QComboBox *clients;
 
     void render();
     void setupSignals();
