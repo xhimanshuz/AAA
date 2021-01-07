@@ -438,16 +438,15 @@ def main():
     mediaHouse()
     conn.close()
 
-# try:
-import os
-if os.path.exists(database):
-    print(f"{database} Exist, Removing it")
-    os.remove(database)
-main()
-    
-        
-# print("----->> FINISHED SUCESSFULLY <<-------")
-# except Exception as e:
-    # print(f"Error Occured, {e}")
+try:
+    import os
+    if os.path.exists(database):
+        print(f"{database} Exist, Removing it")
+        os.remove(database)
+    main()
+           
+print("----->> FINISHED SUCESSFULLY <<-------")
+except Exception as e:
+    print(f"Error Occured, {e}")
 
-# input("PRESS ENDTER TO CONTINUE")
+input("PRESS ENDTER TO CONTINUE")
