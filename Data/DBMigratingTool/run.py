@@ -4,8 +4,8 @@ from sqlite3 import Error
 import datetime
 
 database = "AAA.db"
-conn = sqlite3.connect(database)
-cur = conn.cursor()
+conn = None
+cur = None
 
 def toInt(value):
     try:
@@ -419,10 +419,15 @@ CREATE TABLE "ro" (
         cur.execute(f"""INSERT INTO "ro" ("code","number","date","mhcode","mhname","pcode","pname","jobtypecode","jobtypename","caption","editCentre","doPubtel","sizeduration","totalsizeduration","guarantedpos","premium","strPre","rate","strRate","amount","netAmount","remarks","billAmount","invno","payamount","recptno","recptamount","mbamount","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount","hsncode") VALUES ({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},"{x[16]}",{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},"",{x[24]},"",{x[26]},{x[27]},"{x[28]}",{x[29]},"{x[30]}",{x[31]},"{x[32]}",{x[33]},{x[34]},{x[35]});""")
     conn.commit()                                                                                                                                                                                                                                                                                                                                                                                                                                                #({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},{x[16]},{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},{x[23]},{x[24]},{x[25]},{x[26]},{x[27]},{x[28]},{x[29]},{x[30]},{x[31]},{x[32]},{x[33]},{x[34]},{x[35]})
 #    
-    
+
 
 
 def main():
+    global conn
+    global cur
+    conn = sqlite3.connect(database)
+    cur = conn.cursor()
+
     ro()
     receipt()
     invoice()
@@ -430,6 +435,18 @@ def main():
     parties()
     payment()
     mediaHouse()
+    conn.close()
 
-main()
-conn.close()
+try:
+    import os
+    if os.path.exists(database):
+        print(f"{database} Exist, Removing it")
+        os.remove(database)
+    main()
+    
+        
+    print("----->> FINISHED SUCESSFULLY <<-------")
+except Exception as e:
+    print(f"Error Occured, {e}")
+
+input("PRESS ENDTER TO CONTINUE")
