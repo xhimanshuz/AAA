@@ -349,12 +349,12 @@ def ro():
         rl[i][15] = toDouble(rl[i][15])
         rl[i][17] = toDouble(rl[i][17])
 #        rl[i][23] = toInt(rl[i][23])
-        rl[i][35] = toInt(rl[i][35])
+        rl[i][36] = toDouble(rl[i][36])
         rl[i][19] = toDouble(rl[i][19])
         rl[i][20] = toDouble(rl[i][20])
-        rl[i][22] = toDouble(rl[i][22])
-        rl[i][24] = toDouble(rl[i][24])
-        rl[i][26] = toDouble(rl[i][26])
+        rl[i][21] = toDouble(rl[i][21])
+        rl[i][23] = toDouble(rl[i][23])
+        rl[i][25] = toDouble(rl[i][25])
         rl[i][27] = toDouble(rl[i][27])
         rl[i][28] = toDouble(rl[i][28])
         rl[i][29] = toDouble(rl[i][29])
@@ -363,6 +363,7 @@ def ro():
         rl[i][32] = toDouble(rl[i][32])
         rl[i][33] = toDouble(rl[i][33])
         rl[i][34] = toDouble(rl[i][34])
+        rl[i][35] = toDouble(rl[i][35])
 
 #    conn = sqlite3.connect(database)
 #    cur = conn.cursor()
@@ -389,6 +390,7 @@ CREATE TABLE "ro" (
         "rate"                  REAL,
         "strRate"               TEXT,
         "amount"                REAL,
+        "adcom"                 REAL,
         "netAmount"             REAL,
         "remarks"               TEXT,
         "billAmount"            REAL,
@@ -416,7 +418,7 @@ CREATE TABLE "ro" (
 #    FOREIGN KEY("recptno") REFERENCES "payment_receipt"("number")
     for i,x in enumerate(rl):
         print(f"[{i+1}][>>] {x}")
-        cur.execute(f"""INSERT INTO "ro" ("code","number","date","mhcode","mhname","pcode","pname","jobtypecode","jobtypename","caption","editCentre","doPubtel","sizeduration","totalsizeduration","guarantedpos","premium","strPre","rate","strRate","amount","netAmount","remarks","billAmount","invno","payamount","recptno","recptamount","mbamount","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount","hsncode") VALUES ({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},"{x[16]}",{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},"",{x[24]},"",{x[26]},{x[27]},"{x[28]}",{x[29]},"{x[30]}",{x[31]},"{x[32]}",{x[33]},{x[34]},{x[35]});""")
+        cur.execute(f"""INSERT INTO "ro" ("code","number","date","mhcode","mhname","pcode","pname","jobtypecode","jobtypename","caption","editCentre","doPubtel","sizeduration","totalsizeduration","guarantedpos","premium","strPre","rate","strRate","amount","adcom","netAmount","remarks","billAmount","invno","payamount","recptno","recptamount","mbamount","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount","hsncode") VALUES ({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},"{x[16]}",{x[17]},"{x[18]}",{x[19]},{x[20]},{x[21]},"{x[22]}",{x[23]},"",{x[25]},"",{x[27]},{x[28]},"{x[29]}",{x[30]},"{x[31]}",{x[32]},"{x[33]}",{x[34]},{x[35]},{x[36]});""")
     conn.commit()                                                                                                                                                                                                                                                                                                                                                                                                                                                #({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},{x[16]},{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},{x[23]},{x[24]},{x[25]},{x[26]},{x[27]},{x[28]},{x[29]},{x[30]},{x[31]},{x[32]},{x[33]},{x[34]},{x[35]})
 #    
 
@@ -437,16 +439,16 @@ def main():
     mediaHouse()
     conn.close()
 
-try:
-    import os
-    if os.path.exists(database):
-        print(f"{database} Exist, Removing it")
-        os.remove(database)
-    main()
+# try:
+import os
+if os.path.exists(database):
+    print(f"{database} Exist, Removing it")
+    os.remove(database)
+main()
     
         
-    print("----->> FINISHED SUCESSFULLY <<-------")
-except Exception as e:
-    print(f"Error Occured, {e}")
+# print("----->> FINISHED SUCESSFULLY <<-------")
+# except Exception as e:
+    # print(f"Error Occured, {e}")
 
-input("PRESS ENDTER TO CONTINUE")
+# input("PRESS ENDTER TO CONTINUE")
