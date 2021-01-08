@@ -445,7 +445,7 @@ try:
         os.remove(database)
     main()
            
-print("----->> FINISHED SUCESSFULLY <<-------")
+    print("----->> FINISHED SUCESSFULLY <<-------")
 except Exception as e:
     print(f"Error Occured, {e}")
 
