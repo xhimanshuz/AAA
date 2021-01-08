@@ -389,7 +389,6 @@ CREATE TABLE "ro" (
         "rate"                  REAL,
         "strRate"               TEXT,
         "amount"                REAL,
-        AdCom                   REAL,
         "netAmount"             REAL,
         "remarks"               TEXT,
         "billAmount"            REAL,
