@@ -1,10 +1,14 @@
 #include "AAA.h"
+#include "Config.h"
+#include "pdftroninterface.h"
 #include <QSqlDatabase>
 
 AAA::AAA(QWidget *parent) : QMainWindow(parent)
 {
 
     io = IOHandler::getInstance();
+    appConfigure();
+
 
     render();
     QWidget *mainWidget = new QWidget;
@@ -16,6 +20,7 @@ void AAA::render()
 {
     exit = new QAction("Exit");
     menuBar()->addMenu("File")->addAction(exit);
+    menuBar()->setStyleSheet("color: white; background-color: #212121");
 
     toolBar = new QToolBar("ToolBar");
     newJobType = new QAction("New Job Type");
@@ -60,12 +65,14 @@ void AAA::render()
     roTable->setModel(roDataModel);
     for(auto i: {0, 3,4, 5,7,9,10,11,12,13,14,15,16,17,18,21,28,29,30,31,32,33,35,36})
         roTable->hideColumn(i);
+    roTable->verticalHeader()->setVisible(false);
     roTable->horizontalHeader()->setStretchLastSection(true);
 
     populateData();
 
     newRO = new QPushButton("New RO");
     printList = new QPushButton("Print List");
+    setting = new QPushButton("Setting");
 
     mainLayout = new QVBoxLayout;
 //    mainLayout->addWidget(menuBar);
@@ -91,13 +98,21 @@ void AAA::render()
 
     mainLayout->addWidget(roTable);
 
-    hbox = new QHBoxLayout;
-    hbox->addWidget(newRO);
-    hbox->addWidget(printList);
-    hbox->addStretch();
-    mainLayout->addLayout(hbox);
+//    QWidget *statusBarWidget = new QWidget;
+//    hbox = new QHBoxLayout;
+//    hbox->addWidget(newRO);
+//    hbox->addWidget(printList);
+//    hbox->addWidget(setting);
+//    hbox->addStretch();
+//    statusBarWidget->setLayout(hbox);
 
-
+//    statusBarWidget->setStyleSheet("color: white; background-color: #212121;");
+    statusBar()->setLayoutDirection(Qt::LayoutDirection::RightToLeft);
+    statusBar()->addWidget(newRO);
+    statusBar()->addWidget(printList);
+    statusBar()->addWidget(setting);
+    statusBar()->setStyleSheet("color: white; background-color: #212121");
+    statusBar()->showMessage("Application Started", 10000);
     setupSignals();
     updateRender();
 }
@@ -234,6 +249,10 @@ void AAA::setupSignals()
         populateData();
     });
 
+    connect(setting, &QPushButton::clicked, [this]{
+        ConfigUI ui(io, this);
+        ui.exec();
+    });
 
 }
 
@@ -270,5 +289,14 @@ int AAA::getRoNumber()
 {
     auto index = roTable->currentIndex();
     return roDataModel->data(roDataModel->index(index.row(), 1)).toInt();
+}
+
+void AAA::appConfigure()
+{
+    config = Configure::get();
+    config->setConfigFromList(io->sql->getConfigList());
+    PDFTronInterface::get()->setPdfApplication(config->getPdfApplication());
+//    Config::get()->setConfigFromList(io->sql->getConfig());
+
 }
 

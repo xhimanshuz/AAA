@@ -4,8 +4,8 @@ IOHandler* IOHandler::instance = nullptr;
 
 IOHandler::IOHandler()
 {
-    dataEngine = new DataEngine;
-    sql = new SQLiteHandler;
+    dataEngine = std::make_shared<DataEngine>();
+    sql = std::make_shared<SQLiteHandler>();
 }
 
 IOHandler::~IOHandler()

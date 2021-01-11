@@ -14,8 +14,8 @@ public:
     static IOHandler *instance;
     static IOHandler* getInstance();
 
-    DataEngine *dataEngine;
-    SQLiteHandler *sql;
+    std::shared_ptr<DataEngine> dataEngine;
+    std::shared_ptr<SQLiteHandler> sql;
 };
 
 #endif // IOHANDLER_H

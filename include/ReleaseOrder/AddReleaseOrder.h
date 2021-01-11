@@ -25,7 +25,7 @@ class AddReleaseOrder: public QDialog
 
     int code;
     QLineEdit *roNo;
-    QComboBox *mediaHousList;
+    QComboBox *mediaHouseList;
     QComboBox *jobTypeList;
     QLineEdit *editionCentre;
     QLineEdit *sizeDuration;

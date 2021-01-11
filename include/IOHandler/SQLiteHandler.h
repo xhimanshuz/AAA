@@ -87,6 +87,9 @@ public:
     QList<QStringList> getInvoiceListByRoNo(const int rono);
     QStringList *getGstPerc() const;
 
+
+    bool setConfig(const QStringList &configList);
+    const QStringList getConfigList() const;
 signals:
 
 };

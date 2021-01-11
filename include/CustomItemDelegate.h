@@ -22,207 +22,207 @@
 
 namespace CustomItemDelegate
 {
-    class Amount: public QItemDelegate
+class Amount: public QItemDelegate
+{
+    Q_OBJECT
+
+public:
+    Amount(QObject *parent = nullptr){}
+
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override
     {
-        Q_OBJECT
+        QLineEdit *lineEdit = new QLineEdit(parent);
+        lineEdit->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+        return lineEdit;
+    }
 
-    public:
-        Amount(QObject *parent = nullptr){}
+    void setEditorData(QWidget *editor, const QModelIndex &index) const override
+    {
+        auto value = index.model()->data(index, Qt::EditRole).toString();
+        qobject_cast<QLineEdit*>(editor)->setText(value);
+    }
 
-        QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override
+    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &index) const override
+    {
+        editor->setGeometry(option.rect);
+    }
+
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
+    {
+        QLineEdit *lineEdit = qobject_cast<QLineEdit*>(editor);
+        auto value = lineEdit->text();
+
+        model->setData(index, value, Qt::EditRole);
+    }
+
+};
+
+class Date: public QItemDelegate
+{
+    Q_OBJECT
+
+public:
+    Date(QObject *parent = nullptr) {}
+
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
+    {
+        auto dateEdit = new QDateEdit(parent);
+        dateEdit->setDisplayFormat("yyyy-MM-dd");
+        return dateEdit;
+    }
+
+    void setEditorData(QWidget* editor, const QModelIndex &index) const override
+    {
+        auto value = index.model()->data(index, Qt::EditRole).toString();
+        qobject_cast<QDateEdit*>(editor)->setDate(QDate::fromString(value, "yyyy-MM-dd"));
+    }
+
+    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
+    {
+        editor->setGeometry(option.rect);
+    }
+
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
+    {
+        QDateEdit *dateEdit = qobject_cast<QDateEdit*>(editor);
+        auto value = dateEdit->text();
+
+        model->setData(index, value, Qt::EditRole);
+    }
+};
+
+class Mode: public QItemDelegate
+{
+    Q_OBJECT
+public:
+    Mode(QObject *parent = nullptr){}
+
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
+    {
+        auto comboBox = new QComboBox(parent);
+        comboBox->addItems(QStringList()<< "CASH"<< "CHEQUE" << "NEFT / RTGS"<< "UPI");
+        //            comboBox->setEditable(true);
+        return comboBox;
+    }
+
+    void setEditorData(QWidget* editor, const QModelIndex &index) const override
+    {
+        auto value = index.model()->data(index, Qt::EditRole).toString();
+        qobject_cast<QComboBox*>(editor)->setCurrentText(value);
+    }
+
+    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
+    {
+        editor->setGeometry(option.rect);
+    }
+
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
+    {
+        QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
+        auto value = comboBox->currentText();
+        if(value == "CASH")
         {
-            QLineEdit *lineEdit = new QLineEdit(parent);
-            lineEdit->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
-            return lineEdit;
+            model->setData(index.siblingAtColumn(4), "---", Qt::EditRole);
+            model->setData(index.siblingAtColumn(5), "---", Qt::EditRole);
         }
 
-        void setEditorData(QWidget *editor, const QModelIndex &index) const override
-        {
-            auto value = index.model()->data(index, Qt::EditRole).toString();
-            qobject_cast<QLineEdit*>(editor)->setText(value);
-        }
+        model->setData(index, value, Qt::EditRole);
 
-        void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &index) const override
-        {
-            editor->setGeometry(option.rect);
-        }
+    }
 
-        void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
-        {
-            QLineEdit *lineEdit = qobject_cast<QLineEdit*>(editor);
-            auto value = lineEdit->text();
+    void currentValueChanged(const QString currentValue)
+    {
 
-            model->setData(index, value, Qt::EditRole);
-        }
+    }
+};
 
+class Label: public QItemDelegate
+{
+    Q_OBJECT
+public:
+    Label(QObject *parent = nullptr){}
+
+    //             QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
+    //             {
+    //                return new QLabel(parent);
+    //             }
+
+    //             void setEditorData(QWidget* editor, const QModelIndex &index) const override
+    //             {
+    //                 auto value = index.model()->data(index, Qt::EditRole).toString();
+    //                 qobject_cast<QLabel*>(editor)->setText(value);
+
+    //             }
+
+    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
+    {
+        editor->setGeometry(option.rect);
+    }
+
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
+    {
+        //                 auto label = qobject_cast<QLabel*>(editor);
+        //                 auto value = label->text();
+
+        //                 model->setData(index, value, Qt::EditRole);
+
+    }
+};
+
+class Print: public QStyledItemDelegate
+{
+    Q_OBJECT
+
+    QTableWidget *tableWidget;
+    QPushButton *button;
+
+public:
+    enum class TYPE
+    {
+        MEDIA_PAYMENT = 100,
+        PAYMENT_RECEIPT
     };
-
-    class Date: public QItemDelegate
+    Print::TYPE type;
+    Print(Print::TYPE _type, QTableWidget *_tableWidget, QObject *parent = nullptr): type{_type}, tableWidget{_tableWidget}
     {
-        Q_OBJECT
+        button = new QPushButton("PRINT");
+    }
 
-    public:
-        Date(QObject *parent = nullptr) {}
-
-        QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
-        {
-            auto dateEdit = new QDateEdit(parent);
-            dateEdit->setDisplayFormat("yyyy-MM-dd");
-            return dateEdit;
-        }
-
-        void setEditorData(QWidget* editor, const QModelIndex &index) const override
-        {
-            auto value = index.model()->data(index, Qt::EditRole).toString();
-            qobject_cast<QDateEdit*>(editor)->setDate(QDate::fromString(value, "yyyy-MM-dd"));
-        }
-
-        void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
-        {
-            editor->setGeometry(option.rect);
-        }
-
-        void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
-        {
-            QDateEdit *dateEdit = qobject_cast<QDateEdit*>(editor);
-            auto value = dateEdit->text();
-
-            model->setData(index, value, Qt::EditRole);
-        }
-    };
-
-    class Mode: public QItemDelegate
+    QWidget *createEditor(QWidget* parent, const QStyleOptionViewItem &, const QModelIndex &) const override
     {
-        Q_OBJECT
-    public:
-        Mode(QObject *parent = nullptr){}
-
-        QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
+        auto printButton = new QPushButton("Print", parent);
+        if(type == Print::TYPE::MEDIA_PAYMENT)
         {
-            auto comboBox = new QComboBox(parent);
-            comboBox->addItems(QStringList()<< "CASH"<< "CHEQUE" << "NEFT / RTGS"<< "UPI");
-//            comboBox->setEditable(true);
-            return comboBox;
-        }
-
-        void setEditorData(QWidget* editor, const QModelIndex &index) const override
-        {
-            auto value = index.model()->data(index, Qt::EditRole).toString();
-            qobject_cast<QComboBox*>(editor)->setCurrentText(value);
-        }
-
-        void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
-        {
-            editor->setGeometry(option.rect);
-        }
-
-        void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
-        {
-            QComboBox *comboBox = qobject_cast<QComboBox*>(editor);
-            auto value = comboBox->currentText();
-            if(value == "CASH")
+            connect(printButton, &QPushButton::clicked, [this]
             {
-                model->setData(index.siblingAtColumn(4), "---", Qt::EditRole);
-                model->setData(index.siblingAtColumn(5), "---", Qt::EditRole);
-            }
+                auto id = tableWidget->item(tableWidget->currentIndex().row(), 0)->text().toInt();
 
-            model->setData(index, value, Qt::EditRole);
+                //                    auto roList = io->sql->getROStringList(rono);
+                auto mediaPaymentList = IOHandler::getInstance()->sql->getMediaPaymentStringList(id);
+                //                    if(!mediaPaymentList.isEmpty())
+                //                        PDFTronInterface::get()->printRO(roList, mediaPaymentList);
+            });
 
         }
 
-        void currentValueChanged(const QString currentValue)
+        if(type == Print::TYPE::PAYMENT_RECEIPT)
         {
 
         }
-    };
+        return printButton;
+    }
 
-    class Label: public QItemDelegate
+    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
     {
-        Q_OBJECT
-         public:
-             Label(QObject *parent = nullptr){}
+        editor->setGeometry(option.rect);
+    }
 
-//             QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
-//             {
-//                return new QLabel(parent);
-//             }
-
-//             void setEditorData(QWidget* editor, const QModelIndex &index) const override
-//             {
-//                 auto value = index.model()->data(index, Qt::EditRole).toString();
-//                 qobject_cast<QLabel*>(editor)->setText(value);
-
-//             }
-
-             void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
-             {
-                 editor->setGeometry(option.rect);
-             }
-
-             void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
-             {
-//                 auto label = qobject_cast<QLabel*>(editor);
-//                 auto value = label->text();
-
-//                 model->setData(index, value, Qt::EditRole);
-
-             }
-         };
-
-    class Print: public QStyledItemDelegate
+    void setModelData(QWidget *, QAbstractItemModel *, const QModelIndex &) const override
     {
-        Q_OBJECT
 
-        QTableWidget *tableWidget;
-        QPushButton *button;
+    }
 
-    public:
-        enum class TYPE
-        {
-            MEDIA_PAYMENT = 100,
-            PAYMENT_RECEIPT
-        };
-        Print::TYPE type;
-        Print(Print::TYPE _type, QTableWidget *_tableWidget, QObject *parent = nullptr): type{_type}, tableWidget{_tableWidget}
-        {
-            button = new QPushButton("PRINT");
-        }
-
-        QWidget *createEditor(QWidget* parent, const QStyleOptionViewItem &, const QModelIndex &) const override
-        {
-            auto printButton = new QPushButton("Print", parent);
-            if(type == Print::TYPE::MEDIA_PAYMENT)
-            {
-                connect(printButton, &QPushButton::clicked, [this]
-                {
-                    auto id = tableWidget->item(tableWidget->currentIndex().row(), 0)->text().toInt();
-
-//                    auto roList = io->sql->getROStringList(rono);
-                    auto mediaPaymentList = IOHandler::getInstance()->sql->getMediaPaymentStringList(id);
-//                    if(!mediaPaymentList.isEmpty())
-//                        PDFTronInterface::get()->printRO(roList, mediaPaymentList);
-                });
-
-            }
-
-            if(type == Print::TYPE::PAYMENT_RECEIPT)
-            {
-
-            }
-            return printButton;
-        }
-
-        void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override
-        {
-            editor->setGeometry(option.rect);
-        }
-
-        void setModelData(QWidget *, QAbstractItemModel *, const QModelIndex &) const override
-        {
-
-        }
-
-    };
+};
 
 }
 

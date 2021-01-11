@@ -1,6 +1,8 @@
 #ifndef AAA_H
 #define AAA_H
 
+class Configure;
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QToolBar>
@@ -20,6 +22,7 @@
 #include <QToolButton>
 #include <QDate>
 #include <QGraphicsBlurEffect>
+#include <QStatusBar>
 
 #include "IOHandler/IOHandler.h"
 #include "JobType.h"
@@ -30,6 +33,7 @@
 #include "UserUI/UserWindow.h"
 #include "ReleaseOrder/AddReleaseOrder.h"
 #include "InvoiceWindow.h"
+#include "ConfigUi.h"
 
 class AAA : public QMainWindow
 {
@@ -58,9 +62,11 @@ class AAA : public QMainWindow
     QPushButton *newRO;
     QAction *exit;
     QPushButton *printList;
+    QPushButton *setting;
     QVBoxLayout *mainLayout;
 
     IOHandler *io;
+    Configure *config;
 
     void render();
     void setupSignals();
@@ -69,6 +75,7 @@ class AAA : public QMainWindow
     void populateData();
     int getRoNumber(const QModelIndex &index);
     int getRoNumber();
+    void appConfigure();
 public:
     explicit AAA(QWidget *parent = nullptr);
 

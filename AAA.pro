@@ -6,6 +6,7 @@ CONFIG += static
 
 
 SOURCES += \
+    ConfigUi.cpp \
     src/AAA.cpp \
     src/Invoice/AddInvoice.cpp \
     src/Invoice/InvoiceWindow.cpp \
@@ -23,6 +24,8 @@ SOURCES += \
     src/pdftroninterface.cpp
 
 HEADERS += \
+    Config.h \
+    ConfigUi.h \
     include/AAA.h \
     include/AddInvoice.h \
     include/CustomItemDelegate.h \

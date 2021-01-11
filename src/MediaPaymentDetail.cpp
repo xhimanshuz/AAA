@@ -231,13 +231,7 @@ void MediaPaymentDetail::setValidator()
 QPushButton *MediaPaymentDetail::createPrintButton()
 {
     QPushButton *cellPrintButton = new QPushButton("Print");
-    connect(cellPrintButton, &QPushButton::clicked, [this]{
-        auto id = paymentTable->item(paymentTable->currentIndex().row(), 0)->text().toInt();
-        auto roList = io->sql->getROStringList(rono);
-        auto mediaPaymentList = io->sql->getMediaPaymentStringList(id);
-        if(!mediaPaymentList.isEmpty())
-            PDFTronInterface::get()->printRO(roList, mediaPaymentList);
-    });
+    connect(cellPrintButton, &QPushButton::clicked, this, &MediaPaymentDetail::printMediaPayment);
     cellPrintButton->setDisabled(true);
     return cellPrintButton;
 }
@@ -289,6 +283,17 @@ void MediaPaymentDetail::setTotalAmount()
     auto na = roAmount->text().toDouble();
     totalAmount->setText(QString::number(totalAmountValue));
     balAmount->setText(QString::number(totalAmountValue - roAmount->text().toDouble()));
+}
+
+void MediaPaymentDetail::printMediaPayment()
+{
+    auto id = paymentTable->item(paymentTable->currentIndex().row(), 0)->text().toInt();
+    auto roList = io->sql->getROStringList(rono);
+    auto mediaPaymentList = io->sql->getMediaPaymentStringList(id);
+    auto mediaHouseList = io->sql->getMediaHouseRow(roList.at(3).toInt());
+    roList << mediaHouseList;
+    if(!mediaPaymentList.isEmpty())
+        PDFTronInterface::get()->printRO(roList, mediaPaymentList);
 }
 
 void MediaPaymentDetail::cellChanged(int row, int column)

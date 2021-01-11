@@ -34,8 +34,8 @@ void AddReleaseOrder::render()
     roNo = new QLineEdit(this);
     roNo->setText(QString::number(io->sql->getNewRoNumber()));
     roNo->setReadOnly(true);
-    mediaHousList = new QComboBox(this);
-    mediaHousList->addItems(io->sql->getMediaHouseList());
+    mediaHouseList = new QComboBox(this);
+    mediaHouseList->addItems(io->sql->getMediaHouseList());
     jobTypeList = new QComboBox(this);
     jobTypeList->addItems(io->sql->getJobTypeList());
     editionCentre = new QLineEdit(this);
@@ -86,7 +86,7 @@ void AddReleaseOrder::render()
 
     QFormLayout *form = new QFormLayout;
     form->addRow("RO No", roNo);
-    form->addRow("Media House", mediaHousList);
+    form->addRow("Media House", mediaHouseList);
     form->addRow("Job Type", jobTypeList);
     form->addRow("Edition/Centre", editionCentre);
     form->addRow("Size/Duration", sizeDuration);
@@ -168,8 +168,11 @@ void AddReleaseOrder::setupSignal()
     });
 
     connect(printButton, &QPushButton::clicked, [this]{
+        QStringList roList = toStringList();
+        auto mhList = io->sql->getMediaHouseRow(roList.at(3).toInt());
+        roList << mhList;
         for(auto mpList: io->sql->getMediaPaymentStringListByRono(roNo->text().toInt()))
-            PDFTronInterface::get()->printRO(toStringList(), mpList);
+            PDFTronInterface::get()->printRO(roList, mpList);
     });
 
     connect(CGST, &QComboBox::currentTextChanged, [this](const QString taxNumber){
@@ -256,8 +259,8 @@ QStringList AddReleaseOrder::toStringList()
                         QString::number(0),
                         roNo->text(),
                         date->text(),
-                        QString::number(io->sql->getMediaHouseCode(mediaHousList->currentText())),
-                        mediaHousList->currentText(),
+                        QString::number(io->sql->getMediaHouseCode(mediaHouseList->currentText())),
+                        mediaHouseList->currentText(),
                         QString::number(io->sql->getClientCode(clientList->currentText())),
                         clientList->currentText(),
                         QString::number(io->sql->getJobTypeCode(jobTypeList->currentText())),
@@ -299,7 +302,7 @@ void AddReleaseOrder::setValues(const QStringList detailList)
     roNo->setText(detailList.at(1));
     roNo->setDisabled(true);
     date->setDate(QDate()); // 10
-    mediaHousList->setCurrentText(detailList.at(4));
+    mediaHouseList->setCurrentText(detailList.at(4));
     clientList->setCurrentText(detailList.at(6));
     jobTypeList->setCurrentText(detailList.at(8));
     caption->setText(detailList.at(9));

@@ -409,22 +409,34 @@ bool SQLiteHandler::insertMediaPayment(QList<QStringList> dataList, int rono)
 {
     for(auto strList: dataList)
     {
-        query->exec(QString("SELECT * FROM media_payment WHERE number id = %0").arg(strList.at(0)));
+        query->exec(QString("SELECT * FROM media_payment WHERE id = %0").arg(strList.at(0)));
         if(query->next())
-            query->exec(QString("UPDATE media_payment SET date = :date, amount= :amount, mode= :mode, chequeNo= :chequeNo, bankname= :bankname where id = :id;"));
+        {
+            query->exec(QString("UPDATE media_payment SET date = ?, amount= ?, mode= ?, chequeNo= ?, bankname= ? where id = ?;"));
+            query->addBindValue(strList.at(1));
+            query->addBindValue(strList.at(2).toDouble());
+            query->addBindValue(strList.at(3));
+            query->addBindValue(strList.at(4));
+            query->addBindValue(strList.at(5));
+            query->addBindValue(strList.at(0).toInt());
+        }
         else
+        {
             query->prepare("INSERT INTO media_payment (id, date, amount, mode, chequeNo, bankname, rono) VALUES (:id, :date, :amount, :mode, :chequeNo, :bankname, :rono);");
+            query->bindValue(":id", strList.at(0).toInt());
+            query->bindValue(":date", strList.at(1));
+            query->bindValue(":amount", strList.at(2).toDouble());
+            query->bindValue(":mode", strList.at(3));
+            query->bindValue(":chequeNo", strList.at(4));
+            query->bindValue(":bankname", strList.at(5));
+            query->bindValue(":rono", rono);
+        }
 
-        query->bindValue(":id", strList.at(0).toInt());
-        query->bindValue(":date", strList.at(1));
-        query->bindValue(":amount", strList.at(2).toDouble());
-        query->bindValue(":mode", strList.at(3));
-        query->bindValue(":chequeNo", strList.at(4));
-        query->bindValue(":bankname", strList.at(5));
-        query->bindValue(":rono", rono);
+        auto s = query->lastQuery();
         if(!query->exec())
         {
-            qDebug()<<"Error in Inserting values in media_payment " << query->lastError();
+            auto k = query->lastError().text();
+            qDebug()<<"Error in Inserting values in media_payment " << query->lastError().text();
             return false;
         }
     }
@@ -733,6 +745,7 @@ QList<QStringList> SQLiteHandler::getInvoiceListByRoNo(const int rono)
     query->exec(QString("SELECT number from invoice WHERE rono = %0").arg(rono));
 
     QList<QStringList> list;
+    if(!query->next())
     while(query->next())
     {
         auto invNo = query->value(0).toInt();
@@ -751,6 +764,45 @@ QList<QStringList> SQLiteHandler::getInvoiceListByRoNo(const int rono)
 QStringList *SQLiteHandler::getGstPerc() const
 {
     return gstPerc;
+}
+
+bool SQLiteHandler::setConfig(const QStringList &configList)
+{
+    try
+    {
+        query->prepare("UPDATE config SET pdfapplication=?;");
+        for(auto& str: configList)
+            query->addBindValue(str);
+        if(!query->exec())
+        {
+            qDebug()<< query->lastError().text();
+            return false;
+        }
+
+    }
+    catch(std::exception& e)
+    {
+        qDebug()<< "Exception occured"<<e.what();
+        return false;
+    }
+    return true;
+}
+
+const QStringList SQLiteHandler::getConfigList() const
+{
+    QStringList strList;
+    try {
+        query->exec("Select pdfapplication from config;");
+        int i =0;
+        while(query->next())
+            strList << query->value(i++).toString();
+
+    }
+    catch (std::exception &e)
+    {
+        qDebug()<< "Exception Occured"<< e.what();
+    }
+    return strList;
 }
 
 void SQLiteHandler::setUpModels()
@@ -796,43 +848,43 @@ void SQLiteHandler::setUpModels()
     roModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
     roModel->select();
     roModel->setFilter("mhcode != 0");
-    roModel->setHeaderData(0, Qt::Horizontal, "Code");
+//    roModel->setHeaderData(0, Qt::Horizontal, "Code");
     roModel->setHeaderData(1, Qt::Horizontal, "Ro No.");
-    roModel->setHeaderData(2, Qt::Horizontal, "date");
-    roModel->setHeaderData(3, Qt::Horizontal, "M.H. Code");
-    roModel->setHeaderData(4, Qt::Horizontal, "M.H. Name");
-    roModel->setHeaderData(5, Qt::Horizontal, "Client Code");
+    roModel->setHeaderData(2, Qt::Horizontal, "Date");
+//    roModel->setHeaderData(3, Qt::Horizontal, "M.H. Code");
+//    roModel->setHeaderData(4, Qt::Horizontal, "M.H. Name");
+//    roModel->setHeaderData(5, Qt::Horizontal, "Client Code");
     roModel->setHeaderData(6, Qt::Horizontal, "Client Name");
-    roModel->setHeaderData(7, Qt::Horizontal, "Job Type ID");
+//    roModel->setHeaderData(7, Qt::Horizontal, "Job Type ID");
     roModel->setHeaderData(8, Qt::Horizontal, "Job Type");
-    roModel->setHeaderData(9, Qt::Horizontal, "Caption");
-    roModel->setHeaderData(10, Qt::Horizontal, "Edit Centre");
-    roModel->setHeaderData(11, Qt::Horizontal, "Do Pub Tel");
-    roModel->setHeaderData(12, Qt::Horizontal, "Size Duration");
-    roModel->setHeaderData(13, Qt::Horizontal, "Total Size Duration");
-    roModel->setHeaderData(14, Qt::Horizontal, "Guaranteed Position");
-    roModel->setHeaderData(15, Qt::Horizontal, "Premium");
-    roModel->setHeaderData(16, Qt::Horizontal, "Str. Premium");
-    roModel->setHeaderData(17, Qt::Horizontal, "Rate");
-    roModel->setHeaderData(18, Qt::Horizontal, "Str. Rate");
+//    roModel->setHeaderData(9, Qt::Horizontal, "Caption");
+//    roModel->setHeaderData(10, Qt::Horizontal, "Edit Centre");
+//    roModel->setHeaderData(11, Qt::Horizontal, "Do Pub Tel");
+//    roModel->setHeaderData(12, Qt::Horizontal, "Size Duration");
+//    roModel->setHeaderData(13, Qt::Horizontal, "Total Size Duration");
+//    roModel->setHeaderData(14, Qt::Horizontal, "Guaranteed Position");
+//    roModel->setHeaderData(15, Qt::Horizontal, "Premium");
+//    roModel->setHeaderData(16, Qt::Horizontal, "Str. Premium");
+//    roModel->setHeaderData(17, Qt::Horizontal, "Rate");
+//    roModel->setHeaderData(18, Qt::Horizontal, "Str. Rate");
     roModel->setHeaderData(19, Qt::Horizontal, "Amount");
     roModel->setHeaderData(20, Qt::Horizontal, "Net Amount");
-    roModel->setHeaderData(21, Qt::Horizontal, "Remarks");
+//    roModel->setHeaderData(21, Qt::Horizontal, "Remarks");
     roModel->setHeaderData(22, Qt::Horizontal, "Bill Amount");
     roModel->setHeaderData(23, Qt::Horizontal, "Invoice No.");
     roModel->setHeaderData(24, Qt::Horizontal, "Payment");
     roModel->setHeaderData(25, Qt::Horizontal, "Receipt No.");
     roModel->setHeaderData(26, Qt::Horizontal, "Receipt Amount");
     roModel->setHeaderData(27, Qt::Horizontal, "MediaBill Amount");
-    roModel->setHeaderData(28, Qt::Horizontal, "Rate CGST");
-    roModel->setHeaderData(29, Qt::Horizontal, "Amount CGST");
-    roModel->setHeaderData(30, Qt::Horizontal, "Rate SGST");
-    roModel->setHeaderData(31, Qt::Horizontal, "Amount SGST");
-    roModel->setHeaderData(32, Qt::Horizontal, "Rate IGST");
-    roModel->setHeaderData(33, Qt::Horizontal, "Amount IGST");
+//    roModel->setHeaderData(28, Qt::Horizontal, "Rate CGST");
+//    roModel->setHeaderData(29, Qt::Horizontal, "Amount CGST");
+//    roModel->setHeaderData(30, Qt::Horizontal, "Rate SGST");
+//    roModel->setHeaderData(31, Qt::Horizontal, "Amount SGST");
+//    roModel->setHeaderData(32, Qt::Horizontal, "Rate IGST");
+//    roModel->setHeaderData(33, Qt::Horizontal, "Amount IGST");
     roModel->setHeaderData(34, Qt::Horizontal, "RO Amount");
-    roModel->setHeaderData(35, Qt::Horizontal, "HSN CODE");
-    roModel->setHeaderData(36, Qt::Horizontal, "Discount %");
+//    roModel->setHeaderData(35, Qt::Horizontal, "HSN CODE");
+//    roModel->setHeaderData(36, Qt::Horizontal, "Discount %");
 
     paymentModel = new QSqlTableModel;
     paymentModel->setTable("payment");
@@ -880,6 +932,17 @@ void SQLiteHandler::setUpModels()
     generateBillModel->setHeaderData(3, Qt::Horizontal, "Clients");
     generateBillModel->setHeaderData(16, Qt::Horizontal, "Net Amount");
     generateBillModel->setHeaderData(5, Qt::Horizontal, "HSN");    
+
+    if(query->exec("CREATE TABLE IF NOT EXISTS config (pdfapplication TEXT DEFAULT '');"))
+    {
+        if(query->exec("SELECT * FROM config;"))
+            if(!query->next())
+                query->exec("INSERT INTO config VALUES ('');");
+    }
+    else
+        qDebug()<< query->lastError().text();
+    qDebug()<< "Model Setup";
+
 
 }
 

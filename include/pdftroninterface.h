@@ -23,18 +23,20 @@ using namespace PDF;
 class PDFTronInterface
 {
     PDFTronInterface();
-    QString pdfApplication;
+//    QString pdfApplication;
     QProcess *process;
+    void multiLine(int perLine, QString string, QString key, ContentReplacer& replacer, int loop = 3);
 public:
     ~PDFTronInterface();
 
     static PDFTronInterface *get();
     static PDFTronInterface *instance;
     void showPdf(QString url);
+    void setPdfApplication(const QString &application);
 
-    void printRO(QStringList detailList, QStringList mediaPaymentList, QString fileName="");
-    void printReceipt(QStringList detailList,QStringList roDetail, QString fileName="");
-    void printInvoice(QStringList dataList, QStringList roDetail, QString fileName="");
+    void printRO(QStringList detailList, QStringList mediaPaymentList);
+    void printReceipt(QStringList detailList,QStringList roDetail);
+    void printInvoice(QStringList dataList, QStringList roDetail);
 };
 
 #endif // PDFTRONINTERFACE_H

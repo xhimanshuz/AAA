@@ -67,7 +67,7 @@ class MediaPaymentDetail : public QDialog
     QLineEdit *createLineEditNumber(const QString amount );
     bool isValidRow(const int row);
     void setTotalAmount();
-
+    void printMediaPayment();
 private slots:
     void cellChanged(int row, int column);
 
