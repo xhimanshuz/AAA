@@ -276,10 +276,10 @@ void AAA::updateRender()
 void AAA::populateData()
 {
     io->sql->getRoModel()->query().exec();
-//    roTable->resizeRowsToContents();
     roTable->resizeColumnsToContents();
     roTable->setSortingEnabled(1);
     roTable->sortByColumn(1, Qt::SortOrder::DescendingOrder);
+    roTable->horizontalHeader()->setStretchLastSection(true);
     roTable->viewport()->update();
 }
 
