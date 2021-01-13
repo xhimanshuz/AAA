@@ -32,6 +32,7 @@ class SQLiteHandler : public QObject
 
     void setUpModels();
 public:
+    void reloadDB();
     explicit SQLiteHandler(QObject *parent = nullptr);
     virtual ~SQLiteHandler();
 

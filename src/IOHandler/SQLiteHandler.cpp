@@ -1,11 +1,17 @@
 #include "IOHandler/SQLiteHandler.h"
 #include <QDebug>
-
+#include "Configure.h"
 
 SQLiteHandler::SQLiteHandler(QObject *parent) : QObject(parent)
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("../AAA.db");
+    reloadDB();
+
+}
+
+void SQLiteHandler::reloadDB()
+{
+    db.setDatabaseName("AAA.db");
     if(!db.open())
     {
         qDebug()<< db.lastError();
@@ -770,12 +776,13 @@ bool SQLiteHandler::setConfig(const QStringList &configList)
 {
     try
     {
-        query->prepare("UPDATE config SET pdfapplication=?;");
+        query->prepare("UPDATE config SET pdfapplication=?, database_location=?, rolocation=?, invoicelocation=?, receiptlocation=?, samplepdflocation=?;");
         for(auto& str: configList)
             query->addBindValue(str);
+
         if(!query->exec())
         {
-            qDebug()<< query->lastError().text();
+            auto q= query->lastError().text();
             return false;
         }
 
@@ -792,10 +799,9 @@ const QStringList SQLiteHandler::getConfigList() const
 {
     QStringList strList;
     try {
-        query->exec("Select pdfapplication from config;");
-        int i =0;
+        query->exec("Select * from config;");
         while(query->next())
-            strList << query->value(i++).toString();
+            strList << query->value(0).toString() << query->value(1).toString() <<query->value(2).toString() <<query->value(3).toString() <<query->value(4).toString() <<query->value(5).toString();
 
     }
     catch (std::exception &e)
@@ -933,14 +939,17 @@ void SQLiteHandler::setUpModels()
     generateBillModel->setHeaderData(16, Qt::Horizontal, "Net Amount");
     generateBillModel->setHeaderData(5, Qt::Horizontal, "HSN");    
 
-    if(query->exec("CREATE TABLE IF NOT EXISTS config (pdfapplication TEXT DEFAULT '');"))
+    if(query->exec("CREATE TABLE IF NOT EXISTS config (pdfapplication TEXT, database_location TEXT, rolocation TEXT, invoicelocation TEXT, receiptlocation TEXT, samplepdflocation TEXT);"))
     {
         if(query->exec("SELECT * FROM config;"))
             if(!query->next())
-                query->exec("INSERT INTO config VALUES ('');");
+                query->exec("INSERT INTO config VALUES ('', '', '', '', '', '');");
     }
     else
-        qDebug()<< query->lastError().text();
+    {
+        auto q = query->lastError().text();
+        auto k = 1;
+    }
     qDebug()<< "Model Setup";
 
 

@@ -22,7 +22,18 @@ class ConfigUI : public QDialog
     QVBoxLayout *mainLayout;
     QTabWidget *tabWidget;
     QLineEdit *pdfApplicationUrl;
-    QPushButton *pdfChoose;
+    QLineEdit *dataBaseUrl;
+    QLineEdit *roPdfUrl;
+    QLineEdit *invoicePdfUrl;
+    QLineEdit *receiptPdfUrl;
+    QLineEdit *samplePdfUrl;
+
+    QPushButton *pdfAppChoose;
+    QPushButton *roPdfChoose;
+    QPushButton *dbChoose;
+    QPushButton *invoiceChoose;
+    QPushButton *receiptChoose;
+    QPushButton *samplePdfChoose;
     QPushButton *saveButton;
     QPushButton *closeButton;
 

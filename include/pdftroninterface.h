@@ -19,12 +19,14 @@ using namespace Common;
 using namespace SDF;
 using namespace PDF;
 
+class Configure;
 
 class PDFTronInterface
 {
     PDFTronInterface();
 //    QString pdfApplication;
     QProcess *process;
+    Configure *configure;
     void multiLine(int perLine, QString string, QString key, ContentReplacer& replacer, int loop = 3);
 public:
     ~PDFTronInterface();
@@ -32,7 +34,6 @@ public:
     static PDFTronInterface *get();
     static PDFTronInterface *instance;
     void showPdf(QString url);
-    void setPdfApplication(const QString &application);
 
     void printRO(QStringList detailList, QStringList mediaPaymentList);
     void printReceipt(QStringList detailList,QStringList roDetail);

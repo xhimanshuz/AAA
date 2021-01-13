@@ -1,11 +1,13 @@
 #include "pdftroninterface.h"
 #include "PopplerInterface.h"
 #include <QDebug>
+#include "Configure.h"
 
 PDFTronInterface* PDFTronInterface::instance = nullptr;
 
 PDFTronInterface::PDFTronInterface()
 {
+    configure = Configure::get();
     PDFNet::Initialize();
     process = new QProcess();
 }
@@ -25,13 +27,9 @@ PDFTronInterface *PDFTronInterface::get()
 
 void PDFTronInterface::showPdf(QString url)
 {
+    process->setProgram(configure->getPdfApplication());
     process->setArguments(QStringList()<< url);
     process->startDetached();
-}
-
-void PDFTronInterface::setPdfApplication(const QString &application)
-{
-    process->setProgram(application);
 }
 
 void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentList)
@@ -39,7 +37,7 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
     std::string saveFile;
     try
     {
-        PDFDoc doc("../Data/PDFSample/ro.pdf");
+        PDFDoc doc(QString(configure->getSamepleFileLocation()+"/ro.pdf").toStdString());
         doc.InitSecurityHandler();
 
         // first, replace the image on the first page---
@@ -79,7 +77,7 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
         replacer.AddString("BANK_NAME", mediaPaymentList.at(5).toStdString());
         // finally, apply
         replacer.Process(page);
-        saveFile = QString("../Data/RO/RO_%0_%1.pdf").arg(detailList.at(1)).arg(mediaPaymentList.at(0)).toStdString();
+        saveFile = QString(configure->getRoSaveLocation()+QString("/RO_%0_%1.pdf").arg(detailList.at(1)).arg(mediaPaymentList.at(0))).toStdString();
         doc.Save(saveFile, SDFDoc::e_remove_unused, 0);
         qDebug() << "Done. Result saved in "<< saveFile.c_str();
         showPdf(saveFile.c_str());
@@ -88,7 +86,7 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
     {
         QMessageBox msg(QMessageBox::Icon::Critical, "Error in PDFTron", QString(e.ToString().c_str()));
         msg.exec();
-//        qDebug() << e.ToString().c_str();
+        //        qDebug() << e.ToString().c_str();
     }
     catch (...)
     {
@@ -98,8 +96,8 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
 
     QMessageBox msg(QMessageBox::Icon::Information, "Sucess in PDFTron", QString("Succefully Created"));
     msg.exec();
-//    PopplerInterface pi;
-//    pi.toImage(saveFile.c_str());
+    //    PopplerInterface pi;
+    //    pi.toImage(saveFile.c_str());
 }
 
 void PDFTronInterface::printReceipt(QStringList detailList, QStringList roDetail)
@@ -107,7 +105,7 @@ void PDFTronInterface::printReceipt(QStringList detailList, QStringList roDetail
     std::string saveFile;
     try
     {
-        PDFDoc doc("../Data/PDFSample/recipt.pdf");
+        PDFDoc doc(QString(configure->getSamepleFileLocation()+"/recipt.pdf").toStdString());
         doc.InitSecurityHandler();
 
         // first, replace the image on the first page
@@ -129,7 +127,7 @@ void PDFTronInterface::printReceipt(QStringList detailList, QStringList roDetail
 
         // finally, apply
         replacer.Process(page);
-        saveFile = QString("../Data/RO/receipt_%0.pdf").arg(detailList.at(0)).toStdString();
+        saveFile = QString(configure->getReceiptSaveLocation()+ QString("/receipt_%0.pdf").arg(detailList.at(0))).toStdString();
         doc.Save(saveFile, SDFDoc::e_remove_unused, 0);
         qDebug() << "Done. Result saved in "<< saveFile.c_str();
         showPdf(saveFile.c_str());
@@ -138,7 +136,7 @@ void PDFTronInterface::printReceipt(QStringList detailList, QStringList roDetail
     {
         QMessageBox msg(QMessageBox::Icon::Critical, "Error in PDFTron", QString(e.ToString().c_str()));
         msg.exec();
-//        qDebug() << e.ToString().c_str();
+        //        qDebug() << e.ToString().c_str();
     }
     catch (...)
     {
@@ -148,7 +146,7 @@ void PDFTronInterface::printReceipt(QStringList detailList, QStringList roDetail
 
     QMessageBox msg(QMessageBox::Icon::Information, "Sucess in PDFTron", QString("Succefully Created"));
     msg.exec();
-//    PopplerInterface pi;
+    //    PopplerInterface pi;
     //    pi.toImage(saveFile.c_str());
 }
 
@@ -161,8 +159,8 @@ void PDFTronInterface::multiLine(int perLine, QString string, QString key, Conte
             str = "";
         else
         {
-//            auto s = i*perLine;
-//            auto e = perLine*(i+1);
+            //            auto s = i*perLine;
+            //            auto e = perLine*(i+1);
             str = string.toStdString().substr(i*perLine, perLine);
         }
         replacer.AddString(QString("%0_%1").arg(key).arg(i).toStdString(), str);
@@ -172,49 +170,49 @@ void PDFTronInterface::multiLine(int perLine, QString string, QString key, Conte
 void PDFTronInterface::printInvoice(QStringList dataList, QStringList roDetail)
 {
     std::string saveFile;
-//    try {
-        PDFDoc doc("../Data/PDFSample/Invoice.pdf");
-        doc.InitSecurityHandler();
+    //    try {
+    PDFDoc doc(QString(configure->getSamepleFileLocation()+"/invoice.pdf").toStdString());
+    doc.InitSecurityHandler();
 
-        ContentReplacer replacer;
-        Page page = doc.GetPage(1);
-
-
-            replacer.AddString(QString("RONO").toStdString(), dataList.at(0).toStdString());
-            replacer.AddString(QString("MEDIA_CENTRE").toStdString(), roDetail.at(4).toStdString());
-            replacer.AddString(QString("DATE").toStdString(), dataList.at(2).toStdString());
-            multiLine(15, roDetail.at(12), "SIZE_DUR", replacer);
-            multiLine(15, dataList.at(16), "TOTAL_DUR", replacer);
-//            replacer.AddString(QString("TOTAL_DUR").toStdString(), dataList.at(16).toStdString());
-            replacer.AddString(QString("HSN").toStdString(), roDetail.at(35).toStdString());
-            replacer.AddString(QString("RATE").toStdString(), roDetail.at(17).toStdString());
-            replacer.AddString(QString("PREMIUM").toStdString(), dataList.at(0).toStdString());
-            replacer.AddString(QString("AMOUNT").toStdString(), dataList.at(4).toStdString());
-
-            replacer.AddString(QString("GROSS_AMOUNT").toStdString(), dataList.at(4).toStdString());
-            replacer.AddString(QString("DISCOUNT").toStdString(), dataList.at(6).toStdString());
-            replacer.AddString(QString("AMT_AFT_DIS").toStdString(), dataList.at(7).toStdString());
-            replacer.AddString(QString("CGST").toStdString(), dataList.at(9).toStdString());
-            replacer.AddString(QString("SGST").toStdString(), dataList.at(11).toStdString());
-            replacer.AddString(QString("IGST").toStdString(), dataList.at(12).toStdString());
-            replacer.AddString(QString("INVOICE_AMT").toStdString(), dataList.at(14).toStdString());
-            replacer.AddString(QString("CLIENT").toStdString(), dataList.at(3).toStdString());
-            replacer.AddString(QString("CLIENT_ADDRESS").toStdString(), dataList.at(0).toStdString());
-            replacer.AddString(QString("CLIENT_CITY").toStdString(), dataList.at(0).toStdString());
-            replacer.AddString(QString("INVOICE_DATE").toStdString(), dataList.at(2).toStdString());
-            replacer.AddString(QString("INVOICE_NO").toStdString(), dataList.at(1).toStdString());
-            replacer.AddString(QString("CAPTION").toStdString(), roDetail.at(9).toStdString());
-            replacer.AddString(QString("STATE").toStdString(), dataList.at(0).toStdString());
-            replacer.AddString(QString("CODE").toStdString(), "09");
-            multiLine(40, dataList.at(15), "REMARK", replacer, 4);
-//            replacer.AddString(QString("REMARK").toStdString(), dataList.at(15).toStdString());
-            replacer.AddString(QString("STATE").toStdString(), "");
-            replacer.AddString(QString("GSTIN").toStdString(), "");
+    ContentReplacer replacer;
+    Page page = doc.GetPage(1);
 
 
-            replacer.Process(page);
-            saveFile = QString("../Data/RO/invoice_%0.pdf").arg(dataList.at(0)).toStdString();
-            doc.Save(saveFile, SDFDoc::e_remove_unused, 0);
-            qDebug() << "Done. Result saved in "<< saveFile.c_str();
-            showPdf(saveFile.c_str());
+    replacer.AddString(QString("RONO").toStdString(), dataList.at(0).toStdString());
+    replacer.AddString(QString("MEDIA_CENTRE").toStdString(), roDetail.at(4).toStdString());
+    replacer.AddString(QString("DATE").toStdString(), dataList.at(2).toStdString());
+    multiLine(15, roDetail.at(12), "SIZE_DUR", replacer);
+    multiLine(15, dataList.at(16), "TOTAL_DUR", replacer);
+    //            replacer.AddString(QString("TOTAL_DUR").toStdString(), dataList.at(16).toStdString());
+    replacer.AddString(QString("HSN").toStdString(), roDetail.at(35).toStdString());
+    replacer.AddString(QString("RATE").toStdString(), roDetail.at(17).toStdString());
+    replacer.AddString(QString("PREMIUM").toStdString(), dataList.at(0).toStdString());
+    replacer.AddString(QString("AMOUNT").toStdString(), dataList.at(4).toStdString());
+
+    replacer.AddString(QString("GROSS_AMOUNT").toStdString(), dataList.at(4).toStdString());
+    replacer.AddString(QString("DISCOUNT").toStdString(), dataList.at(6).toStdString());
+    replacer.AddString(QString("AMT_AFT_DIS").toStdString(), dataList.at(7).toStdString());
+    replacer.AddString(QString("CGST").toStdString(), dataList.at(9).toStdString());
+    replacer.AddString(QString("SGST").toStdString(), dataList.at(11).toStdString());
+    replacer.AddString(QString("IGST").toStdString(), dataList.at(12).toStdString());
+    replacer.AddString(QString("INVOICE_AMT").toStdString(), dataList.at(14).toStdString());
+    replacer.AddString(QString("CLIENT").toStdString(), dataList.at(3).toStdString());
+    replacer.AddString(QString("CLIENT_ADDRESS").toStdString(), dataList.at(0).toStdString());
+    replacer.AddString(QString("CLIENT_CITY").toStdString(), dataList.at(0).toStdString());
+    replacer.AddString(QString("INVOICE_DATE").toStdString(), dataList.at(2).toStdString());
+    replacer.AddString(QString("INVOICE_NO").toStdString(), dataList.at(1).toStdString());
+    replacer.AddString(QString("CAPTION").toStdString(), roDetail.at(9).toStdString());
+    replacer.AddString(QString("STATE").toStdString(), dataList.at(0).toStdString());
+    replacer.AddString(QString("CODE").toStdString(), "09");
+    multiLine(40, dataList.at(15), "REMARK", replacer, 4);
+    //            replacer.AddString(QString("REMARK").toStdString(), dataList.at(15).toStdString());
+    replacer.AddString(QString("STATE").toStdString(), "");
+    replacer.AddString(QString("GSTIN").toStdString(), "");
+
+
+    replacer.Process(page);
+    saveFile = QString(configure->getInvoiceSaveLocation() +QString("/invoice_%0.pdf").arg(dataList.at(0))).toStdString();
+    doc.Save(saveFile, SDFDoc::e_remove_unused, 0);
+    qDebug() << "Done. Result saved in "<< saveFile.c_str();
+    showPdf(saveFile.c_str());
 }

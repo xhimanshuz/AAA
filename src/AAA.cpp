@@ -1,12 +1,13 @@
-#include "AAA.h"
-#include "Config.h"
-#include "pdftroninterface.h"
 #include <QSqlDatabase>
+
+#include "AAA.h"
+#include "pdftroninterface.h"
+#include "Configure.h"
+Configure* Configure::instance = nullptr;
 
 AAA::AAA(QWidget *parent) : QMainWindow(parent)
 {
 
-    io = IOHandler::getInstance();
     appConfigure();
 
 
@@ -252,6 +253,8 @@ void AAA::setupSignals()
     connect(setting, &QPushButton::clicked, [this]{
         ConfigUI ui(io, this);
         ui.exec();
+        io->sql->reloadDB();
+        populateData();
     });
 
 }
@@ -294,9 +297,8 @@ int AAA::getRoNumber()
 void AAA::appConfigure()
 {
     config = Configure::get();
+    io = IOHandler::getInstance();
     config->setConfigFromList(io->sql->getConfigList());
-    PDFTronInterface::get()->setPdfApplication(config->getPdfApplication());
-//    Config::get()->setConfigFromList(io->sql->getConfig());
 
 }
 

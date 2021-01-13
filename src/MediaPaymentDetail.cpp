@@ -300,14 +300,17 @@ void MediaPaymentDetail::cellChanged(int row, int column)
 {
     setTotalAmount();
 
+//    qobject_cast<QPushButton*>(paymentTable->cellWidget(paymentTable->rowCount()-1, 6))->setEnabled(false);
     if(!isValidRow(row))
         return;
 
 
     if(row+1 != paymentTable->rowCount())
         return;
-//    paymentTable->item(paymentTable->row())
+    qobject_cast<QPushButton*>(paymentTable->cellWidget(paymentTable->rowCount()-1, 6))->setEnabled(true);
     insertNewRow();
+//    if(paymentTable->rowCount() > 2)
+//    paymentTable->cellWidget(6, column)->setEnabled(true);
 }
 
 MediaPaymentDetail::~MediaPaymentDetail()

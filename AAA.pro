@@ -1,6 +1,6 @@
 QT += widgets sql
 
-CONFIG += static
+#CONFIG += static
 
 #QMAKE_CXXFLAGS += -static
 
@@ -24,8 +24,8 @@ SOURCES += \
     src/pdftroninterface.cpp
 
 HEADERS += \
-    Config.h \
     ConfigUi.h \
+    Configure.h \
     include/AAA.h \
     include/AddInvoice.h \
     include/CustomItemDelegate.h \

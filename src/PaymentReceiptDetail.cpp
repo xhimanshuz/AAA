@@ -305,6 +305,7 @@ void PaymentReceiptDetail::cellChanged(int row, int column)
     if(row+1 != receiptTableWidget->rowCount())
         return;
 
+    qobject_cast<QPushButton*>(receiptTableWidget->cellWidget(receiptTableWidget->rowCount()-1, 7))->setEnabled(true);
     insertNewRow();
 }
 
