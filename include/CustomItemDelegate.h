@@ -32,7 +32,7 @@ public:
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override
     {
         QLineEdit *lineEdit = new QLineEdit(parent);
-        lineEdit->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
+        lineEdit->setValidator(new QRegExpValidator(QRegExp("\\d*\\.?\\d+")));
         return lineEdit;
     }
 
@@ -67,14 +67,14 @@ public:
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
     {
         auto dateEdit = new QDateEdit(parent);
-        dateEdit->setDisplayFormat("yyyy-MM-dd");
+        dateEdit->setDisplayFormat("dd-MM-yyyy");
         return dateEdit;
     }
 
     void setEditorData(QWidget* editor, const QModelIndex &index) const override
     {
         auto value = index.model()->data(index, Qt::EditRole).toString();
-        qobject_cast<QDateEdit*>(editor)->setDate(QDate::fromString(value, "yyyy-MM-dd"));
+        qobject_cast<QDateEdit*>(editor)->setDate(QDate::fromString(value, "dd-MM-yyyy"));
     }
 
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex &) const override

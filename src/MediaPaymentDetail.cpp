@@ -282,7 +282,7 @@ void MediaPaymentDetail::setTotalAmount()
     }
     auto na = roAmount->text().toDouble();
     totalAmount->setText(QString::number(totalAmountValue));
-    balAmount->setText(QString::number(totalAmountValue - roAmount->text().toDouble()));
+    balAmount->setText(QString::number(roAmount->text().toDouble()-totalAmountValue ));
 }
 
 void MediaPaymentDetail::printMediaPayment()

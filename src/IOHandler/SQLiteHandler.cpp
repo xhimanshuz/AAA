@@ -406,6 +406,55 @@ QStringList SQLiteHandler::getRoList()
     return strList;
 }
 
+bool SQLiteHandler::updateNumberToRo(const QString &numbers, const int ro, SQLiteHandler::ROIndex index)
+{
+    QString columnName{""};
+    switch (index)
+    {
+        case ROIndex::MH_CODE:
+            columnName = "mhcode";
+            break;
+        case ROIndex::P_CODE:
+            columnName = "pcode";
+            break;
+        case ROIndex::JOBT_CODE:
+            columnName = "jobtypecode";
+            break;
+        case ROIndex::INV_NO:
+            columnName = "invno";
+            break;
+        case ROIndex::RECPT_NO:
+            columnName = "recptno";
+            break;
+        default:
+        {
+            qDebug()<< "Invalid Index";
+            return false;
+        }
+    }
+
+    query->prepare(QString("UPDATE ro SET %0=? WHERE number = ?").arg(columnName));
+    query->bindValue(0, numbers);
+    query->bindValue(1, ro);
+
+    if(!query->exec())
+    {
+        auto q = query->lastError().text();
+        qDebug()<< q;
+        return false;
+    }
+    return true;
+
+//    QString number{""};
+//    if(query->next())
+//        number = query->value(0).toString();
+
+
+
+
+
+}
+
 QSqlTableModel *SQLiteHandler::getMediaPaymentModel() const
 {
     return paymentModel;
@@ -413,21 +462,19 @@ QSqlTableModel *SQLiteHandler::getMediaPaymentModel() const
 
 bool SQLiteHandler::insertMediaPayment(QList<QStringList> dataList, int rono)
 {
+    float total{0};
+    query->prepare("DELETE FROM media_payment where rono = ?");
+    query->bindValue(0, rono);
+    if(!query->exec())
+    {
+        auto q = query->lastError();
+        qDebug()<< "Error in removing";
+        return false;
+    }
+
     for(auto strList: dataList)
     {
-        query->exec(QString("SELECT * FROM media_payment WHERE id = %0").arg(strList.at(0)));
-        if(query->next())
-        {
-            query->exec(QString("UPDATE media_payment SET date = ?, amount= ?, mode= ?, chequeNo= ?, bankname= ? where id = ?;"));
-            query->addBindValue(strList.at(1));
-            query->addBindValue(strList.at(2).toDouble());
-            query->addBindValue(strList.at(3));
-            query->addBindValue(strList.at(4));
-            query->addBindValue(strList.at(5));
-            query->addBindValue(strList.at(0).toInt());
-        }
-        else
-        {
+
             query->prepare("INSERT INTO media_payment (id, date, amount, mode, chequeNo, bankname, rono) VALUES (:id, :date, :amount, :mode, :chequeNo, :bankname, :rono);");
             query->bindValue(":id", strList.at(0).toInt());
             query->bindValue(":date", strList.at(1));
@@ -436,16 +483,28 @@ bool SQLiteHandler::insertMediaPayment(QList<QStringList> dataList, int rono)
             query->bindValue(":chequeNo", strList.at(4));
             query->bindValue(":bankname", strList.at(5));
             query->bindValue(":rono", rono);
-        }
-
-        auto s = query->lastQuery();
         if(!query->exec())
         {
             auto k = query->lastError().text();
             qDebug()<<"Error in Inserting values in media_payment " << query->lastError().text();
             return false;
         }
+        total+= strList[2].toDouble();
+//        numberList.push_back(strList[0]);
     }
+    
+    query->prepare("UPDATE ro SET payamount = ? WHERE number = ?;");
+    query->bindValue(0, total);
+    query->bindValue(1, rono);
+    if(!query->exec())
+    {
+        auto q = query->lastError().text();
+        qDebug()<< q;
+        return false;
+    }
+//    updateNumberToRo(numberList, ROIndex::RECPT_NO);
+//    auto cn = combineNumber(numberList);
+
     return true;
 }
 
@@ -495,18 +554,21 @@ QSqlTableModel *SQLiteHandler::getPaymentReceiptModel() const
 
 bool SQLiteHandler::insertPaymentReceipt(QList<QStringList> dataList, int rono)
 {
+    QStringList idList;
+    query->prepare("DELETE FROM payment_receipt where rono = ?");
+    query->bindValue(0, rono);
+    if(!query->exec())
+    {
+        auto q = query->lastError();
+        qDebug()<< "Error in removing";
+        return false;
+    }
 
+    double total{0.00};
     for(auto strList: dataList)
     {
-        query->exec(QString("Select * from payment_receipt WHERE number = %0").arg(strList.at(0)) );
-        if(query->next())
-        {
-            query->prepare("UPDATE payment_receipt set rcptDate = :date, rcptamount = :amount, paymode = :paymode, chqno = :chqno, bankname = :bankname, remark = :remark, rono = :rono WHERE number = :number;");
-        }
-        else
-        {
-            query->prepare("INSERT INTO payment_receipt (rcptdate, rcptamount, paymode, chqno, bankname, remark, rono, number) VALUES (:date, :amount, :paymode, :chqno, :bankname, :remark, :rono, :number);");
-        }
+        query->prepare("INSERT INTO payment_receipt (rcptdate, rcptamount, paymode, chqno, bankname, remark, rono, number) VALUES (:date, :amount, :paymode, :chqno, :bankname, :remark, :rono, :number);");
+
         query->bindValue(":date", strList.at(1));
         query->bindValue(":amount", strList.at(2).toDouble());
         query->bindValue(":paymode", strList.at(3));
@@ -521,7 +583,21 @@ bool SQLiteHandler::insertPaymentReceipt(QList<QStringList> dataList, int rono)
             qDebug()<<"Error in Inserting values in receipt " << query->lastError();
             return false;
         }
+        idList << strList[0];
+        total+= strList[2].toDouble();
     }
+
+    updateNumberToRo(combineNumber(idList), rono, ROIndex::RECPT_NO);
+    query->prepare("UPDATE ro SET recptamount = ? WHERE number = ?;");
+    query->bindValue(0, total);
+    query->bindValue(1, rono);
+    if(!query->exec())
+    {
+        auto q = query->lastError().text();
+        qDebug()<< q;
+        return false;
+    }
+
     return true;
 
 }
@@ -588,7 +664,7 @@ bool SQLiteHandler::insertMediaBill(QList<QStringList> dataList, int rono)
         qDebug()<<"Error in deleting in Receipt: "<< query->lastError();
         return false;
     }
-
+    double total{0.0};
     for(auto strList: dataList)
     {
         query->prepare("INSERT INTO mediaBill (id, date, amount, rono) VALUES (:id, :date, :amount, :rono);");
@@ -596,11 +672,23 @@ bool SQLiteHandler::insertMediaBill(QList<QStringList> dataList, int rono)
         query->bindValue(":date", strList.at(1));
         query->bindValue(":amount", strList.at(2).toDouble());
         query->bindValue(":rono", rono);
+
         if(!query->exec())
         {
             qDebug()<<"Error in Inserting values in mediaBill " << query->lastError();
             return false;
         }
+        total+= strList[2].toDouble();
+    }
+//    updateNumberToRo(combineNumber(), rono, ROIndex::RECPT_NO);
+    query->prepare("UPDATE ro SET mbamount = ? WHERE number = ?;");
+    query->bindValue(0, total);
+    query->bindValue(1, rono);
+    if(!query->exec())
+    {
+        auto q = query->lastError().text();
+        qDebug()<< q;
+        return false;
     }
     return true;
 }
@@ -718,8 +806,23 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
     }
     qDebug()<<"[!] Trasactoion Sucessfully with Invoice Number: "<< strList.at(1).toInt();
 
+
+    auto invno = strList.at(1);
+    query->prepare("SELECT invno from ro WHERE number = ?");
+    query->bindValue(0, strList.at(0).toInt());
+    query->exec();
+    if(query->next())
+    {
+        auto oldinvno = query->value(0).toString();
+        if(!oldinvno.contains(invno))
+        {
+            oldinvno+= ","+invno;
+        }
+        invno = oldinvno;
+    }
+
     query->prepare("UPDATE ro SET invno = :invno WHERE number = :number");
-    query->bindValue(":invno", strList.at(1).toInt());
+    query->bindValue(":invno", invno);
     query->bindValue(":number", strList.at(0).toInt());
     if(!query->exec())
     {
@@ -809,6 +912,15 @@ const QStringList SQLiteHandler::getConfigList() const
         qDebug()<< "Exception Occured"<< e.what();
     }
     return strList;
+}
+
+const QString SQLiteHandler::combineNumber(const QStringList &numberList)
+{
+    QString combinedNumber{""};
+    for(auto &number: numberList)
+        combinedNumber += number+",";
+    combinedNumber.resize(combinedNumber.size()-1);
+    return combinedNumber;
 }
 
 void SQLiteHandler::setUpModels()
@@ -943,7 +1055,7 @@ void SQLiteHandler::setUpModels()
     {
         if(query->exec("SELECT * FROM config;"))
             if(!query->next())
-                query->exec("INSERT INTO config VALUES ('', '', '', '', '', '');");
+                query->exec("INSERT INTO config VALUES ('', 'AAA.db', 'Data/ro', 'Data/invoice', 'Data/receipt', 'Data/SamplePdf');");
     }
     else
     {

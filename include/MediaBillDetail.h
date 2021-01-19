@@ -19,6 +19,7 @@
 #include <QRegExp>
 
 #include "IOHandler/IOHandler.h"
+#include "CustomItemDelegate.h"
 
 class MediaBill : public QDialog
 {
@@ -56,6 +57,9 @@ class MediaBill : public QDialog
     void populateData(QList<QStringList> list = {});
     void insertNewRow();
     void setValidator();
+    void setTotalAmount();
+    QPushButton* createDeleteButton();
+
 private slots:
     void cellChanged(int row, int column);
 public:

@@ -45,19 +45,19 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
         Page page = doc.GetPage(1);
 
 
-        replacer.AddString("CLIENT", detailList.at(6).toStdString());
-        replacer.AddString("MEDIA_HOUSE", detailList.at(4).toStdString());
+        replacer.AddString("CLIENT", detailList.at(6).toUpper().toStdString());
+        replacer.AddString("MEDIA_HOUSE", detailList.at(4).toUpper().toStdString());
         replacer.AddString("MEDIA_HOUSE_ADDRESS", detailList.at(42).toStdString());
         replacer.AddString("MEDIA_HOUSE_CITY", QString("%0, %1").arg(detailList.at(43)).arg(detailList[44]).toStdString());
         replacer.AddString("RONO", detailList.at(1).toStdString());
-        multiLine(60, detailList[21], "REMARK", replacer, 3);
+        multiLine(60, detailList[21].toUpper(), "REMARK", replacer, 3);
         replacer.AddString("RO_DATE", detailList.at(2).toStdString());
-        replacer.AddString("CAPTION", detailList.at(9).toStdString());
-        replacer.AddString("EDITION_CENTRE", detailList.at(10).toStdString());
+        replacer.AddString("CAPTION", detailList.at(9).toUpper().toStdString());
+        replacer.AddString("EDITION_CENTRE", detailList.at(10).toUpper().toStdString());
         replacer.AddString("DOP", detailList.at(11).toStdString());
-        replacer.AddString("SIZE_DURATION", detailList.at(12).toStdString());
-        replacer.AddString("TOTAL_SIZE_DURATION", detailList.at(13).toStdString());
-        replacer.AddString("GUARANTED_POSITION", detailList.at(14).toStdString());
+        replacer.AddString("SIZE_DURATION", detailList.at(12).toUpper().toStdString());
+        replacer.AddString("TOTAL_SIZE_DURATION", detailList.at(13).toUpper().toStdString());
+        replacer.AddString("GUARANTED_POSITION", detailList.at(14).toUpper().toStdString());
         replacer.AddString("PREMIUM", detailList.at(15).toStdString());
         replacer.AddString("RATE", detailList.at(17).toStdString());
         replacer.AddString("RATE_REMARK", detailList.at(18).toStdString());
