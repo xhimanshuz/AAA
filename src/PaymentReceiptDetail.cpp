@@ -292,7 +292,7 @@ void PaymentReceiptDetail::setTotalAmount()
 
     auto na = netAmount->text().toDouble();
     totalAmount->setText(QString::number(totalAmountValue));
-    balAmount->setText(QString::number(totalAmountValue - netAmount->text().toDouble()));
+    balAmount->setText(QString::number(netAmount->text().toDouble()-totalAmountValue));
 }
 
 void PaymentReceiptDetail::cellChanged(int row, int column)

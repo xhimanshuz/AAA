@@ -32,11 +32,11 @@ def csvToList(fileStr):
 
 def toDate(timeStr):
     if len(timeStr) == 0:
-        return 1
+        return "01-01-2000"
 #    print(">> toDate", timeStr)
 #    d = datetime.datetime.strptime("30-7-2020 0:00:00", "%d-%m-%Y 0:00:00")
-    d = datetime.datetime.strptime(timeStr, "%d-%m-%Y %H:%M:%S")
-    return datetime.datetime.strftime(d, "%Y-%m-%d")
+    d = datetime.datetime.strptime(timeStr, "%d-%m-%Y 0:00:00")
+    return datetime.datetime.strftime(d, "%d-%m-%Y")
 
 
 def mediaHouse():
@@ -248,7 +248,7 @@ def addReceipt(receiptno, rono):
     print(f"addReceipt(rono={rono}, receiptno={receiptno})")
     cur.execute(f"SELECT recptno FROM ro WHERE number = {rono};")
     rcptno = cur.fetchone()
-    print(rcptno)
+#    print(rcptno)
     oldrcptno = ""
     if rcptno[0] != '':
         print(f"> {rcptno[0]}")
@@ -333,7 +333,20 @@ def mediaBill():
     for i,x in enumerate(mb):
         print(f"[{i+1}][>>] {x}")
         cur.execute(f"""INSERT INTO "main"."mediaBill"("id","date","rocode","rono","amount") VALUES ("{x[0]}","{x[1]}",{x[2]},{x[3]},{x[4]});""")
+        conn.commit()
+        addMediaBillToRO(x[3],x[4])
+
+def addMediaBillToRO(rono, amount):
+    print(f"Adding MediaBill to RO rono={rono}, Amount={amount}")
+    cur.execute(f"SELECT mbamount FROM ro WHERE number = {rono}")
+    amt = cur.fetchone()
+#    total = 0;
+    if(amt[0] != ''):
+        amount+= amt[0];
+    cur.execute(f"UPDATE ro SET mbamount = {amount} WHERE number = {rono};")
     conn.commit()
+
+
     
 
 def ro():
@@ -416,7 +429,7 @@ CREATE TABLE "ro" (
 #    FOREIGN KEY("recptno") REFERENCES "payment_receipt"("number")
     for i,x in enumerate(rl):
         print(f"[{i+1}][>>] {x}")
-        cur.execute(f"""INSERT INTO "ro" ("code","number","date","mhcode","mhname","pcode","pname","jobtypecode","jobtypename","caption","editCentre","doPubtel","sizeduration","totalsizeduration","guarantedpos","premium","strPre","rate","strRate","amount","netAmount","remarks","billAmount","invno","payamount","recptno","recptamount","mbamount","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount","hsncode") VALUES ({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},"{x[16]}",{x[17]},"{x[18]}",{x[19]},{x[21]},"{x[22]}",{x[23]},"",{x[25]},"",{x[27]},{x[28]},"{x[29]}",{x[30]},"{x[31]}",{x[32]},"{x[33]}",{x[34]},{x[35]},{x[36]});""")
+        cur.execute(f"""INSERT INTO "ro" ("code","number","date","mhcode","mhname","pcode","pname","jobtypecode","jobtypename","caption","editCentre","doPubtel","sizeduration","totalsizeduration","guarantedpos","premium","strPre","rate","strRate","amount","netAmount","remarks","billAmount","invno","payamount","recptno","recptamount","mbamount","ratecgst","amountcgst","ratesgst","amountsgst","rateigst","amountigst","finalamount","hsncode") VALUES ({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},"{x[16]}",{x[17]},"{x[18]}",{x[19]},{x[21]},"{x[22]}",{x[23]},"",{x[25]},"",{x[27]},0,"{x[29]}",{x[30]},"{x[31]}",{x[32]},"{x[33]}",{x[34]},{x[35]},{x[36]});""")
     conn.commit()                                                                                                                                                                                                                                                                                                                                                                                                                                                #({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},{x[16]},{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},{x[23]},{x[24]},{x[25]},{x[26]},{x[27]},{x[28]},{x[29]},{x[30]},{x[31]},{x[32]},{x[33]},{x[34]},{x[35]})
 #    
 
@@ -427,7 +440,6 @@ def main():
     global cur
     conn = sqlite3.connect(database)
     cur = conn.cursor()
-
     ro()
     receipt()
     invoice()
@@ -435,6 +447,7 @@ def main():
     parties()
     payment()
     mediaHouse()
+    mediaBill()
     conn.close()
 
 try:

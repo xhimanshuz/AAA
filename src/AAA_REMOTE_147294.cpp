@@ -35,10 +35,10 @@ void AAA::render()
     toolBar->addActions(QList<QAction*>()<< newJobType << newMediaHouse << newClient << mediaPaymentButton << invoiceButton  << paymentReceipt  << mediaBill);
 
     searchDateFrom = new QDateEdit(QDate::currentDate(), this);
-    searchDateFrom->setDisplayFormat("dd-MM-yyyy");
+    searchDateFrom->setDisplayFormat("yyyy-MM-dd");
     searchDateFrom->setCalendarPopup(true);
     searchDateTo = new QDateEdit(QDate::currentDate(), this);
-    searchDateTo->setDisplayFormat("dd-MM-yyyy");
+    searchDateTo->setDisplayFormat("yyyy-MM-dd");
     searchDateTo->setCalendarPopup(true);
     dateSearchButton = new QToolButton;
     dateSearchButton->setText("⏲");
@@ -116,7 +116,6 @@ void AAA::render()
     statusBar()->showMessage("Application Started", 10000);
     setupSignals();
     updateRender();
-    roTable->sortByColumn(1, Qt::SortOrder::DescendingOrder);
 }
 
 void AAA::setupSignals()
@@ -246,7 +245,7 @@ void AAA::setupSignals()
     });
 
     connect(dateClearButton, &QToolButton::clicked, [=]{
-        auto date = QDate::currentDate().toString("dd-MM-yyyy");
+        auto date = QDate::currentDate().toString("yyyy-MM-dd");
         io->sql->getRoModel()->setFilter(QString("date < '%0'").arg(date));
         populateData();
     });
@@ -279,10 +278,8 @@ void AAA::populateData()
     io->sql->getRoModel()->query().exec();
     roTable->resizeColumnsToContents();
     roTable->setSortingEnabled(1);
-
     roTable->sortByColumn(1, Qt::SortOrder::DescendingOrder);
     roTable->horizontalHeader()->setStretchLastSection(true);
-
     roTable->viewport()->update();
 }
 

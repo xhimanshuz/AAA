@@ -45,12 +45,11 @@ void MediaBill::render()
     rate = new QLineEdit;
     netAmount = new QLineEdit;
 
-    mediaBillTableWidget = new QTableWidget(1, 3, this);
-    mediaBillTableWidget->setHorizontalHeaderLabels(QStringList()<< "MB. No."<<"Date"<<"Amount");
-//    mediaBillSModel = new QStandardItemModel;
-//    mediaBillModel = io->sql->getMediaBill();
-
-//    mediaBillTableView->setModel(mediaBillSModel);
+    mediaBillTableWidget = new QTableWidget(0, 4, this);
+    insertNewRow();
+    mediaBillTableWidget->setItemDelegateForColumn(1, new CustomItemDelegate::Date(this));
+    mediaBillTableWidget->setItemDelegateForColumn(2, new CustomItemDelegate::Amount(this));
+    mediaBillTableWidget->setHorizontalHeaderLabels(QStringList()<< "MB. No."<<"Date"<<"Amount"<<""<<"");
     populateData();
 
     totalAmount = new QLineEdit;
@@ -99,7 +98,8 @@ void MediaBill::render()
     mediaBillTableWidget->addAction(deleteRow);
 
     setupSignals();
-    setValidator();}
+    setValidator();
+}
 
 void MediaBill::setupSignals()
 {
@@ -202,6 +202,7 @@ void MediaBill::populateData(QList<QStringList> list)
 void MediaBill::insertNewRow()
 {
     mediaBillTableWidget->setRowCount(mediaBillTableWidget->rowCount()+1);
+    mediaBillTableWidget->setCellWidget(mediaBillTableWidget->rowCount()-1, 3, createDeleteButton());
 }
 
 void MediaBill::setValidator()
@@ -213,13 +214,46 @@ void MediaBill::setValidator()
     totalAmount->setValidator(new QRegExpValidator(QRegExp("\\d+\\.?\\d+")));
 }
 
+void MediaBill::setTotalAmount()
+{
+    auto totalAmountValue{0};
+    auto cr = mediaBillTableWidget->rowCount();
+    for(auto row = 0; row < mediaBillTableWidget->rowCount()-1; row++)
+    {
+        auto t = mediaBillTableWidget->item(row, 2)->text();
+        auto value = mediaBillTableWidget->item(row, 2)->text().toInt();
+        totalAmountValue += value;
+    }
+//    auto na = roAmount->text().toDouble();
+    totalAmount->setText(QString::number(totalAmountValue));
+}
+
+QPushButton* MediaBill::createDeleteButton()
+{
+    auto cellDeleteButton = new QPushButton("Delete");
+    connect(cellDeleteButton, &QPushButton::clicked, [this]{
+        auto row = mediaBillTableWidget->currentRow();
+        if(!mediaBillTableWidget->item(row, 2))
+            return;
+        mediaBillTableWidget->removeRow(row);
+        if(mediaBillTableWidget->rowCount() < 1)
+            insertNewRow();
+        auto rc = mediaBillTableWidget->rowCount();
+        mediaBillTableWidget->viewport()->update();
+        rc = mediaBillTableWidget->rowCount();
+        setTotalAmount();
+    });
+
+    return cellDeleteButton;
+}
+
 void MediaBill::cellChanged(int row, int column)
 {
     if(!mediaBillTableWidget->item(row, 0) || !mediaBillTableWidget->item(row, 1) ||!mediaBillTableWidget->item(row, 2))
         return;
-
-    if(column+1 != mediaBillTableWidget->columnCount())
+    if(row+1 != mediaBillTableWidget->rowCount())
         return;
 
     insertNewRow();
+    setTotalAmount();
 }

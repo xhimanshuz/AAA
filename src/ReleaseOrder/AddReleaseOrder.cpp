@@ -50,7 +50,7 @@ void AddReleaseOrder::render()
     rateRemark = new QTextEdit(this);
     rateRemark->setTabChangesFocus(true);
     date = new QDateEdit(QDate::currentDate(), this);
-    date->setDisplayFormat("dd/MM/yyyy");
+    date->setDisplayFormat("dd-MM-yyyy");
     date->setCalendarPopup(true);
     clientList = new QComboBox(this);
     clientList->addItems(io->sql->getClientList());

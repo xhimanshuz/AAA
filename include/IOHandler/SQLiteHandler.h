@@ -31,6 +31,16 @@ class SQLiteHandler : public QObject
     QSqlQueryModel *generateBillModel;
 
     void setUpModels();
+    
+    enum class ROIndex
+    {
+        MH_CODE,
+        P_CODE,
+        JOBT_CODE,
+        INV_NO,
+        RECPT_NO
+    };
+    
 public:
     void reloadDB();
     explicit SQLiteHandler(QObject *parent = nullptr);
@@ -63,6 +73,7 @@ public:
     int getNewRoNumber() const;
     int getNewRoCode() const;
     QStringList getRoList();
+    bool updateNumberToRo(const QString &numbers, const int ro, ROIndex index);
 
     QSqlTableModel *getMediaPaymentModel() const;
     bool insertMediaPayment(QList<QStringList> dataList, int rono);
@@ -91,6 +102,8 @@ public:
 
     bool setConfig(const QStringList &configList);
     const QStringList getConfigList() const;
+
+    const QString combineNumber(const QStringList &numberList);
 signals:
 
 };
