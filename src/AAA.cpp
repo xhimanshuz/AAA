@@ -279,12 +279,10 @@ void AAA::populateData()
     io->sql->getRoModel()->query().exec();
     roTable->resizeColumnsToContents();
     roTable->setSortingEnabled(1);
-<<<<<<< HEAD
 
-=======
     roTable->sortByColumn(1, Qt::SortOrder::DescendingOrder);
     roTable->horizontalHeader()->setStretchLastSection(true);
->>>>>>> ba0014fd3f9c7d38bbe03be44090f4f019faa3ee
+
     roTable->viewport()->update();
 }
 
