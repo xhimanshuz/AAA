@@ -1055,7 +1055,11 @@ void SQLiteHandler::setUpModels()
     {
         if(query->exec("SELECT * FROM config;"))
             if(!query->next())
+<<<<<<< HEAD
                 query->exec("INSERT INTO config VALUES ('', 'AAA.db', 'Data/ro', 'Data/invoice', 'Data/receipt', 'Data/SamplePdf');");
+=======
+                query->exec("INSERT INTO config VALUES ('SlimPDF Reader/SlimPDF Reader.exe', 'AAA.db', 'Data/ro', 'Data/invoice', 'Data/receipt', 'Data/SamplePdf');");
+>>>>>>> ba0014fd3f9c7d38bbe03be44090f4f019faa3ee
     }
     else
     {
