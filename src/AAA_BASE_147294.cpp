@@ -1,26 +1,27 @@
 #include <QSqlDatabase>
 
 #include "AAA.h"
-#include "HeaderUi.h"
 #include "pdftroninterface.h"
 #include "Configure.h"
 Configure* Configure::instance = nullptr;
 
 AAA::AAA(QWidget *parent) : QMainWindow(parent)
 {
+
     appConfigure();
+
+
     render();
     QWidget *mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
     setCentralWidget(mainWidget);
-
 }
 
 void AAA::render()
 {
     exit = new QAction("Exit");
     menuBar()->addMenu("File")->addAction(exit);
-    menuBar()->setStyleSheet("color: white; background-color: #D32F2F");
+    menuBar()->setStyleSheet("color: white; background-color: #212121");
 
     toolBar = new QToolBar("ToolBar");
     newJobType = new QAction("New Job Type");
@@ -34,10 +35,10 @@ void AAA::render()
     toolBar->addActions(QList<QAction*>()<< newJobType << newMediaHouse << newClient << mediaPaymentButton << invoiceButton  << paymentReceipt  << mediaBill);
 
     searchDateFrom = new QDateEdit(QDate::currentDate(), this);
-    searchDateFrom->setDisplayFormat("dd-MM-yyyy");
+    searchDateFrom->setDisplayFormat("yyyy-MM-dd");
     searchDateFrom->setCalendarPopup(true);
     searchDateTo = new QDateEdit(QDate::currentDate(), this);
-    searchDateTo->setDisplayFormat("dd-MM-yyyy");
+    searchDateTo->setDisplayFormat("yyyy-MM-dd");
     searchDateTo->setCalendarPopup(true);
     dateSearchButton = new QToolButton;
     dateSearchButton->setText("⏲");
@@ -75,11 +76,8 @@ void AAA::render()
     setting = new QPushButton("Setting");
 
     mainLayout = new QVBoxLayout;
-    mainLayout->setMargin(0);
-    mainLayout->addWidget(new HeaderUi("ANTHEM ADVERTSING AGENCY", "#F44336", this));
-
-    auto mainLayout2 = new QVBoxLayout;
-    mainLayout2->addWidget(toolBar);
+//    mainLayout->addWidget(menuBar);
+    mainLayout->addWidget(toolBar);
 
     QHBoxLayout *hbox = new QHBoxLayout;
     hbox->addWidget(new QLabel("Date From"));
@@ -97,12 +95,19 @@ void AAA::render()
     hbox->addWidget(new QLabel("Job Type"));
     hbox->addWidget(jobType);
     hbox->addWidget(go);
-    mainLayout2->addLayout(hbox);
+    mainLayout->addLayout(hbox);
 
-    mainLayout2->addWidget(roTable);
-    mainLayout2->setMargin(10);
-    mainLayout->addLayout(mainLayout2);
+    mainLayout->addWidget(roTable);
 
+//    QWidget *statusBarWidget = new QWidget;
+//    hbox = new QHBoxLayout;
+//    hbox->addWidget(newRO);
+//    hbox->addWidget(printList);
+//    hbox->addWidget(setting);
+//    hbox->addStretch();
+//    statusBarWidget->setLayout(hbox);
+
+//    statusBarWidget->setStyleSheet("color: white; background-color: #212121;");
     statusBar()->setLayoutDirection(Qt::LayoutDirection::RightToLeft);
     statusBar()->addWidget(newRO);
     statusBar()->addWidget(printList);
@@ -111,7 +116,6 @@ void AAA::render()
     statusBar()->showMessage("Application Started", 10000);
     setupSignals();
     updateRender();
-    roTable->sortByColumn(1, Qt::SortOrder::DescendingOrder);
 }
 
 void AAA::setupSignals()
@@ -241,7 +245,7 @@ void AAA::setupSignals()
     });
 
     connect(dateClearButton, &QToolButton::clicked, [=]{
-        auto date = QDate::currentDate().toString("dd-MM-yyyy");
+        auto date = QDate::currentDate().toString("yyyy-MM-dd");
         io->sql->getRoModel()->setFilter(QString("date < '%0'").arg(date));
         populateData();
     });
@@ -272,12 +276,10 @@ void AAA::updateRender()
 void AAA::populateData()
 {
     io->sql->getRoModel()->query().exec();
+//    roTable->resizeRowsToContents();
     roTable->resizeColumnsToContents();
     roTable->setSortingEnabled(1);
-
     roTable->sortByColumn(1, Qt::SortOrder::DescendingOrder);
-    roTable->horizontalHeader()->setStretchLastSection(true);
-
     roTable->viewport()->update();
 }
 

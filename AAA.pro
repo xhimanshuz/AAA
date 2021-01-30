@@ -1,8 +1,6 @@
 QT += widgets sql
 
-#CONFIG += static
-
-#QMAKE_CXXFLAGS += -static
+CONFIG += static
 
 
 SOURCES += \
