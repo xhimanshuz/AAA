@@ -159,12 +159,27 @@ void PDFTronInterface::multiLine(int perLine, QString string, QString key, Conte
             str = "";
         else
         {
-            //            auto s = i*perLine;
-            //            auto e = perLine*(i+1);
             str = string.toStdString().substr(i*perLine, perLine);
         }
         replacer.AddString(QString("%0_%1").arg(key).arg(i).toStdString(), str);
     }
+}
+
+const string PDFTronInterface::rightPadding(std::string string, int spaceSize)
+{
+    if(string.size() < 4)
+        spaceSize+=3;
+    if(string.find(".") == std::string::npos)
+        string+=".00";
+    else
+    {
+        auto i = string.find(".");
+        auto size = string.size();
+        if(i == string.size()-2)
+            string+="0";
+    }
+    string.insert(0, spaceSize-string.size(), ' ');
+    return string;
 }
 
 void PDFTronInterface::printInvoice(QStringList dataList, QStringList roDetail)
@@ -185,20 +200,20 @@ void PDFTronInterface::printInvoice(QStringList dataList, QStringList roDetail)
     multiLine(15, dataList.at(16), "TOTAL_DUR", replacer);
     //            replacer.AddString(QString("TOTAL_DUR").toStdString(), dataList.at(16).toStdString());
     replacer.AddString(QString("HSN").toStdString(), roDetail.at(35).toStdString());
-    replacer.AddString(QString("RATE").toStdString(), roDetail.at(17).toStdString());
-    replacer.AddString(QString("PREMIUM").toStdString(), dataList.at(0).toStdString());
-    replacer.AddString(QString("AMOUNT").toStdString(), dataList.at(4).toStdString());
+    replacer.AddString(QString("RATE").toStdString(), rightPadding(roDetail.at(17).toStdString(), 8));
+    replacer.AddString(QString("PREMIUM").toStdString(),rightPadding(dataList.at(0).toStdString(), 13));
+    replacer.AddString(QString("AMOUNT").toStdString(), rightPadding(dataList.at(4).toStdString(), 13));
 
-    replacer.AddString(QString("GROSS_AMOUNT").toStdString(), dataList.at(4).toStdString());
-    replacer.AddString(QString("DISCOUNT").toStdString(), dataList.at(6).toStdString());
-    replacer.AddString(QString("AMT_AFT_DIS").toStdString(), dataList.at(7).toStdString());
-    replacer.AddString(QString("CGST").toStdString(), dataList.at(9).toStdString());
-    replacer.AddString(QString("SGST").toStdString(), dataList.at(11).toStdString());
-    replacer.AddString(QString("IGST").toStdString(), dataList.at(12).toStdString());
-    replacer.AddString(QString("INVOICE_AMT").toStdString(), dataList.at(14).toStdString());
-    replacer.AddString(QString("CLIENT").toStdString(), dataList.at(3).toStdString());
-    replacer.AddString(QString("CLIENT_ADDRESS").toStdString(), dataList.at(0).toStdString());
-    replacer.AddString(QString("CLIENT_CITY").toStdString(), dataList.at(0).toStdString());
+    replacer.AddString(QString("GROSS_AMOUNT").toStdString(), rightPadding(dataList.at(4).toStdString(), 20));
+    replacer.AddString(QString("DISCOUNT").toStdString(), rightPadding(dataList.at(6).toStdString(), 20));
+    replacer.AddString(QString("AMT_AFT_DIS").toStdString(), rightPadding(dataList.at(7).toStdString(), 20));
+    replacer.AddString(QString("CGST").toStdString(), rightPadding(dataList.at(9).toStdString(), 20));
+    replacer.AddString(QString("SGST").toStdString(), rightPadding(dataList.at(11).toStdString(), 20));
+    replacer.AddString(QString("IGST").toStdString(), rightPadding(dataList.at(12).toStdString(), 20));
+    replacer.AddString(QString("INVOICE_AMT").toStdString(), rightPadding(dataList.at(14).toStdString(), 20));
+    replacer.AddString(QString("CLIENT").toStdString(), dataList.at(17).toStdString());
+    replacer.AddString(QString("CLIENT_ADDRESS").toStdString(), dataList.at(18).toStdString());
+    replacer.AddString(QString("CLIENT_CITY").toStdString(), dataList.at(19).toStdString());
     replacer.AddString(QString("INVOICE_DATE").toStdString(), dataList.at(2).toStdString());
     replacer.AddString(QString("INVOICE_NO").toStdString(), dataList.at(1).toStdString());
     replacer.AddString(QString("CAPTION").toStdString(), roDetail.at(9).toStdString());

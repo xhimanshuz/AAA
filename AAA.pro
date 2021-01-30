@@ -26,6 +26,8 @@ SOURCES += \
 HEADERS += \
     ConfigUi.h \
     Configure.h \
+    HeaderUi.h \
+    ROSqlTableModel.h \
     include/AAA.h \
     include/AddInvoice.h \
     include/CustomItemDelegate.h \

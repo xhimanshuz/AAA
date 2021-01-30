@@ -731,7 +731,7 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
     strList << rono
             << number
             << date
-            << getClientName(pcode.toInt())
+            << pcode
             << gramount
             << disrate
             << disamount
@@ -961,7 +961,7 @@ void SQLiteHandler::setUpModels()
     clientsModel->setHeaderData(8, Qt::Horizontal, "GST");
     clientsModel->setHeaderData(9, Qt::Horizontal, "Pin Code");
 
-    roModel = new QSqlTableModel;
+    roModel = new ROTableModel;
     roModel->setTable("ro");
     roModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
     roModel->select();
@@ -1060,7 +1060,6 @@ void SQLiteHandler::setUpModels()
     else
     {
         auto q = query->lastError().text();
-        auto k = 1;
     }
     qDebug()<< "Model Setup";
 

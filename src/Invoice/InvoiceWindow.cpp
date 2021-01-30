@@ -1,4 +1,5 @@
 #include "InvoiceWindow.h"
+#include "HeaderUi.h"
 
 InvoiceWindow::InvoiceWindow(const QString _client, const QStringList invno, const int rono, QWidget *parent) : QDialog(parent), islastSelectedMedia(false)
 {
@@ -26,7 +27,7 @@ InvoiceWindow::~InvoiceWindow()
 void InvoiceWindow::render()
 {
     mainLayout = new QVBoxLayout;
-
+    mainLayout->addWidget(new HeaderUi("INVOICE", "#1976D2", this));
     seachRoNo = new QComboBox;
     seachRoNo->addItems(io->sql->getRoList());
     seachRoNo->setEditable(true);

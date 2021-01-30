@@ -28,6 +28,7 @@ class PDFTronInterface
     QProcess *process;
     Configure *configure;
     void multiLine(int perLine, QString string, QString key, ContentReplacer& replacer, int loop = 3);
+    const std::string rightPadding(std::string string, int spaceSize);
 public:
     ~PDFTronInterface();
 

@@ -1,5 +1,6 @@
 #include "ReleaseOrder/AddReleaseOrder.h"
 #include "pdftroninterface.h"
+#include "HeaderUi.h"
 
 
 AddReleaseOrder::AddReleaseOrder(QWidget *parent): QDialog(parent)
@@ -29,7 +30,7 @@ void AddReleaseOrder::render()
     mainLayout = new QVBoxLayout;
     auto mainHBox = new QHBoxLayout;
 
-    mainLayout->addWidget(new QLabel("<h1>Add New Release Order</h1>"));
+    mainLayout->addWidget(new HeaderUi("Add New Release Order", "#212121", this));
 
     roNo = new QLineEdit(this);
     roNo->setText(QString::number(io->sql->getNewRoNumber()));

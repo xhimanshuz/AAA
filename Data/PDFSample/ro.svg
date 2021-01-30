@@ -73,8 +73,8 @@
      id="namedview4"
      showgrid="false"
      inkscape:zoom="2.1385906"
-     inkscape:cx="410.56371"
-     inkscape:cy="554.42383"
+     inkscape:cx="409.52004"
+     inkscape:cy="662.48886"
      inkscape:window-x="0"
      inkscape:window-y="22"
      inkscape:window-maximized="0"
@@ -715,7 +715,7 @@
          id="tspan234"
          x="112.9203"
          y="556.30957"
-         style="stroke-width:0.75;font-weight:bold">[AMOUNT_2]</tspan></text><text
+         style="stroke-width:0.75;font-weight:normal">[AMOUNT_2]</tspan></text><text
        xml:space="preserve"
        style="font-size:9.99998px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="47.840775"
@@ -725,7 +725,7 @@
          id="tspan239"
          x="47.840775"
          y="556.41699"
-         style="stroke-width:0.75;font-weight:bold">[DATE]</tspan></text><text
+         style="stroke-width:0.75;font-weight:normal">[DATE]</tspan></text><text
        xml:space="preserve"
        style="font-size:9.99998px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="190.07567"
@@ -889,7 +889,7 @@
          x="365.09775"
          y="454.2388"
          style="stroke-width:0.671799"
-         id="tspan283"></tspan><tspan
+         id="tspan283" /><tspan
          sodipodi:role="line"
          x="365.09775"
          y="465.43542"

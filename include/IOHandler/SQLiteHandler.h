@@ -12,6 +12,7 @@
 #include <QList>
 #include <QMapIterator>
 #include <QMessageBox>
+#include "ROSqlTableModel.h"
 
 class SQLiteHandler : public QObject
 {
@@ -24,7 +25,7 @@ class SQLiteHandler : public QObject
     QSqlQueryModel *jobTypeModel;
     QSqlTableModel *mediaHouseModel;
     QSqlTableModel *clientsModel;
-    QSqlTableModel *roModel;
+    ROTableModel *roModel;
     QSqlTableModel *paymentModel;
     QSqlTableModel *receiptModel;
     QSqlTableModel *mediaBillModel;
