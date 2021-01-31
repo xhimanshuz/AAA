@@ -20,7 +20,7 @@ void AAA::render()
 {
     exit = new QAction("Exit");
     menuBar()->addMenu("File")->addAction(exit);
-    menuBar()->setStyleSheet("color: white; background-color: #D32F2F");
+    menuBar()->setStyleSheet("color: white; background-color: #424242");
 
     toolBar = new QToolBar("ToolBar");
     newJobType = new QAction("New Job Type");
@@ -76,7 +76,7 @@ void AAA::render()
 
     mainLayout = new QVBoxLayout;
     mainLayout->setMargin(0);
-    mainLayout->addWidget(new HeaderUi("ANTHEM ADVERTSING AGENCY", "#F44336", this));
+    mainLayout->addWidget(new HeaderUi("ANTHEM ADVERTSING AGENCY", "#212121", this));
 
     auto mainLayout2 = new QVBoxLayout;
     mainLayout2->addWidget(toolBar);
