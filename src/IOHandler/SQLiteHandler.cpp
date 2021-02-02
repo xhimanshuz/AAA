@@ -816,7 +816,7 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
         auto oldinvno = query->value(0).toString();
         if(!oldinvno.contains(invno))
         {
-            oldinvno+= ","+invno;
+            oldinvno+= (invno+",");
         }
         invno = oldinvno;
     }

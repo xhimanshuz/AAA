@@ -194,7 +194,8 @@ void PDFTronInterface::printInvoice(QStringList dataList, QStringList roDetail)
 
 
     replacer.AddString(QString("RONO").toStdString(), dataList.at(0).toStdString());
-    replacer.AddString(QString("MEDIA_CENTRE").toStdString(), roDetail.at(4).toStdString());
+    multiLine(23, roDetail.at(4),"MEDIA_CENTRE", replacer);
+//    replacer.AddString(QString("MEDIA_CENTRE").toStdString(), roDetail.at(4).toStdString());
     replacer.AddString(QString("DATE").toStdString(), dataList.at(2).toStdString());
     multiLine(15, roDetail.at(12), "SIZE_DUR", replacer);
     multiLine(15, dataList.at(16), "TOTAL_DUR", replacer);

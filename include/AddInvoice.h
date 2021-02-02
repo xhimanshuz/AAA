@@ -65,7 +65,7 @@ public:
     explicit AddInvoice(QWidget *parent = nullptr, const int _invno = 0, const int rono = 0);
     virtual ~AddInvoice();
 
-    void setValueFromNumbers(const QStringList invnoList);
+    void setValueFromNumbers(QStringList invnoList);
     void setValue(const QStringList billList);
     void setValueFromRO(const QStringList roList);
     void setDefaultValue();

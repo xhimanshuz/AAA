@@ -147,6 +147,8 @@ void AddInvoice::setupSignal()
     connect(print, &QPushButton::clicked, [this]{
         auto invoiceList = io->sql->getInvoiceList(invoiceNoCurrent->text().toInt());
         auto roData = io->sql->getROStringList(roNo->text().toInt());
+        if(invoiceList.empty())
+            return ;
         auto client = io->sql->getClientRow(invoiceList.at(3).toInt());
         invoiceList << client[1]<< client[6]+", "+client[7]<< client[8];
         if(!invoiceList.isEmpty())
@@ -395,8 +397,10 @@ AddInvoice::~AddInvoice()
 
 }
 
-void AddInvoice::setValueFromNumbers(const QStringList invnoList)
+void AddInvoice::setValueFromNumbers(QStringList invnoList)
 {
+    if(invnoList.last() == "")
+        invnoList.pop_back();
     invoiceNo->addItems(invnoList);
     invoiceNo->setCurrentIndex(0);
 
