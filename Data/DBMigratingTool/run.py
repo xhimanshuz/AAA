@@ -94,14 +94,15 @@ def parties():
 	"city"	TEXT,
 	"state"	TEXT,
 	"gst"	TEXT,
-	"pincode"	INTEGER,
+        "stateCode" TEXT,
+        "pincode"	INTEGER,
         PRIMARY KEY("id" AUTOINCREMENT)
 );""" )
     conn.commit()
 
     for x in pl:
         print(f"[>>] {x}")
-        cur.execute(f'INSERT INTO "clients"("id","name","contactperson","phone","email","address","city","state","gst","pincode") VALUES ("{x[0]}","{x[1]}","","{x[2]}","{x[3]}","{x[4]}","{x[5]}","{x[6]}","{x[7]}","{x[8]}");')
+        cur.execute(f'INSERT INTO "clients"("id","name","contactperson","phone","email","address","city","state","gst","stateCode","pincode") VALUES ("{x[0]}","{x[1]}","{x[2]}","{x[3]}","{x[4]}","{x[5]}","{x[6]}","{x[7]}","{x[8]}","{x[9]}","");')
 
     conn.commit()
     
