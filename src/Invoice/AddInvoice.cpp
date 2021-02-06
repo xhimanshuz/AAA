@@ -16,7 +16,6 @@ QComboBox *AddInvoice::getClients() const
 
 void AddInvoice::render()
 {
-
     roNo = new QLineEdit;
     roNo->setReadOnly(true);
     invoiceNo = new QComboBox;
@@ -150,7 +149,7 @@ void AddInvoice::setupSignal()
         if(invoiceList.empty())
             return ;
         auto client = io->sql->getClientRow(invoiceList.at(3).toInt());
-        invoiceList << client[1]<< client[6]+", "+client[7]<< client[8];
+        invoiceList << client[1]<< client[5]<<client[6] + ", "+ client[7];
         if(!invoiceList.isEmpty())
             PDFTronInterface::get()->printInvoice(invoiceList, roData);
     });
@@ -260,7 +259,7 @@ void AddInvoice::setValue(const QStringList billList)
 
     date->setDate(QDate::fromString(billList.at(2), "dd/MM/yyyy"));
     clients->setCurrentText(io->sql->getClientName(billList.at(3).toInt()));
-    clientsEdit->setText(billList.at(3));
+    clientsEdit->setText(io->sql->getClientName(billList.at(3).toInt()));
     grossAmt->setText(billList.at(4));
     discountPerc->setValue(billList.at(5).toDouble());
 //    discount->setText(billList.at(6));

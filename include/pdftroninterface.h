@@ -12,6 +12,7 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <QProcess>
+#include <QDir>
 
 using namespace std;
 using namespace pdftron;

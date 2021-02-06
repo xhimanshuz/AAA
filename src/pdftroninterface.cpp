@@ -152,6 +152,7 @@ void PDFTronInterface::printReceipt(QStringList detailList, QStringList roDetail
 
 void PDFTronInterface::multiLine(int perLine, QString string, QString key, ContentReplacer& replacer, int loop)
 {
+    QStringList strList;
     std::string str{""};
     for(auto i=0; i<loop; i++)
     {
@@ -160,9 +161,15 @@ void PDFTronInterface::multiLine(int perLine, QString string, QString key, Conte
         else
         {
             str = string.toStdString().substr(i*perLine, perLine);
+            if(i > 0 && !str.empty())
+                strList[i-1]+="-";
         }
-        replacer.AddString(QString("%0_%1").arg(key).arg(i).toStdString(), str);
+        strList << str.data();
     }
+
+    int i =0;
+    for(auto str: strList)
+        replacer.AddString(QString("%0_%1").arg(key).arg(i++).toStdString(), str.toStdString());
 }
 
 const string PDFTronInterface::rightPadding(std::string string, int spaceSize)
@@ -186,6 +193,7 @@ void PDFTronInterface::printInvoice(QStringList dataList, QStringList roDetail)
 {
     std::string saveFile;
     //    try {
+
     PDFDoc doc(QString(configure->getSamepleFileLocation()+"/invoice.pdf").toStdString());
     doc.InitSecurityHandler();
 
@@ -213,7 +221,8 @@ void PDFTronInterface::printInvoice(QStringList dataList, QStringList roDetail)
     replacer.AddString(QString("IGST").toStdString(), rightPadding(dataList.at(12).toStdString(), 20));
     replacer.AddString(QString("INVOICE_AMT").toStdString(), rightPadding(dataList.at(14).toStdString(), 20));
     replacer.AddString(QString("CLIENT").toStdString(), dataList.at(17).toStdString());
-    replacer.AddString(QString("CLIENT_ADDRESS").toStdString(), dataList.at(18).toStdString());
+    multiLine(60, dataList.at(18), "CLIENT_ADDRESS", replacer);
+//    replacer.AddString("CLIENT_ADDRESS", dataList.at(18).toStdString());
     replacer.AddString(QString("CLIENT_CITY").toStdString(), dataList.at(19).toStdString());
     replacer.AddString(QString("INVOICE_DATE").toStdString(), dataList.at(2).toStdString());
     replacer.AddString(QString("INVOICE_NO").toStdString(), dataList.at(1).toStdString());
