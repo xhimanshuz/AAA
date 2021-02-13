@@ -223,16 +223,16 @@ void PDFTronInterface::printInvoice(QStringList dataList, QStringList roDetail)
     replacer.AddString(QString("CLIENT").toStdString(), dataList.at(17).toStdString());
     multiLine(60, dataList.at(18), "CLIENT_ADDRESS", replacer);
 //    replacer.AddString("CLIENT_ADDRESS", dataList.at(18).toStdString());
-    replacer.AddString(QString("CLIENT_CITY").toStdString(), dataList.at(19).toStdString());
+    replacer.AddString(QString("CLIENT_CITY").toStdString(), (dataList.at(19)+", "+dataList[20]).toStdString());
     replacer.AddString(QString("INVOICE_DATE").toStdString(), dataList.at(2).toStdString());
     replacer.AddString(QString("INVOICE_NO").toStdString(), dataList.at(1).toStdString());
     replacer.AddString(QString("CAPTION").toStdString(), roDetail.at(9).toStdString());
     replacer.AddString(QString("STATE").toStdString(), dataList.at(0).toStdString());
-    replacer.AddString(QString("CODE").toStdString(), "09");
+    replacer.AddString(QString("CODE").toStdString(), dataList[22].toStdString());
     multiLine(40, dataList.at(15), "REMARK", replacer, 4);
     //            replacer.AddString(QString("REMARK").toStdString(), dataList.at(15).toStdString());
-    replacer.AddString(QString("STATE").toStdString(), dataList[21].toStdString());
-    replacer.AddString(QString("GSTIN").toStdString(), dataList[20].toStdString());
+    replacer.AddString(QString("STATE").toStdString(), dataList[20].toStdString());
+    replacer.AddString(QString("GSTIN").toStdString(), dataList[21].toStdString());
 
 
     replacer.Process(page);
