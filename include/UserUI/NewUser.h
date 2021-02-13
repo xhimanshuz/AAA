@@ -37,6 +37,7 @@ class NewUser : public QWidget
     QComboBox *city;
     QComboBox *state;
     QLineEdit *gstin;
+    QLineEdit *stateCode;
     QLineEdit *pinCode;
     QPushButton *save;
     QPushButton *clear;

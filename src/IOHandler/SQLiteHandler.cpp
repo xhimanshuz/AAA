@@ -5,20 +5,22 @@
 SQLiteHandler::SQLiteHandler(QObject *parent) : QObject(parent)
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
+    locationDb = QSqlDatabase::addDatabase("QSQLITE", "location");
     reloadDB();
-
 }
 
 void SQLiteHandler::reloadDB()
 {
     db.setDatabaseName("AAA.db");
     if(!db.open())
-    {
-        qDebug()<< db.lastError();
-        return;
-    }
+        throw std::runtime_error("Error in opening Database AAA.db");
     qDebug()<< "Successfully connected!";
-    query = new QSqlQuery;
+    query = new QSqlQuery(db);
+
+    locationDb.setDatabaseName("location.db");
+    if(!locationDb.open())
+        throw std::runtime_error("Error in opening Database location.db");
+    lquery = new QSqlQuery(locationDb);
 
     setUpModels();
 }
@@ -220,6 +222,7 @@ QStringList SQLiteHandler::getClientRow(const int id)
         << query->value("city").toString()
         << query->value("state").toString()
         << query->value("GST").toString()
+        << query->value("stateCode").toString()
         << query->value("pincode").toString();
     }
 
@@ -242,7 +245,7 @@ bool SQLiteHandler::insertClientRow(const QStringList &strList)
     {
         auto name = strList[1];
         auto address = strList[5];
-        query->prepare("UPDATE clients SET name = :name, contactPerson = :contactPerson, phone = :phone, email = :email, address = :address, city = :city, state = :state, GST = :GST, pincode = :pincode WHERE id = :id");
+        query->prepare("UPDATE clients SET name = :name, contactPerson = :contactPerson, phone = :phone, email = :email, address = :address, city = :city, state = :state, GST = :GST, stateCode = :stateCode, pincode = :pincode WHERE id = :id");
         query->bindValue(":id", strList.at(0));
         query->bindValue(":name", strList.at(1));
         query->bindValue(":contactPerson", strList.at(2));
@@ -252,11 +255,12 @@ bool SQLiteHandler::insertClientRow(const QStringList &strList)
         query->bindValue(":city", strList.at(6));
         query->bindValue(":state", strList.at(7));
         query->bindValue(":GST", strList.at(8));
-        query->bindValue(":pincode", strList.at(9));
+        query->bindValue(":stateCode", strList.at(9));
+        query->bindValue(":pincode", strList.at(10));
     }
     else // else do INSERT
     {
-        query->prepare("INSERT INTO clients (name, contactPerson, phone, email, address, city, state, GST, pincode) VALUES (:name, :contactPerson, :phone, :email, :address, :city, :state, :GST, :pincode)");
+        query->prepare("INSERT INTO clients (name, contactPerson, phone, email, address, city, state, GST, stateCode, pincode) VALUES (:name, :contactPerson, :phone, :email, :address, :city, :state, :GST, :stateCode, :pincode)");
         query->bindValue(":name", strList.at(1));
         query->bindValue(":contactPerson", strList.at(2));
         query->bindValue(":phone", strList.at(3));
@@ -265,7 +269,8 @@ bool SQLiteHandler::insertClientRow(const QStringList &strList)
         query->bindValue(":city", strList.at(6));
         query->bindValue(":state", strList.at(7));
         query->bindValue(":GST", strList.at(8));
-        query->bindValue(":pincode", strList.at(9));
+        query->bindValue(":stateCode", strList.at(9));
+        query->bindValue(":pincode", strList.at(10));
     }
     if(auto result = query->exec())
         return result;
@@ -912,6 +917,64 @@ const QStringList SQLiteHandler::getConfigList() const
         qDebug()<< "Exception Occured"<< e.what();
     }
     return strList;
+}
+
+QStringList SQLiteHandler::getStates() const
+{
+    QStringList statesList;
+    try
+    {
+        lquery->exec("SELECT DISTINCT state FROM Location ORDER BY state;");
+        while(lquery->next())
+            statesList << lquery->value(0).toString();
+    }
+    catch(std::exception &ex)
+    {
+        qDebug()<< "Exception Occured"<< ex.what();
+        return {};
+    }
+    return statesList;
+}
+
+QStringList SQLiteHandler::getCities(const QString state) const
+{
+    QStringList statesList;
+    try
+    {
+        lquery->exec(QString("SELECT DISTINCT city FROM Location WHERE state = '%0' ORDER BY city;").arg(state));
+        while(lquery->next())
+            statesList << lquery->value(0).toString();
+    }
+    catch(std::exception &ex)
+    {
+        qDebug()<< "Exception Occured"<< ex.what();
+        return {};
+    }
+    return statesList;
+}
+
+QString SQLiteHandler::getPinCode(QString city) const
+{
+    try
+    {
+        lquery->exec(QString("SELECT pincode FROM Location WHERE city = '%0';").arg(city));
+        if(lquery->next())
+            return lquery->value(0).toString();
+        return "";
+    }
+    catch(std::exception &ex)
+    {
+        qDebug()<< "Exception Occured"<< ex.what();
+        return "";
+    }
+}
+
+QString SQLiteHandler::getStateCode(QString state) const
+{
+    lquery->exec(QString("SELECT stateCode FROM Location WHERE state = '%0' LIMIT 1;").arg(state));
+    if(lquery->next())
+        return lquery->value(0).toString();
+    return "";
 }
 
 const QString SQLiteHandler::combineNumber(const QStringList &numberList)

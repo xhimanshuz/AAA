@@ -7,6 +7,47 @@ database = "AAA.db"
 conn = None
 cur = None
 
+stateCode = {
+    "JAMMU & KASHMIR":"01",
+    "HIMACHAL PRADESH":"02",
+    "PUNJAB":"03",
+    "CHANDIGARH":"04",
+    "UTTARAKHAND":"05",
+    "HARYANA":"06",
+    "DELHI":"07",
+    "RAJASTHAN":"08",
+    "UTTAR PRADESH":"09",
+    "BIHAR":"10",
+    "SIKKIM":"11",
+    "ARUNACHAL PRADESH":"12",
+    "NAGALAND":"13",
+    "MANIPUR":"14",
+    "MIZORAM":"15",
+    "TRIPURA":"16",
+    "MEGHALAYA":"17",
+    "ASSAM":"18",
+    "WEST BENGAL":"19",
+    "JHARKHAND":"20",
+    "ODISHA":"21",
+    "CHATTISGARH":"22",
+    "MADHYA PRADESH":"23",
+    "GUJARAT":"24",
+    "DAMAN & DIU":"26",
+    "DADRA & NAGAR HAVELI":"26",
+    "MAHARASHTRA": "27",
+    "ANDHRA PRADESH":"28",
+    "KARNATAKA":"29",
+    "GOA":"30",
+    "LAKSHADWEEP":"31",
+    "KERALA":"32",
+    "TAMIL NADU":"33",
+    "PONDICHERRY":"34",
+    "ANDAMAN & NICOBAR ISLANDS":"35",
+    "TELANGANA":"36",
+    "ANDHRA PRADESH":"37",
+    "LADAKH": "38"   
+}
+
 def toInt(value):
     try:
         if value == '': return 0
@@ -27,8 +68,29 @@ def csvToList(fileStr):
         for x in cr:
             # print(x)
             list.append(x)
+        print(list[0])
         del list[0]
     return list
+
+def csvToListDic(fileStr):
+    list = []
+    with open(fileStr, 'r', encoding='utf-8') as f:
+        cr = csv.reader(f)
+        stateDic = {}
+        citydic = {}
+        pcd = {}
+        cr.__next__()
+        l = []
+        for x in cr:
+            # l.append(x)
+                # print(x)
+            pcd[x[1]] = {"pincode": x[1], "city": x[7], "state":x[9], "scode": stateCode[x[9]] }
+    
+    return pcd
+            # citydic[x[7]] = {"pincode": x[1], "city": x[7], "state":x[9], "scode": stateCode[x[9]] }
+        # for pc in pcd:
+            # stateDic[pcd[]]
+            # stateDic[x[9]] = citydic[x[7]]
 
 def toDate(timeStr):
     if len(timeStr) == 0:
@@ -65,6 +127,8 @@ def mediaHouse():
 
 
     for x in mhl:
+        if x[6] == 'UP': x[6] = 'UTTAR PRADESH'
+        if x[6] in stateCode.keys(): x[8] = stateCode[x[6]]
         print(f"[>>] {x}")
         cur.execute(f'INSERT INTO "mediaHouse"("id","name","contactPerson","phone","email","address","city","state","GST","SC") VALUES ("{x[0]}","{x[1]}","","{x[2]}","{x[3]}","{x[4]}","{x[5]}","{x[6]}","{x[7]}","{x[8]}");')
     conn.commit()
@@ -101,6 +165,10 @@ def parties():
     conn.commit()
 
     for x in pl:
+        if x[7] == "UP": 
+            x[7] = "UTTAR PRADESH"
+        if x[7] in stateCode.keys():
+            x[9] = stateCode[x[7]]
         print(f"[>>] {x}")
         cur.execute(f'INSERT INTO "clients"("id","name","contactperson","phone","email","address","city","state","gst","stateCode","pincode") VALUES ("{x[0]}","{x[1]}","{x[2]}","{x[3]}","{x[4]}","{x[5]}","{x[6]}","{x[7]}","{x[8]}","{x[9]}","");')
 
@@ -434,7 +502,22 @@ CREATE TABLE "ro" (
     conn.commit()                                                                                                                                                                                                                                                                                                                                                                                                                                                #({x[0]},{x[1]},"{x[2]}",{x[3]},"{x[4]}",{x[5]},"{x[6]}","{x[7]}","{x[8]}","{x[9]}","{x[10]}","{x[11]}","{x[12]}","{x[13]}","{x[14]}",{x[15]},{x[16]},{x[17]},"{x[18]}",{x[19]},{x[20]},"{x[21]}",{x[22]},{x[23]},{x[24]},{x[25]},{x[26]},{x[27]},{x[28]},{x[29]},{x[30]},{x[31]},{x[32]},{x[33]},{x[34]},{x[35]})
 #    
 
-import threading
+def location():
+    ll = csvToListDic("all_india_pin_code.csv")
+    cur.execute("""
+        CREATE TABLE 'Location' (
+        "pincode" INTEGER,
+        'state' TEXT,
+        'city' TEXT,
+        'stateCode' TEXT,
+        PRIMARY KEY("pincode")
+        );
+        """)
+    conn.commit()
+    for pc in ll:
+        print(f"[>>] {pc} {ll[pc]}")
+        cur.execute(f"""INSERT INTO "Location" ("pincode","state","city","stateCode") VALUES({pc}, "{ll[pc]['state']}","{ll[pc]['city']}", "{ll[pc]['scode']}");""")
+    conn.commit()
 
 def main():
     d = datetime.datetime.now()
@@ -442,6 +525,7 @@ def main():
     global cur
     conn = sqlite3.connect(database)
     cur = conn.cursor()
+    # location()
     ro()
     receipt()
     invoice()
@@ -453,15 +537,14 @@ def main():
     conn.close()
     print(f"Time: {datetime.datetime.now() - d}")
 
-try:
-    import os
-    if os.path.exists(database):
-        print(f"{database} Exist, Removing it")
-        os.remove(database)
-    main()
-           
-    print("----->> FINISHED SUCESSFULLY <<-------")
-except Exception as e:
-    print(f"Error Occured, {e}")
+import os
+if os.path.exists(database):
+    print(f"{database} Exist, Removing it")
+    os.remove(database)
+main()
+       
+print("----->> FINISHED SUCESSFULLY <<-------")
+# except Exception as e:
+    # print(f"Error Occured, {e}")
 
 input("PRESS ENDTER TO CONTINUE")

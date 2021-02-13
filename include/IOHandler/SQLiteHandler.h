@@ -19,7 +19,9 @@ class SQLiteHandler : public QObject
     Q_OBJECT
 
     QSqlDatabase db;
+    QSqlDatabase locationDb;
     QSqlQuery *query;
+    QSqlQuery *lquery;
 
     QStringList *gstPerc;
     QSqlQueryModel *jobTypeModel;
@@ -103,6 +105,11 @@ public:
 
     bool setConfig(const QStringList &configList);
     const QStringList getConfigList() const;
+
+    QStringList getStates() const;
+    QStringList getCities(const QString state) const;
+    QString getPinCode(QString city) const;
+    QString getStateCode(QString state) const;
 
     const QString combineNumber(const QStringList &numberList);
 signals:

@@ -26,7 +26,7 @@ void UserWindow::render()
     populateData();
 //    usersList->setSelectionBehavior(QTableView::SelectRows);
     usersList->horizontalHeader()->setStretchLastSection(true);
-//    usersList->setSi
+    usersList->hideColumn(0);//    usersList->setSi
 
     newUserWidget = new NewUser(type, this);
     addNew = new QPushButton("Add New", this);
@@ -66,7 +66,7 @@ void UserWindow::setupSignal()
     connect(usersList, &QTableView::clicked, [this](const QModelIndex &index){
         if(index.row() == -1)
             return;
-
+        auto selectedIndex = usersList->currentIndex();
         auto id = modelData->data(modelData->index(index.row(), 0)).toInt();
         QStringList list = (type == USER_TYPE::MEDIA_HOUSE)?io->sql->getMediaHouseRow(id): io->sql->getClientRow(id);
         if(list.isEmpty())
@@ -74,6 +74,7 @@ void UserWindow::setupSignal()
         newUserWidget->setValues(list);
 
         populateData();
+        usersList->setCurrentIndex(selectedIndex);
     });
 
     connect(remove, &QPushButton::clicked, [this]{

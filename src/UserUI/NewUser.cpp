@@ -49,9 +49,12 @@ void NewUser::render()
     city = new QComboBox;
     city->setEditable(true);
     state = new QComboBox;
+    state->addItems(IOHandler::getInstance()->sql->getStates());
+    state->setCurrentText("");
     state->setEditable(true);
     gstin = new QLineEdit;
     pinCode = new QLineEdit;
+    stateCode = new QLineEdit;
     save = new QPushButton("Save");
     clear = new QPushButton("Clear");
 
@@ -66,14 +69,16 @@ void NewUser::render()
     form->addRow("Phone ", phone);
     form->addRow("Email ID ", email);
     form->addRow("Address ", address);
-    form->addRow("City ", city);
     form->addRow("State ", state);
+    form->addRow("City ", city);
     form->addRow("GSTIN No. ", gstin);
+    form->addRow("State Code", stateCode);
     form->addRow("Pin Code ", pinCode);
     form->addRow("", hbox);
     mainLayout->addLayout(form);
 
     signalSetup();
+    state->setCurrentText("UTTAR PRADESH");
     setValidator();
 }
 
@@ -94,7 +99,8 @@ void NewUser::setValues(const QStringList &strList)
     city->setCurrentText(strList[6]);
     state->setCurrentText(strList[7]);
     gstin->setText(strList[8]);
-    pinCode->setText(strList[9]);
+    stateCode->setText(strList[9]);
+    pinCode->setText(strList[10]);
 }
 
 void NewUser::setValues(const QList<QVariant> &items)
@@ -108,7 +114,8 @@ void NewUser::setValues(const QList<QVariant> &items)
     city->setCurrentText(items.at(5).toString());
     state->setCurrentText(items.at(6).toString());
     gstin->setText(items.at(7).toString());
-    pinCode->setText(items.at(8).toString());
+    stateCode->setText(items.at(8).toString());
+    pinCode->setText(items.at(9).toString());
 }
 
 void NewUser::signalSetup()
@@ -116,7 +123,6 @@ void NewUser::signalSetup()
     connect(save, &QPushButton::clicked, [this]{
         if(!isValid())
             return;
-
         if(type == USER_TYPE::CLIENT)
             IOHandler::getInstance()->sql->insertClientRow(toStringList());
         else
@@ -127,6 +133,18 @@ void NewUser::signalSetup()
 
     connect(clear, &QPushButton::clicked, this, &NewUser::clearValues);
     connect(this, &NewUser::addNewClick, this, &NewUser::clearValues);
+
+    connect(state, &QComboBox::currentTextChanged, [&](const QString &state){
+        city->clear();
+        city->addItems(IOHandler::getInstance()->sql->getCities(state));
+        city->setCurrentText("");
+        stateCode->setText(IOHandler::getInstance()->sql->getStateCode(state));
+    });
+
+    connect(city, &QComboBox::currentTextChanged, [&](const QString &cityText){
+        pinCode->setText(IOHandler::getInstance()->sql->getPinCode(cityText));
+    });
+
 
 }
 
@@ -143,6 +161,7 @@ void NewUser::clearValues()
     city->clearEditText();
     state->clearEditText();
     gstin->clear();
+    stateCode->clear();
     pinCode->clear();
 }
 
@@ -158,5 +177,17 @@ bool NewUser::isValid()
 
 const QStringList NewUser::toStringList()
 {
-    return {QString::number(id), userName->text(), contactPerson->text(), phone->text(), email->text(), address->toPlainText(), city->currentText(), state->currentText(), gstin->text(), pinCode->text()};
+    return {
+                QString::number(id),
+                userName->text(),
+                contactPerson->text(),
+                phone->text(),
+                email->text(),
+                address->toPlainText(),
+                city->currentText(),
+                state->currentText(),
+                gstin->text(),
+                stateCode->text(),
+                pinCode->text()
+    };
 }
