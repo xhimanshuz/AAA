@@ -3,7 +3,7 @@ import sqlite3
 from sqlite3 import Error
 import datetime
 
-database = "AAA.db"
+database = "location.db"
 conn = None
 cur = None
 
@@ -525,15 +525,15 @@ def main():
     global cur
     conn = sqlite3.connect(database)
     cur = conn.cursor()
-    # location()
-    ro()
-    receipt()
-    invoice()
-    jobType()
-    parties()
-    payment()
-    mediaHouse()
-    mediaBill()
+    location()
+    #ro()
+    #receipt()
+    #invoice()
+    #jobType()
+    #parties()
+    #payment()
+    #mediaHouse()
+    #mediaBill()
     conn.close()
     print(f"Time: {datetime.datetime.now() - d}")
 
