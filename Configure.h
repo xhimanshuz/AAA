@@ -3,11 +3,13 @@
 
 #include <QString>
 #include <memory>
-#include "IOHandler/SQLiteHandler.h"
 
+#include "Log.h"
+#include "IOHandler/SQLiteHandler.h"
 
 class Configure
 {
+    std::shared_ptr<spdlog::logger> log;
     QString pdfApplication;
     QString databaseLocation;
     QString samepleFileLocation;
@@ -16,13 +18,16 @@ class Configure
     QString receiptSaveLocation;
     static Configure* instance;
 
-    Configure() {}
-    Configure(const Configure&) {}
+    Configure() {log = spdlog::get("dlog");}
+    Configure(const Configure&) {
+        log = spdlog::get("dlog");
+    }
 
 public:
     virtual ~Configure(){}
     static Configure* get()
     {
+
         if(!instance)
             instance = new Configure;
         return instance;
@@ -48,8 +53,22 @@ public:
         setInvoiceSaveLocation(strList[3]);
         setReceiptSaveLocation(strList[4]);
         setSamepleFileLocation(strList[5]);
+
+        log->info("Config Modified");
+        printConfig();
     }
 
+    void printConfig()
+    {
+        log->info("*********** CONFIG ***********"
+                  "# PDF Application: {}\n"
+                  "# Database location: {}\n"
+                  "# RO Save Location: {}\n"
+                  "# Invoice Save Location: {}\n"
+                  "# Receipt Location: {}\n"
+                  "# Sample Data Location: {}"
+                  "", str(pdfApplication), str(databaseLocation), str(roSaveLocation), str(invoiceSaveLocation), str(receiptSaveLocation), str(samepleFileLocation));
+    }
 //    QString getDatabaseLocation() const;
 //    void setDatabaseLocation(const QString &value);
 //    QString getSamepleFileLocation() const;
@@ -66,32 +85,32 @@ public:
 
     QString getRoSaveLocation() const
     {
-    return roSaveLocation;
+        return roSaveLocation;
     }
 
     void setRoSaveLocation(const QString &value)
     {
-    roSaveLocation = value;
+        roSaveLocation = value;
     }
 
     QString getInvoiceSaveLocation() const
     {
-    return invoiceSaveLocation;
+        return invoiceSaveLocation;
     }
 
     void setInvoiceSaveLocation(const QString &value)
     {
-    invoiceSaveLocation = value;
+        invoiceSaveLocation = value;
     }
 
     QString getReceiptSaveLocation() const
     {
-    return receiptSaveLocation;
+        return receiptSaveLocation;
     }
 
     void setReceiptSaveLocation(const QString &value)
     {
-    receiptSaveLocation = value;
+        receiptSaveLocation = value;
     }
 
     QString getDatabaseLocation() const
@@ -106,5 +125,4 @@ public:
 };
 
 
-#endif // CONFIG_H
-
+#endif

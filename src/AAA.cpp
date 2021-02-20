@@ -1,19 +1,24 @@
 #include <QSqlDatabase>
 
 #include "AAA.h"
+#include <iostream>
 #include "HeaderUi.h"
 #include "pdftroninterface.h"
 #include "Configure.h"
 Configure* Configure::instance = nullptr;
 
 AAA::AAA(QWidget *parent) : QMainWindow(parent)
-{
+{    
     appConfigure();
     render();
     QWidget *mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
     setCentralWidget(mainWidget);
+}
 
+AAA::~AAA()
+{
+    log->info("Application Closed {}", __FUNCTION__);
 }
 
 void AAA::render()
@@ -118,6 +123,7 @@ void AAA::setupSignals()
 {
 
     connect(newJobType, &QAction::triggered, [this]{
+        log->debug("New Job Type Clicked");
         JobType jobType;
         jobType.exec();
 
@@ -132,6 +138,7 @@ void AAA::setupSignals()
     });
 
     connect(newClient, &QAction::triggered, [this]{
+        log->info("New Client Clicked");
         UserWindow client(USER_TYPE::CLIENT, this);
         client.exec();
 
@@ -294,6 +301,8 @@ int AAA::getRoNumber()
 
 void AAA::appConfigure()
 {
+    log = spdlog::get("dlog");
+    log->info("*********** Application started ***********");
     config = Configure::get();
     io = IOHandler::getInstance();
     config->setConfigFromList(io->sql->getConfigList());

@@ -1,9 +1,10 @@
 #include "IOHandler/SQLiteHandler.h"
-#include <QDebug>
 #include "Configure.h"
 
 SQLiteHandler::SQLiteHandler(QObject *parent) : QObject(parent)
 {
+    log = spdlog::get("dlog");
+
     db = QSqlDatabase::addDatabase("QSQLITE");
     locationDb = QSqlDatabase::addDatabase("QSQLITE", "location");
     reloadDB();
@@ -14,24 +15,26 @@ void SQLiteHandler::reloadDB()
     db.setDatabaseName("AAA.db");
     if(!db.open())
         throw std::runtime_error("Error in opening Database AAA.db");
-    qDebug()<< "Successfully connected!";
+    log->info("**** Successfully connected to AAA.db! ****");
     query = new QSqlQuery(db);
 
     locationDb.setDatabaseName("location.db");
     if(!locationDb.open())
         throw std::runtime_error("Error in opening Database location.db");
     lquery = new QSqlQuery(locationDb);
-
+    log->info("**** Successfully connected to location.db! ****");
     setUpModels();
 }
 
 QSqlQueryModel *SQLiteHandler::getJobTypeModel() const
 {
+    log->debug("{}()", __FUNCTION__);
     return jobTypeModel;
 }
 
 bool SQLiteHandler::insertJobType(const QString &newJobType, const QString &oldJobType)
 {
+    log->debug("{}(&{}, &{})", __FUNCTION__, str(newJobType), str(oldJobType));
     if(oldJobType == newJobType || newJobType.isEmpty())
         return true;
 
@@ -41,11 +44,14 @@ bool SQLiteHandler::insertJobType(const QString &newJobType, const QString &oldJ
     query->prepare("INSERT INTO jobType (name) VALUES (?)");
     query->addBindValue(newJobType);
     auto result = query->exec();
+    log->debug("RETURN: result::{}", result);
     return result;
 }
 
 bool SQLiteHandler::removeJobType(const QString &jobtype)
 {
+    log->debug("{}(&{})", __FUNCTION__, str(jobtype));
+
     query->prepare("DELETE FROM jobtype WHERE name = ?");
     query->addBindValue(jobtype);
     return query->exec();
@@ -53,50 +59,55 @@ bool SQLiteHandler::removeJobType(const QString &jobtype)
 
 int SQLiteHandler::getJobTypeCode(const QString &jobTypeName)
 {
+    log->debug("{}({})", __FUNCTION__, str(jobTypeName));
     query->exec(QString("SELECT id FROM jobType WHERE name = '%0'").arg(jobTypeName));
     if(!query->next())
     {
-        qDebug()<<query->lastError();
+        log->error(str(query->lastError().text()));
         return -1;
     }
     auto id = query->value(0).toInt();
+    log->info("RETURN: id::{}", id);
     return id;
 }
 
 QStringList SQLiteHandler::getJobTypeList()
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT name FROM jobType");
     QStringList strList;
     strList << "";
     while(query->next())
         strList << query->value(0).toString();
 
+    log->debug("RETURN: strList::{}", str(strList));
     return strList;
 }
 
 QSqlTableModel *SQLiteHandler::getMediaHouseModel() const
 {
+    log->debug("{}()", __FUNCTION__);
     return mediaHouseModel;
 }
 
 QStringList SQLiteHandler::getMediaHouseRow(const int id)
 {
+    log->debug("{}({})", __FUNCTION__, id);
     query->prepare("SELECT * FROM mediaHouse WHERE id = ?");
     query->addBindValue(id);
     query->exec();
 
-    QList<QVariant> list = query->boundValues().values();
-    qDebug()<< list<< list.size();
-    for(auto i = 0; i< list.size(); ++i)
-            qDebug()<< list.at(i);
+//    QList<QVariant> list = query->boundValues().values();
+//    qDebug()<< list<< list.size();
+//    for(auto i = 0; i< list.size(); ++i)
+//            qDebug()<< list.at(i);
 
-    QMapIterator<QString, QVariant> i(query->boundValues());
-    while(i.hasNext())
-    {
-        i.next();
-        qDebug()<< "Map"<< i.key() <<":"<< i.value();
-    }
-
+//    QMapIterator<QString, QVariant> i(query->boundValues());
+//    while(i.hasNext())
+//    {
+//        i.next();
+//        qDebug()<< "Map"<< i.key() <<":"<< i.value();
+//    }
     QStringList strList;
     while(query->next())
     {
@@ -112,25 +123,23 @@ QStringList SQLiteHandler::getMediaHouseRow(const int id)
         << query->value("GST").toString()
         << query->value("SC").toString();
     }
-
+    log->info("RETURN {}", str(strList));
     return strList;
-
 }
 
 bool SQLiteHandler::insertMediaHouseRow(const QStringList &strList)
 {
     // check if already exist or not
+    log->debug("{}({})", __FUNCTION__, str(strList));
     query->prepare("SELECT id FROM mediaHouse WHERE id = ?");
     query->addBindValue(strList.at(0).toInt());
     if(!query->exec())
-    {
-        qDebug()<< query->lastError();
-        exit(-1);
-    }
+        throw std::logic_error(query->lastError().text().toStdString());
 
     // If already exist then update
     if(query->next())
     {
+        log->debug("MediaHouse with id = {} found, Update mediaHouseData", strList.at(0).toInt());
         auto name = strList[1];
         auto address = strList[5];
         query->prepare("UPDATE mediaHouse SET name = :name, contactPerson = :contactPerson, phone = :phone, email = :email, address = :address, city = :city, state = :state, GST = :GST, SC = :SC WHERE id = :id");
@@ -147,6 +156,7 @@ bool SQLiteHandler::insertMediaHouseRow(const QStringList &strList)
     }
     else // else do INSERT
     {
+        log->debug("MediaHouse with id = {} not found, Inserting new mediaHouseData", strList.at(0).toInt());
         query->prepare("INSERT INTO mediaHouse (name, contactPerson, phone, email, address, city, state, GST, SC) VALUES (:name, :contactPerson, :phone, :email, :address, :city, :state, :GST, :SC)");
         query->bindValue(":name", strList.at(1));
         query->bindValue(":contactPerson", strList.at(2));
@@ -159,17 +169,21 @@ bool SQLiteHandler::insertMediaHouseRow(const QStringList &strList)
         query->bindValue(":SC", strList.at(9));
     }
     if(auto result = query->exec())
+    {
+        log->debug("RETURN: result::{}", result);
         return result;
+    }
     else
-        qDebug()<< query->lastError();
-    exit(-1);
+        throw std::logic_error(query->lastError().text().toStdString());
+    return false;
 }
 
 bool SQLiteHandler::removeMediHouseaRow(const int id)
 {
+    log->debug("{}({})", __FUNCTION__, id);
     if(!query->exec(QString("DELETE FROM mediaHouse WHERE id = %0").arg(id)))
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         return false;
     }
     return true;
@@ -177,34 +191,40 @@ bool SQLiteHandler::removeMediHouseaRow(const int id)
 
 int SQLiteHandler::getMediaHouseCode(const QString mediaHouseName)
 {
+    log->debug("{}({})", __FUNCTION__, str(mediaHouseName));
     query->exec(QString("SELECT id FROM mediaHouse WHERE name = '%0'").arg(mediaHouseName));
     if(!query->next())
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         return -1;
     }
     auto id = query->value(0).toInt();
+    log->debug("RETURN: id::{}", id);
     return id;
 }
 
 QStringList SQLiteHandler::getMediaHouseList()
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT name FROM mediaHouse order by name");
     QStringList strList;
     strList << "";
     while(query->next())
         strList << query->value(0).toString();
 
+    log->debug("RETURN: strList::{}", str(strList));
     return strList;
 }
 
 QSqlTableModel *SQLiteHandler::getClietModel() const
 {
+    log->debug("{}()", __FUNCTION__);
     return clientsModel;
 }
 
 QStringList SQLiteHandler::getClientRow(const int id)
 {
+    log->debug("{}(id::{})", __FUNCTION__, id);
     query->prepare("SELECT * FROM clients WHERE id = ?");
     query->addBindValue(id);
     query->exec();
@@ -226,17 +246,19 @@ QStringList SQLiteHandler::getClientRow(const int id)
         << query->value("pincode").toString();
     }
 
+    log->debug("RETURN: strList::{}", str(strList));
     return strList;
 }
 
 bool SQLiteHandler::insertClientRow(const QStringList &strList)
 {
+    log->debug("{}({})", __FUNCTION__, str(strList));
     // check if already exist or not
     query->prepare("SELECT id FROM clients WHERE id = ?");
     query->addBindValue(strList.at(0).toInt());
     if(!query->exec())
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         exit(-1);
     }
 
@@ -276,16 +298,16 @@ bool SQLiteHandler::insertClientRow(const QStringList &strList)
         return result;
     else
     {
-        auto error = query->lastError().text();
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
     }
 }
 
 bool SQLiteHandler::removeClientRow(const int id)
 {
+    log->debug("{}({})", __FUNCTION__, id);
     if(!query->exec(QString("DELETE FROM clients WHERE id = %0").arg(id)))
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         return false;
     }
     return true;
@@ -293,10 +315,11 @@ bool SQLiteHandler::removeClientRow(const int id)
 
 int SQLiteHandler::getClientCode(QString clientName)
 {
+    log->debug("{}({})", __FUNCTION__, str(clientName));
     query->exec(QString("SELECT id FROM clients WHERE name = '%0'").arg(clientName));
     if(!query->next())
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         return -1;
     }
     auto id = query->value(0).toInt();
@@ -305,34 +328,40 @@ int SQLiteHandler::getClientCode(QString clientName)
 
 const QString SQLiteHandler::getClientName(const int pcode)
 {
+    log->debug("{}({})", __FUNCTION__, pcode);
     query->exec(QString("SELECT name FROM clients WHERE id = %0").arg(pcode));
     if(!query->next())
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         return "";
     }
     auto name = query->value(0).toString();
+    log->debug("RETURN: name::{}", str(name));
     return name;
 }
 
 QStringList SQLiteHandler::getClientList()
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT name FROM clients order by name");
     QStringList strList;
     strList << "";
     while(query->next())
         strList << query->value(0).toString();
 
+    log->debug("RETURN: strList::{}", str(strList));
     return strList;
 }
 
 QSqlTableModel *SQLiteHandler::getRoModel() const
 {
+    log->debug("{}({})", __FUNCTION__);
     return roModel;
 }
 
 bool SQLiteHandler::insertRoData(QStringList dataList)
 {
+    log->debug("{}({})", __FUNCTION__, str(dataList));
     query->exec(QString("SELECT number FROM ro WHERE number = %0").arg(dataList.at(1)));
     if(!query->next())
     {
@@ -358,9 +387,7 @@ bool SQLiteHandler::insertRoData(QStringList dataList)
     }
     if(!query->exec())
     {
-        auto q = query->lastQuery().toStdString();
-        auto error = query->lastError().text();
-        qDebug()<< error;
+        log->error(str(query->lastError().text()));
         return false;
     }
     return true;
@@ -369,10 +396,11 @@ bool SQLiteHandler::insertRoData(QStringList dataList)
 
 const QStringList SQLiteHandler::getROStringList(const int id)
 {
+    log->debug("{}({})", __FUNCTION__, id);
     query->exec(QString("SELECT * FROM ro WHERE number = %0 order by number").arg(id));
     if(!query->next())
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         return {};
     }
 
@@ -380,11 +408,13 @@ const QStringList SQLiteHandler::getROStringList(const int id)
     for(auto i=0; i<37; i++)
         strList << query->value(i).toString();
 
+    log->debug("RETURN: strList::size({})", strList.size());
     return strList;
 }
 
 int SQLiteHandler::getNewRoNumber() const
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT MAX(number) FROM ro");
     if(query->next())
         return query->value(0).toInt()+1;
@@ -393,26 +423,30 @@ int SQLiteHandler::getNewRoNumber() const
 
 int SQLiteHandler::getNewRoCode() const
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT MAX(code) FROM ro");
     if(query->next())
         return query->value(0).toInt()+1;
-    qDebug()<< query->lastError();
+    log->error(str(query->lastError().text()));
     return -1;
 }
 
 QStringList SQLiteHandler::getRoList()
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT number FROM ro order by number");
     QStringList strList;
     strList << "";
     while(query->next())
         strList << query->value(0).toString();
 
+    log->debug("RETURN: strList::{}", str(strList));
     return strList;
 }
 
 bool SQLiteHandler::updateNumberToRo(const QString &numbers, const int ro, SQLiteHandler::ROIndex index)
 {
+    log->debug("{}(numbers::{}, ro::{})", __FUNCTION__, str(numbers), ro);
     QString columnName{""};
     switch (index)
     {
@@ -433,7 +467,7 @@ bool SQLiteHandler::updateNumberToRo(const QString &numbers, const int ro, SQLit
             break;
         default:
         {
-            qDebug()<< "Invalid Index";
+            log->info("Invalid Index");
             return false;
         }
     }
@@ -444,36 +478,27 @@ bool SQLiteHandler::updateNumberToRo(const QString &numbers, const int ro, SQLit
 
     if(!query->exec())
     {
-        auto q = query->lastError().text();
-        qDebug()<< q;
+        log->error(str(query->lastError().text()));
         return false;
     }
     return true;
-
-//    QString number{""};
-//    if(query->next())
-//        number = query->value(0).toString();
-
-
-
-
-
 }
 
 QSqlTableModel *SQLiteHandler::getMediaPaymentModel() const
 {
+    log->debug("{}()", __FUNCTION__);
     return paymentModel;
 }
 
 bool SQLiteHandler::insertMediaPayment(QList<QStringList> dataList, int rono)
 {
+    log->debug("{}( QList<StringList>::dataList::size({}), rono::{})", __FUNCTION__, dataList.size(), rono);
     float total{0};
     query->prepare("DELETE FROM media_payment where rono = ?");
     query->bindValue(0, rono);
     if(!query->exec())
     {
-        auto q = query->lastError();
-        qDebug()<< "Error in removing";
+        log->error("Error in Removing, {}", str(query->lastError().text()));
         return false;
     }
 
@@ -490,12 +515,10 @@ bool SQLiteHandler::insertMediaPayment(QList<QStringList> dataList, int rono)
             query->bindValue(":rono", rono);
         if(!query->exec())
         {
-            auto k = query->lastError().text();
-            qDebug()<<"Error in Inserting values in media_payment " << query->lastError().text();
+            log->error("Error in Inserting values in media_payment, {}", str(query->lastError().text()));
             return false;
         }
         total+= strList[2].toDouble();
-//        numberList.push_back(strList[0]);
     }
     
     query->prepare("UPDATE ro SET payamount = ? WHERE number = ?;");
@@ -503,18 +526,15 @@ bool SQLiteHandler::insertMediaPayment(QList<QStringList> dataList, int rono)
     query->bindValue(1, rono);
     if(!query->exec())
     {
-        auto q = query->lastError().text();
-        qDebug()<< q;
+        log->error(str(query->lastError().text()));
         return false;
     }
-//    updateNumberToRo(numberList, ROIndex::RECPT_NO);
-//    auto cn = combineNumber(numberList);
-
     return true;
 }
 
 QList<QStringList> SQLiteHandler::getMediaPaymentStringListByRono(int rono)
 {
+    log->debug("{}(rono::{})", __FUNCTION__, rono);
     query->exec(QString("SELECT id, date, amount, mode, chequeNo, bankname FROM media_payment WHERE rono = %0;").arg(rono));
 
     QList<QStringList> list;
@@ -525,22 +545,26 @@ QList<QStringList> SQLiteHandler::getMediaPaymentStringListByRono(int rono)
         list.append(strList);
     }
 
+    log->debug("RETURN: QList<QStringList>::strList::size({})", list.size());
     return list;
 }
 
 int SQLiteHandler::getNewMediaPaymentNumber()
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT MAX(id) FROM media_payment;");
 
     if(!query->next())
         return -1;
 
     auto number = query->value(0).toInt();
+    log->debug("RETURN: number::{}", number+1);
     return number+1;
 }
 
 QStringList SQLiteHandler::getMediaPaymentStringList(int mpId)
 {
+    log->debug("{}({})", __FUNCTION__, mpId);
     query->exec(QString("SELECT id, date, amount, mode, chequeNo, bankname FROM media_payment WHERE id = %0 order by id").arg(mpId));
 
     QStringList list;
@@ -549,23 +573,25 @@ QStringList SQLiteHandler::getMediaPaymentStringList(int mpId)
         list<< query->value(0).toString() << query->value(1).toString() << QString::number(query->value(2).toDouble()) << query->value(3).toString()<< query->value(4).toString()<< query->value(5).toString();
     }
 
+    log->debug("RETURN: list::{}", str(list));
     return list;
 }
 
 QSqlTableModel *SQLiteHandler::getPaymentReceiptModel() const
 {
+    log->debug("{}()", __FUNCTION__);
     return receiptModel;
 }
 
 bool SQLiteHandler::insertPaymentReceipt(QList<QStringList> dataList, int rono)
 {
+    log->debug("{}(QList<StringList>::dataList::size({}), {})", __FUNCTION__, dataList.size(), rono);
     QStringList idList;
     query->prepare("DELETE FROM payment_receipt where rono = ?");
     query->bindValue(0, rono);
     if(!query->exec())
     {
-        auto q = query->lastError();
-        qDebug()<< "Error in removing";
+        log->error("Error in removing payment_receipt, {}", str(query->lastError().text()));
         return false;
     }
 
@@ -584,8 +610,7 @@ bool SQLiteHandler::insertPaymentReceipt(QList<QStringList> dataList, int rono)
         query->bindValue(":rono", rono);
         if(!query->exec())
         {
-            auto err = query->lastError().text();
-            qDebug()<<"Error in Inserting values in receipt " << query->lastError();
+            log->error("Error in Inserting values in receipt, {}", str(query->lastError().text()));
             return false;
         }
         idList << strList[0];
@@ -598,17 +623,15 @@ bool SQLiteHandler::insertPaymentReceipt(QList<QStringList> dataList, int rono)
     query->bindValue(1, rono);
     if(!query->exec())
     {
-        auto q = query->lastError().text();
-        qDebug()<< q;
+        log->error(str(query->lastError().text()));
         return false;
     }
-
     return true;
-
 }
 
 QList<QStringList> SQLiteHandler::getPaymentReceiptStringListByRO(int rono)
 {
+    log->debug("{}({})", __FUNCTION__, rono);
     query->exec(QString("SELECT number, rcptdate, rcptamount, paymode, chqno, bankname, remark  FROM payment_receipt WHERE rono = %0;").arg(rono));
 
     QList<QStringList> list;
@@ -619,36 +642,42 @@ QList<QStringList> SQLiteHandler::getPaymentReceiptStringListByRO(int rono)
                 << query->value(6).toString();
         list.append(strList);
     }
-
+    log->debug("RETURN: QList<QStringList>::list::size({})", list.size());
     return list;
 }
 
 QStringList SQLiteHandler::getPaymentReceiptStringList(int prNo)
 {
+    log->debug("{}({})", __FUNCTION__, prNo);
      query->exec(QString("SELECT number, rcptdate, rcptamount, paymode, chqno, bankname, remark  FROM payment_receipt WHERE number = %0 order by number;").arg(prNo));
      if(!query->next())
          return {};
      QStringList strList = QStringList() << query->value(0).toString()<< query->value(1).toString() << QString::number(query->value(2).toDouble()) << query->value(3).toString() << query->value(4).toString()<< query->value(5).toString()
                          << query->value(6).toString();
+    log->debug("RETURN: strList::{}", str(strList));
      return strList;
 }
 
 int SQLiteHandler::getNewPaymentReceiptNumber()
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT MAX(number) FROM payment_receipt;");
     if(!query->next())
         return -1;
     auto number = query->value(0).toInt();
+    log->debug("RETURN: number::{}", number+1);
     return number+1;
 }
 
 QSqlTableModel *SQLiteHandler::getMediaBill() const
 {
+    log->debug("{}()", __FUNCTION__);
     return mediaBillModel;
 }
 
 QList<QStringList> SQLiteHandler::getMediaBillList(int rono)
 {
+    log->debug("{}({})", __FUNCTION__, rono);
     query->exec(QString("SELECT id, date, amount FROM mediaBill WHERE rono = %0 order by id;").arg(rono));
 
     QList<QStringList> list;
@@ -658,15 +687,16 @@ QList<QStringList> SQLiteHandler::getMediaBillList(int rono)
         strList << query->value(0).toString() << query->value(1).toString() << QString::number(query->value(2).toDouble());
         list.append(strList);
     }
-
+    log->debug("RETURN: QList<QStringList>::size({})", list.size());
     return list;
 }
 
 bool SQLiteHandler::insertMediaBill(QList<QStringList> dataList, int rono)
 {
+    log->debug("{}(QList<StringList>::dataList::size({}), {})", __FUNCTION__, dataList.size(), rono);
     if(!query->exec(QString("DELETE FROM mediaBill WHERE rono = %0;").arg(rono)))
     {
-        qDebug()<<"Error in deleting in Receipt: "<< query->lastError();
+        log->error("Error in deleting in Receipt, {}", str(query->lastError().text()));
         return false;
     }
     double total{0.0};
@@ -680,7 +710,7 @@ bool SQLiteHandler::insertMediaBill(QList<QStringList> dataList, int rono)
 
         if(!query->exec())
         {
-            qDebug()<<"Error in Inserting values in mediaBill " << query->lastError();
+            log->error("Error in Inserting values in mediaBill, {}", str(query->lastError().text()));
             return false;
         }
         total+= strList[2].toDouble();
@@ -691,8 +721,7 @@ bool SQLiteHandler::insertMediaBill(QList<QStringList> dataList, int rono)
     query->bindValue(1, rono);
     if(!query->exec())
     {
-        auto q = query->lastError().text();
-        qDebug()<< q;
+        log->error(str(query->lastError().text()));
         return false;
     }
     return true;
@@ -701,19 +730,21 @@ bool SQLiteHandler::insertMediaBill(QList<QStringList> dataList, int rono)
 
 QSqlQueryModel *SQLiteHandler::getInvoiceModel() const
 {
+    log->debug("{}()", __FUNCTION__);
     return generateBillModel;
 }
 
 QStringList SQLiteHandler::getInvoiceList(const int invno)
 {
+    log->debug("{}(invno::{})", __FUNCTION__, invno);
     query->exec(QString("SELECT rono, number, date, pcode, gramount, disrate, disamount, npamount, ratecgst, amountcgst, ratesgst, amountsgst, rateigst, amountigst, finalamount, remark, totalsizeduration FROM invoice WHERE number = %0 order by number").arg(invno));
     if(!query->next())
     {
-        qDebug()<<"Error for invoice id: "<< invno<< query->lastError();
+        log->error("Error for invoice id: {}, {}",invno, str(query->lastError().text()));
+        log->debug("RETURNING: QStringList.size(1)");
         return {};
     }
 
-//    auto gramount = query->value(4).toDouble();
     auto rono = query->value(0).toString();
     auto number = query->value(1).toString();
     auto date = query->value(2).toString();
@@ -751,16 +782,18 @@ QStringList SQLiteHandler::getInvoiceList(const int invno)
             << remark
             << totSizeDur;
 
+    log->debug("RETURN: strList::{}", str(strList));
     return strList;
 
 }
 
 bool SQLiteHandler::insertInvoiceList(QStringList strList)
 {
+    log->debug("{}({})", __FUNCTION__, str(strList));
     query->exec(QString("SELECT number FROM invoice WHERE number = %0").arg(strList.at(1).toInt()));
     if(!query->next())
     {
-        qDebug() << "[!] "<<strList.at(1).toInt()<<" Invoice number doesn't exist, so, Inserting new one!" << query->lastError();
+        log->debug("Invoice number doesn't exist, So Inserting new one!");
         query->prepare("INSERT INTO invoice ('rono','date', 'pcode', 'gramount', 'disrate','disamount', 'npamount', 'ratecgst','amountcgst','ratesgst','amountsgst','rateigst','amountigst','finalamount', 'remark', 'totalsizeduration') VALUES (:rono,:date,:pcode,:gramount,:disrate,:disamount,:npamount,:ratecgst,:amountcgst,:ratesgst,:amountsgst,:rateigst,:amountigst,:finalamount,:remark,:totalsizeduration)");
         query->bindValue(":rono", strList.at(0).toInt());
         query->bindValue(":date", strList.at(2));
@@ -781,7 +814,7 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
     }
     else
     {
-        qDebug()<<"[!] "<< strList.at(1).toInt()<<" Invoice number doesn't exist, so, Updating Existing one!";
+        log->debug("Invoice number exist. So, Updating Existing one");
         query->prepare("UPDATE invoice SET rono=:rono, date=:date, pcode=:pcode, gramount=:gramount, disrate=:disrate, disamount=:disamount, npamount=:npamount, ratecgst=:ratecgst, amountcgst=:amountcgst, ratesgst=:ratesgst, amountsgst=:amountsgst, rateigst=:rateigst, amountigst=:amountigst, finalamount=:finalamount, remark=:remark, totalsizeduration=:totalsizeduration WHERE number = :number");
         query->bindValue(":rono", strList.at(0).toInt());
         query->bindValue(":date", strList.at(2));
@@ -806,12 +839,10 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
     {
         QMessageBox msg(QMessageBox::Critical, "Error Occured",QString("Error in Updating/Inserting "+query->lastError().text()), QMessageBox::Close);
         msg.exec();
-        qDebug()<<"Error in Updating/Inserting "<< query->lastError();
+        log->error("Error in Updating/Inserting, {}", str(query->lastError().text()));
         return false;
     }
-    qDebug()<<"[!] Trasactoion Sucessfully with Invoice Number: "<< strList.at(1).toInt();
-
-
+    log->debug("Transaction sucessfully with Invoice Number");
     auto invno = strList.at(1);
     query->prepare("SELECT invno from ro WHERE number = ?");
     query->bindValue(0, strList.at(0).toInt());
@@ -833,26 +864,29 @@ bool SQLiteHandler::insertInvoiceList(QStringList strList)
     {
         QMessageBox msg(QMessageBox::Critical, "Error in Updating RO",QString(query->lastError().text()), QMessageBox::Close);
         msg.exec();
-        qDebug()<<"Error in UPDATING RO "<<strList.at(0).toInt();
+        log->error("Error in UPDATING RO {}", str(query->lastError().text()));
         return false;
     }
-    qDebug()<<"[!] RO Number: "<< strList.at(0).toInt()<<" update with invoice number: "<< strList.at(1).toInt();
+    log->debug("RO Number: {} update with invoice number: {}", strList[0].toInt(), strList[1].toInt());
     QMessageBox msg(QMessageBox::Information, "Transaction Sucessfull",QString("RO Number:<b> %0</b> update with invoice number: <b>%1</b>").arg(QString::number(strList.at(0).toInt())).arg(QString::number(strList.at(1).toInt())), QMessageBox::Close);
     msg.exec();
+    log->debug("RETURN: {}", true);
     return true;
 }
 
 int SQLiteHandler::getNewInvoiceCode()
 {
+    log->debug("{}()", __FUNCTION__);
     query->exec("SELECT MAX(number) FROM invoice");
     if(query->next())
         return query->value(0).toInt()+1;
-    qDebug()<< query->lastError();
+    log->error(str(query->lastError().text()));
     return -1;
 }
 
 QList<QStringList> SQLiteHandler::getInvoiceListByRoNo(const int rono)
 {
+    log->debug("{}(rono::{})", __FUNCTION__, rono);
     try
     {
 
@@ -870,18 +904,21 @@ QList<QStringList> SQLiteHandler::getInvoiceListByRoNo(const int rono)
     }
     catch(...)
     {
-        qDebug()<< query->lastError();
+        log->error(str(query->lastError().text()));
         return {};
     }
 }
 
 QStringList *SQLiteHandler::getGstPerc() const
 {
+    log->debug("{}()", __FUNCTION__);
+    log->debug("RETURN: gstPerc::{}", str(*gstPerc));
     return gstPerc;
 }
 
 bool SQLiteHandler::setConfig(const QStringList &configList)
 {
+    log->debug("{}(configList::{})", __FUNCTION__, str(configList));
     try
     {
         query->prepare("UPDATE config SET pdfapplication=?, database_location=?, rolocation=?, invoicelocation=?, receiptlocation=?, samplepdflocation=?;");
@@ -897,7 +934,7 @@ bool SQLiteHandler::setConfig(const QStringList &configList)
     }
     catch(std::exception& e)
     {
-        qDebug()<< "Exception occured"<<e.what();
+//        log->critical("Exception occured: {}", e.what());
         return false;
     }
     return true;
@@ -905,6 +942,7 @@ bool SQLiteHandler::setConfig(const QStringList &configList)
 
 const QStringList SQLiteHandler::getConfigList() const
 {
+    log->debug("{}()", __FUNCTION__);
     QStringList strList;
     try {
         query->exec("Select * from config;");
@@ -914,13 +952,15 @@ const QStringList SQLiteHandler::getConfigList() const
     }
     catch (std::exception &e)
     {
-        qDebug()<< "Exception Occured"<< e.what();
+        log->critical("Exception Occured: {},", e.what());
     }
+    log->debug("RETURN: strList::{}", str(strList));
     return strList;
 }
 
 QStringList SQLiteHandler::getStates() const
 {
+    log->debug("{}()", __FUNCTION__);
     QStringList statesList;
     try
     {
@@ -928,16 +968,18 @@ QStringList SQLiteHandler::getStates() const
         while(lquery->next())
             statesList << lquery->value(0).toString();
     }
-    catch(std::exception &ex)
+    catch(std::exception &e)
     {
-        qDebug()<< "Exception Occured"<< ex.what();
+        log->critical("Exception Occured: {}, Returning QString::size(0)", e.what());
         return {};
     }
+    log->debug("RETURN: stateList::{}", str(statesList));
     return statesList;
 }
 
 QStringList SQLiteHandler::getCities(const QString state) const
 {
+    log->debug("{}(state::{})", __FUNCTION__, str(state));
     QStringList statesList;
     try
     {
@@ -947,14 +989,16 @@ QStringList SQLiteHandler::getCities(const QString state) const
     }
     catch(std::exception &ex)
     {
-        qDebug()<< "Exception Occured"<< ex.what();
+        log->critical("Exception Occured: {}, Returning QString::size(0)", ex.what());
         return {};
     }
+    log->debug("RETURN: strList::{}", str(statesList));
     return statesList;
 }
 
 QString SQLiteHandler::getPinCode(QString city) const
 {
+    log->debug("{}(city::{})", __FUNCTION__, str(city));
     try
     {
         lquery->exec(QString("SELECT pincode FROM Location WHERE city = '%0';").arg(city));
@@ -964,13 +1008,14 @@ QString SQLiteHandler::getPinCode(QString city) const
     }
     catch(std::exception &ex)
     {
-        qDebug()<< "Exception Occured"<< ex.what();
+        log->critical("Exception Occured: {}, Returning QString('') ", ex.what());
         return "";
     }
 }
 
 QString SQLiteHandler::getStateCode(QString state) const
 {
+    log->debug("{}({})", __FUNCTION__, str(state));
     lquery->exec(QString("SELECT stateCode FROM Location WHERE state = '%0' LIMIT 1;").arg(state));
     if(lquery->next())
         return lquery->value(0).toString();
@@ -979,15 +1024,18 @@ QString SQLiteHandler::getStateCode(QString state) const
 
 const QString SQLiteHandler::combineNumber(const QStringList &numberList)
 {
+    log->debug("{}(numberList::{})", __FUNCTION__, str(numberList));
     QString combinedNumber{""};
     for(auto &number: numberList)
         combinedNumber += number+",";
     combinedNumber.resize(combinedNumber.size()-1);
+    log->debug("RETURN: strList::{}", str(combinedNumber));
     return combinedNumber;
 }
 
 void SQLiteHandler::setUpModels()
 {
+    log->debug("{}()", __FUNCTION__);
     gstPerc = new QStringList(QStringList()<< ""<< "2.5"<<"5.0"<<"6.0"<<"12.0"<<"9.0"<<"18.0"<<"14.0"<<"28.0");
 
     jobTypeModel = new QSqlQueryModel;
@@ -1124,13 +1172,11 @@ void SQLiteHandler::setUpModels()
     {
         auto q = query->lastError().text();
     }
-    qDebug()<< "Model Setup";
-
-
+    log->debug("Model Setuped!");
 }
 
 SQLiteHandler::~SQLiteHandler()
 {
-
+    log->debug("{}(), Exiting!", __FUNCTION__);
 }
 

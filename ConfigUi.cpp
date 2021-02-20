@@ -4,6 +4,8 @@
 
 ConfigUI::ConfigUI(IOHandler *_io, QWidget *parent): QDialog(parent), io(_io)
 {
+    log = spdlog::get("dlog");
+
     mainLayout = new QVBoxLayout(this);
     render();
     setLayout(mainLayout);
@@ -87,6 +89,27 @@ void ConfigUI::render()
     dbWidget->setLayout(gvbox);
     tabWidget->addTab(dbWidget, "Database");
 
+    QWidget *logsWidget = new QWidget;
+    infoLogs = new QRadioButton("Info");
+    debugLogs = new QRadioButton("Debug");
+    noLogs = new QRadioButton("No Logs");
+    buttonGroup = new QButtonGroup(this);
+    buttonGroup->addButton(noLogs, LOG_LEVEL::NONE);
+    buttonGroup->addButton(infoLogs, LOG_LEVEL::INFO);
+    buttonGroup->addButton(debugLogs, LOG_LEVEL::DEBUG);
+    hbox = new QHBoxLayout;
+    hbox->addWidget(infoLogs);
+    hbox->addWidget(debugLogs);
+    hbox->addWidget(noLogs);
+    gvbox = new QVBoxLayout;
+    gvbox->addLayout(hbox);
+    gb = new QGroupBox("Logs Level");
+    gb->setLayout(gvbox);
+    vbox = new QVBoxLayout;
+    vbox->addWidget(gb);
+    vbox->addStretch();
+    logsWidget->setLayout(vbox);
+    tabWidget->addTab(logsWidget, "Logs");
     mainLayout->addWidget(tabWidget);
 
     saveButton = new QPushButton("Save", this);
@@ -99,6 +122,7 @@ void ConfigUI::render()
     mainLayout->addLayout(hbox);
 
     signalSetup();
+    debugLogs->setChecked(true);
 }
 
 void ConfigUI::signalSetup()
@@ -140,6 +164,26 @@ void ConfigUI::signalSetup()
        close();
     });
 
+    connect(buttonGroup, QOverload<int>::of(&QButtonGroup::buttonClicked), [=](int id){
+        switch (id)
+        {
+            case NONE:
+                log->set_level(spdlog::level::off);
+                current = NONE;
+                break;
+            case INFO:
+                log->set_level(spdlog::level::info);
+                current = INFO;
+                break;
+            case DEBUG:
+                log->set_level(spdlog::level::debug);
+                current = DEBUG;
+                break;
+            default:
+                break;
+        }
+
+    } );
 
 }
 
