@@ -76,6 +76,7 @@ class Update():
 
     def runArchive(self, fileName):
         print(f"Running Archive: {fileName}")
+        subprocess.run('taskkill /IM "AAA.exe" /F')
         resp = subprocess.run(f"{fileName} -y -p{self.password}")
         if not resp.returncode:
             print(f"Success Fully Updated, {resp.returncode}")
@@ -103,7 +104,7 @@ class Update():
         input("Now, File downloaded, Do you want to install, \nIt will close the application? Press Enter to continue.")
         self.runArchive(file)
         self.writeJson()
-        self.removeDownloadedFile(file)
+        #self.removeDownloadedFile(file)
     
 def main():
     try:
