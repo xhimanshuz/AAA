@@ -25,6 +25,7 @@ HEADERS += \
     ConfigUi.h \
     Configure.h \
     HeaderUi.h \
+    Log.h \
     ROSqlTableModel.h \
     include/AAA.h \
     include/AddInvoice.h \
@@ -54,12 +55,15 @@ unix {
 message(PdfTron Dir = $$PWD/$$PDFTRON_DIR )
 
 INCLUDEPATH += include \
-               $$PWD/$$PDFTRON_DIR/Headers
+               $$PWD/$$PDFTRON_DIR/Headers \
+               /home/gnu/Documents/Codes/git/spdlog/include
 
 DESTDIR = $$PWD/build/ \
 
+
 DISTFILES += .gitignore \
-            $$PWD/Data/DBMigratingTool/run.py
+            $$PWD/Data/DBMigratingTool/run.py \
+            $$PWD/build/
 
 LIBS += -L$$PWD/$$PDFTRON_DIR/Lib  -lPDFNetC
 

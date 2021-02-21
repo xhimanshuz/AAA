@@ -13,6 +13,7 @@
 #include <QMapIterator>
 #include <QMessageBox>
 #include "ROSqlTableModel.h"
+#include "Log.h"
 
 class SQLiteHandler : public QObject
 {
@@ -32,6 +33,7 @@ class SQLiteHandler : public QObject
     QSqlTableModel *receiptModel;
     QSqlTableModel *mediaBillModel;
     QSqlQueryModel *generateBillModel;
+    std::shared_ptr<spdlog::logger> log;
 
     void setUpModels();
     

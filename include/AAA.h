@@ -24,6 +24,8 @@ class Configure;
 #include <QGraphicsBlurEffect>
 #include <QStatusBar>
 
+#include "Log.h"
+
 #include "IOHandler/IOHandler.h"
 #include "JobType.h"
 #include "MediaPaymentDetail.h"
@@ -67,6 +69,7 @@ class AAA : public QMainWindow
 
     IOHandler *io;
     Configure *config;
+    std::shared_ptr<spdlog::logger> log;
 
     void render();
     void setupSignals();
@@ -78,6 +81,7 @@ class AAA : public QMainWindow
     void appConfigure();
 public:
     explicit AAA(QWidget *parent = nullptr);
+    virtual ~AAA();
 
 signals:
 
