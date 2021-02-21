@@ -78,6 +78,7 @@ void AAA::render()
     newRO = new QPushButton("New RO");
     printList = new QPushButton("Print List");
     setting = new QPushButton("Setting");
+    otaButton = new QPushButton("Check Update");
 
     mainLayout = new QVBoxLayout;
     mainLayout->setMargin(0);
@@ -110,6 +111,7 @@ void AAA::render()
 
     statusBar()->setLayoutDirection(Qt::LayoutDirection::RightToLeft);
     statusBar()->addWidget(newRO);
+    statusBar()->addWidget(otaButton);
     statusBar()->addWidget(printList);
     statusBar()->addWidget(setting);
     statusBar()->setStyleSheet("color: white; background-color: #212121");
@@ -258,6 +260,26 @@ void AAA::setupSignals()
         ui.exec();
         io->sql->reloadDB();
         populateData();
+    });
+
+    connect(otaButton, &QPushButton::clicked, [=]{
+        log->critical("Update Started");
+        QMessageBox msg(QMessageBox::Warning, "Checking for Update", "Checking for update Please wait...", QMessageBox::Button::Close, this, Qt::FramelessWindowHint);
+        msg.button(QMessageBox::Button::Close)->setEnabled(false);
+
+        std::thread([&]{
+            QString process("utility.exe 'password@aaa%&'");
+            if(int status_code = system(process.toStdString().c_str()))
+            {
+                log->error("Error in Updating, Return Code: {}", status_code);
+                QMessageBox(QMessageBox::Warning, "Unsucessful Updation", "Error in Updating, Return Code: "+QString::number(status_code) , QMessageBox::Button::Close, this, Qt::FramelessWindowHint).exec();
+            }
+            else
+                QMessageBox(QMessageBox::Warning, "Unsucessful Updation", "Successfully Updated the application. Please Restart."+QString::number(status_code), QMessageBox::Button::Close, this, Qt::FramelessWindowHint).exec();
+
+            msg.button(QMessageBox::Button::Close)->setEnabled(true);
+        }).detach();
+        msg.exec();
     });
 
 }
