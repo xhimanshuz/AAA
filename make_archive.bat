@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\PeaZip\res\7z\7z.exe" a -t7z -m0=LZMA2 -mmt=on -mx9 -md=64m -mfb=64 -ms=4g -mqs=on -sccUTF-8 "-ppassword@aaa" -mhe=on -bb0 -bse0 -bsp2 -sfx "-wbuild\" "build\AAA_archive_x86.exe" "build\Data" "build\AAA.exe" "build\location.db" "build\PDFNetC.dll" 
