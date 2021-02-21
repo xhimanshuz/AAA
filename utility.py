@@ -1,8 +1,10 @@
+import os
 import wget
 import requests
 import json
 import subprocess
 import sys
+from sys import exit
 
 GITHUB_API_URL = "https://api.github.com/repos"
 
@@ -48,13 +50,15 @@ class Update():
     def downloadFile(self):
         file_url = self.json['file_url']
         try:
+            if os.path.exists(self.json['file_name']):
+                os.remove(self.json['file_name'])
             filename = wget.download(file_url, self.json['file_name'])
-            print(f"File Success fully downloaded at: {self.save_location+self.json['file_name']} ")
+            print(f"File Success fully downloaded at: {self.save_location+filename} ")
         except Exception as e:
             print(f"Error in Downloading {file_url}, resp code = {filename}")
             print(f"Exception Occured: ", e)
             return False
-        return self.save_location+self.json['file_name']
+        return self.save_location+filename
 
     def versionCheck(self):
         print("[!] Checking Version.")
@@ -74,26 +78,44 @@ class Update():
         print(f"Running Archive: {fileName}")
         resp = subprocess.run(f"{fileName} -y -p{self.password}")
         if not resp.returncode:
-            print("Success Fully Updated")
+            print(f"Success Fully Updated, {resp.returncode}")
         else:
-            print("Error in Installing File")
+            print(f"Error in Installing File, {resp.returncode}")
+            input("Press Enter to Continue...")
+            exit(-2)
+
+    def removeDownloadedFile(self, file):
+        print(f"Cleaning Archive File... {file}")
+        if os.path.exists(file):
+            os.remove(file)
 
     def run(self):
         self.getJson()
         self.openJson()
         print("Downloading Upate File", )
         if not self.versionCheck():
-            return 
+            input("Press Enter to Continue...")
+            exit(0)
         file = self.downloadFile()
+        if not file:
+            input("Press Enter to Continue...")
+            exit(-1)
+        input("Now, File downloaded, Do you want to install, \nIt will close the application? Press Enter to continue.")
         self.runArchive(file)
         self.writeJson()
-
-        input("Press Enter to Continue...")
-
+        self.removeDownloadedFile(file)
+    
 def main():
-    password = sys.argv[1]
-    print("Password: ", password)
-    u = Update(password)
-    u.run()
+    try:
+        password = sys.argv[1]
+        # print("Password: ", password)
+        u = Update(password)
+        u.run()
+        input("Press Enter to Continue...")
+        exit(0)
+    except Exception as e:
+        print(f"Exception occured, {str(e)}")
+        input("Press Enter to Continue...")
+        exit(1)
 
 main()

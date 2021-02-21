@@ -264,19 +264,22 @@ void AAA::setupSignals()
 
     connect(otaButton, &QPushButton::clicked, [=]{
         log->critical("Update Started");
-        QMessageBox msg(QMessageBox::Warning, "Checking for Update", "Checking for update Please wait...", QMessageBox::Button::Close, this, Qt::FramelessWindowHint);
+        QMessageBox msg(QMessageBox::Warning, "Checking for Update", "Checking for update.", QMessageBox::Button::Close, this, Qt::FramelessWindowHint);
         msg.button(QMessageBox::Button::Close)->setEnabled(false);
 
         std::thread([&]{
-            QString process("utility.exe 'password@aaa%&'");
+            QString process("utility.exe 'password@aaa%'");
             if(int status_code = system(process.toStdString().c_str()))
             {
                 log->error("Error in Updating, Return Code: {}", status_code);
                 QMessageBox(QMessageBox::Warning, "Unsucessful Updation", "Error in Updating, Return Code: "+QString::number(status_code) , QMessageBox::Button::Close, this, Qt::FramelessWindowHint).exec();
             }
             else
-                QMessageBox(QMessageBox::Warning, "Unsucessful Updation", "Successfully Updated the application. Please Restart."+QString::number(status_code), QMessageBox::Button::Close, this, Qt::FramelessWindowHint).exec();
-
+            {
+                QMessageBox(QMessageBox::Warning, "Sucessful Updation", "Successfully Updated the application. Please Restart."+QString::number(status_code), QMessageBox::Button::Close, this, Qt::FramelessWindowHint).exec();
+                log->critical("Sucessful Updation", "Successfully Updated the application. Please Restart. status_code: {}", status_code);
+                close();
+             }
             msg.button(QMessageBox::Button::Close)->setEnabled(true);
         }).detach();
         msg.exec();

@@ -440,7 +440,7 @@ QStringList SQLiteHandler::getRoList()
     while(query->next())
         strList << query->value(0).toString();
 
-    log->debug("RETURN: strList::{}", str(strList));
+    log->debug("RETURN: strList::{}", strList.size());
     return strList;
 }
 
