@@ -78,15 +78,13 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
         replacer.AddString("MODE", mediaPaymentList.at(3).toStdString());
         replacer.AddString("CHEQUE_NO", mediaPaymentList.at(4).toStdString());
         replacer.AddString("BANK_NAME", mediaPaymentList.at(5).toStdString());
-<<<<<<< .mine
+<<<<<<< HEAD
         replacer.AddString("DISCOUNT", (discountPerc+"%").toStdString());
-        replacer.AddString("DISCOUNT_RATE", QString::number(discountAmount).toStdString());
-
 =======
         replacer.AddString("DISCOUNT", discountPerc.toStdString());
+>>>>>>> 8e76579adbd0367322ba4a7acfff78f765a9a009
         replacer.AddString("DISCOUNT_RATE", QString::number(discountAmount).toStdString());
 
->>>>>>> .theirs
         // finally, apply
         replacer.Process(page);
         saveFile = QString(configure->getRoSaveLocation()+QString("/RO_%0_%1.pdf").arg(detailList.at(1)).arg(mediaPaymentList.at(0))).toStdString();

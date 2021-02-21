@@ -43,9 +43,6 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
         // first, replace the image on the first page---
         ContentReplacer replacer;
         Page page = doc.GetPage(1);
-        double amount = detailList[19].toDouble();
-        double discountAmount =  (amount - detailList[20].toDouble());
-        QString discountPerc = QString::number(((discountAmount / amount) * 100), 'g', 2);
 
 
         replacer.AddString("CLIENT", detailList.at(6).toUpper().toStdString());
@@ -78,15 +75,6 @@ void PDFTronInterface::printRO(QStringList detailList, QStringList mediaPaymentL
         replacer.AddString("MODE", mediaPaymentList.at(3).toStdString());
         replacer.AddString("CHEQUE_NO", mediaPaymentList.at(4).toStdString());
         replacer.AddString("BANK_NAME", mediaPaymentList.at(5).toStdString());
-<<<<<<< .mine
-        replacer.AddString("DISCOUNT", (discountPerc+"%").toStdString());
-        replacer.AddString("DISCOUNT_RATE", QString::number(discountAmount).toStdString());
-
-=======
-        replacer.AddString("DISCOUNT", discountPerc.toStdString());
-        replacer.AddString("DISCOUNT_RATE", QString::number(discountAmount).toStdString());
-
->>>>>>> .theirs
         // finally, apply
         replacer.Process(page);
         saveFile = QString(configure->getRoSaveLocation()+QString("/RO_%0_%1.pdf").arg(detailList.at(1)).arg(mediaPaymentList.at(0))).toStdString();
