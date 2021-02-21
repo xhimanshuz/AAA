@@ -49,13 +49,14 @@ class Update():
     
     def downloadFile(self):
         file_url = self.json['file_url']
+        print(f"Downloading File. File Url: {file_url} ")
         try:
             if os.path.exists(self.json['file_name']):
                 os.remove(self.json['file_name'])
             filename = wget.download(file_url, self.json['file_name'])
             print(f"File Success fully downloaded at: {self.save_location+filename} ")
         except Exception as e:
-            print(f"Error in Downloading {file_url}, resp code = {filename}")
+            print(f"Error in Downloading {file_url}, resp code")
             print(f"Exception Occured: ", e)
             return False
         return self.save_location+filename
@@ -109,7 +110,7 @@ class Update():
 def main():
     try:
         password = sys.argv[1]
-        # print("Password: ", password)
+        print("Password: ", password)
         u = Update(password)
         u.run()
         input("Press Enter to Continue...")

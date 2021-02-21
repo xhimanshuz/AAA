@@ -268,7 +268,7 @@ void AAA::setupSignals()
         msg.button(QMessageBox::Button::Close)->setEnabled(false);
 
         std::thread([&]{
-            QString process("utility.exe 'password@aaa%'");
+            QString process("utility.exe password@aaa");
             if(int status_code = system(process.toStdString().c_str()))
             {
                 log->error("Error in Updating, Return Code: {}", status_code);
