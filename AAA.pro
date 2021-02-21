@@ -55,8 +55,7 @@ unix {
 message(PdfTron Dir = $$PWD/$$PDFTRON_DIR )
 
 INCLUDEPATH += include \
-               $$PWD/$$PDFTRON_DIR/Headers \
-               /home/gnu/Documents/Codes/git/spdlog/include
+               $$PWD/$$PDFTRON_DIR/Headers
 
 DESTDIR = $$PWD/build/ \
 

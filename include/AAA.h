@@ -66,6 +66,7 @@ class AAA : public QMainWindow
     QPushButton *printList;
     QPushButton *setting;
     QVBoxLayout *mainLayout;
+    QPushButton *otaButton;
 
     IOHandler *io;
     Configure *config;
