@@ -2,11 +2,13 @@ import wget
 import requests
 import json
 import subprocess
+import sys
 
 GITHUB_API_URL = "https://api.github.com/repos"
 
 class Update():
-    def __init__(self):
+    def __init__(self, _password):
+        self.password = _password
         self.repo_url = "/xhimanshuz/AAA"
         self.status_json_url = 'https://raw.githubusercontent.com/xhimanshuz/AAA/master/status.json'
         self.local_json = {}
@@ -19,9 +21,13 @@ class Update():
         Load Local Json
         '''
         print(f"Loading Local Json: ")
-        with open("status.json", "r") as f:
-            self.local_json = json.load(f)
-            print("[!] Local Json: ", self.local_json)
+        try:
+            with open("status.json", "r") as f:
+                self.local_json = json.load(f)
+                print("[!] Local Json: ", self.local_json)
+        except Exception as e:
+            self.local_json['version'] = '0'
+            print("Exception while opening Json.")
 
     def getJson(self):
         '''
@@ -32,11 +38,17 @@ class Update():
         if resp.status_code == 200:
             self.json = resp.json()
         print(f"Response: {self.json}")
+
+    def writeJson(self):
+        print("Updating Exisiting Json")
+        with open("status.json", 'w') as f:
+            json.dump(self.json, f)
+        print("Successfully Download Json")
     
     def downloadFile(self):
         file_url = self.json['file_url']
         try:
-            filename = wget.download(file_url)
+            filename = wget.download(file_url, self.json['file_name'])
             print(f"File Success fully downloaded at: {self.save_location+self.json['file_name']} ")
         except Exception as e:
             print(f"Error in Downloading {file_url}, resp code = {filename}")
@@ -60,7 +72,11 @@ class Update():
 
     def runArchive(self, fileName):
         print(f"Running Archive: {fileName}")
-        pass
+        resp = subprocess.run(f"{fileName} -y -p{self.password}")
+        if not resp.returncode:
+            print("Success Fully Updated")
+        else:
+            print("Error in Installing File")
 
     def run(self):
         self.getJson()
@@ -70,6 +86,14 @@ class Update():
             return 
         file = self.downloadFile()
         self.runArchive(file)
-# if __file__ == __name__:
-u = Update()
-u.run()
+        self.writeJson()
+
+        input("Press Enter to Continue...")
+
+def main():
+    password = sys.argv[1]
+    print("Password: ", password)
+    u = Update(password)
+    u.run()
+
+main()
