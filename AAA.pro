@@ -1,7 +1,7 @@
 QT += widgets sql
 
 CONFIG += static
-
+RC_ICONS = icon.ico
 
 SOURCES += \
     ConfigUi.cpp \
