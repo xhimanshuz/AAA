@@ -16,5 +16,7 @@ copy ..\..\..\Data\PDFSample\*.pdf .
 cd ..\..\
 copy ..\Data\DBMigratingTool\location.db .
 cd ..
+copy make_archive.bat build\
+cd build
 @call "make_archive.bat"
 pause

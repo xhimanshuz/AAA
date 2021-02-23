@@ -38,6 +38,8 @@ PDFTron/
 PDFTron/*
 
 Makefile
+Makefile.*
+
 
 .qmake.stash
 
@@ -45,4 +47,9 @@ Makefile
 
 build/
 build/*
+release/
+release/*
+debug/
+debug/*
 
+aaa_plugin_import.cpp
