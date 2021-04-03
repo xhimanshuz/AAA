@@ -1,5 +1,5 @@
 #include "AddInvoice.h"
-#include "pdftroninterface.h"
+#include "svginterface.h"
 
 AddInvoice::AddInvoice(QWidget *parent, int _invno, int _rono): QWidget(parent), io{IOHandler::getInstance()}, latestInvoiceCode(io->sql->getNewInvoiceCode())
 {
@@ -151,7 +151,7 @@ void AddInvoice::setupSignal()
         auto client = io->sql->getClientRow(invoiceList.at(3).toInt());
         invoiceList << client[1]<< client[5]<<client[6] << client[7] << client[8] << client[9];
         if(!invoiceList.isEmpty())
-            PDFTronInterface::get()->printInvoice(invoiceList, roData);
+            SVGInterface::get()->printInvoice(invoiceList, roData);
     });
 
     connect(invoiceNo, &QComboBox::currentTextChanged, [=](const QString invno){

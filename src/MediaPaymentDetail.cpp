@@ -1,5 +1,5 @@
 ﻿#include "MediaPaymentDetail.h"
-#include "pdftroninterface.h"
+#include "svginterface.h"
 
 MediaPaymentDetail::MediaPaymentDetail(QWidget *parent, int roNo) : QDialog(parent), rono(roNo), io{IOHandler::getInstance()}, latestMediaPaymentId{io->sql->getNewMediaPaymentNumber()}
 {
@@ -293,7 +293,7 @@ void MediaPaymentDetail::printMediaPayment()
     auto mediaHouseList = io->sql->getMediaHouseRow(roList.at(3).toInt());
     roList << mediaHouseList;
     if(!mediaPaymentList.isEmpty())
-        PDFTronInterface::get()->printRO(roList, mediaPaymentList);
+        SVGInterface::get()->printRO(roList, mediaPaymentList);
 }
 
 void MediaPaymentDetail::cellChanged(int row, int column)

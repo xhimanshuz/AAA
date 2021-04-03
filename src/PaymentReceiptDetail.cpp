@@ -1,5 +1,5 @@
 #include "PaymentReceiptDetail.h"
-#include "pdftroninterface.h"
+#include "svginterface.h"
 #include "CustomItemDelegate.h"
 
 PaymentReceiptDetail::PaymentReceiptDetail(QWidget *parent, int _roNo): QDialog(parent), rono(_roNo), io{IOHandler::getInstance()}, latestInvoiceNo{io->sql->getNewPaymentReceiptNumber()}
@@ -248,7 +248,7 @@ QPushButton *PaymentReceiptDetail::createPrintButton()
                                               mediaHouse->currentText()<< "03-11-2020"<< "09AIIPR8398A1ZQ"<< amount->text();
        auto number = receiptTableWidget->item(receiptTableWidget->currentIndex().row(), 0)->text().toInt();
        auto paymetReceiptList = io->sql->getPaymentReceiptStringList(number);
-       PDFTronInterface::get()->printReceipt(paymetReceiptList, roDetail);
+       SVGInterface::get()->printReceipt(paymetReceiptList, roDetail);
     });
     cellPrintButton->setDisabled(true);
     return cellPrintButton;

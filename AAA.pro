@@ -1,6 +1,6 @@
 QT += widgets sql
 
-CONFIG += static
+
 RC_ICONS = icon.ico
 
 SOURCES += \
@@ -19,7 +19,7 @@ SOURCES += \
     src/IOHandler/SQLiteHandler.cpp \
     src/JobType.cpp \
     src/app.cpp \
-    src/pdftroninterface.cpp
+    svginterface.cpp
 
 HEADERS += \
     ConfigUi.h \
@@ -42,20 +42,17 @@ HEADERS += \
     include/IOHandler/DataEngine.h \
     include/IOHandler/IOHandler.h \
     include/JobType.h \
-    include/pdftroninterface.h
+    svginterface.h
 message($$QMAKE_HOST.arch == x86_64)
 win32 {
+    CONFIG += static
     message(Building for Windows)
-    PDFTRON_DIR = PDFTron/Win32
 }
 unix {
     message(Building for Unix)
-    PDFTRON_DIR = PDFTron
 }
-message(PdfTron Dir = $$PWD/$$PDFTRON_DIR )
 
-INCLUDEPATH += include \
-               $$PWD/$$PDFTRON_DIR/Headers
+INCLUDEPATH += include
 
 DESTDIR = $$PWD/build/ \
 
@@ -63,8 +60,6 @@ DESTDIR = $$PWD/build/ \
 DISTFILES += .gitignore \
             $$PWD/Data/DBMigratingTool/run.py \
             $$PWD/build/
-
-LIBS += -L$$PWD/$$PDFTRON_DIR/Lib  -lPDFNetC
 
 RESOURCES += \
     Resource.qrc

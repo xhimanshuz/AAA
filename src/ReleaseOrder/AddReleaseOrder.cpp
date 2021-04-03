@@ -1,5 +1,5 @@
 #include "ReleaseOrder/AddReleaseOrder.h"
-#include "pdftroninterface.h"
+#include "svginterface.h"
 #include "HeaderUi.h"
 
 
@@ -173,7 +173,7 @@ void AddReleaseOrder::setupSignal()
         auto mhList = io->sql->getMediaHouseRow(roList.at(3).toInt());
         roList << mhList;
         for(auto mpList: io->sql->getMediaPaymentStringListByRono(roNo->text().toInt()))
-            PDFTronInterface::get()->printRO(roList, mpList);
+            SVGInterface::get()->printRO(roList, mpList);
     });
 
     connect(CGST, &QComboBox::currentTextChanged, [this](const QString taxNumber){

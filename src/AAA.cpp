@@ -3,7 +3,6 @@
 #include "AAA.h"
 #include <iostream>
 #include "HeaderUi.h"
-#include "pdftroninterface.h"
 #include "Configure.h"
 Configure* Configure::instance = nullptr;
 
