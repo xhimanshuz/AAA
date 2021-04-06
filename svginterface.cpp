@@ -7,6 +7,7 @@ SVGInterface::SVGInterface()
 {
     configure = Configure::get();
     process = new QProcess;
+    log = spdlog::get("dlog");
 }
 
 void SVGInterface::multiLine(int perLine, QString string, QString key, QByteArray &stream, int loop)
@@ -64,11 +65,19 @@ void SVGInterface::showPdf(QString url)
 
 void SVGInterface::printRO(QStringList detailList, QStringList mediaPaymentList)
 {
+
     QString saveFile;
     try
     {
         QFile svgFile(QString(configure->getSamepleFileLocation()+"/ro.svg"));
+        if(!svgFile.open(QIODevice::ReadOnly))
+        {
+            log->critical("Error in Reading SVG File: {} {}", str(svgFile.fileName()), svgFile.exists());
+            svgFile.close();
+        }
         assert(svgFile.open(QIODevice::ReadOnly));
+        log->debug("File Opened! {}", str(svgFile.fileName()));
+
         double amount = detailList[19].toDouble();
         double discountAmount =  (amount - detailList[20].toDouble());
         QString discountPerc = QString::number(((discountAmount / amount) * 100), 'g', 2);
@@ -110,7 +119,15 @@ void SVGInterface::printRO(QStringList detailList, QStringList mediaPaymentList)
         saveFile = QString(configure->getRoSaveLocation()+QString("/RO_%0_%1.svg").arg(detailList.at(1)).arg(mediaPaymentList.at(0)));
 
         QFile svgFileW(saveFile);
-        assert(svgFileW.open(QIODevice::WriteOnly));
+        if(!svgFileW.open(QIODevice::WriteOnly))
+        {
+            log->critical("Error in Writing SVG File: {} {}", str(svgFileW.fileName()), svgFileW.exists());
+            svgFile.close();
+            QMessageBox mb;
+            mb.setText("Errorin Writing");
+            mb.exec();
+        }
+//        assert(svgFileW.open(QIODevice::WriteOnly));
         svgFileW.write(stream);
         svgFile.close();
         svgFileW.close();
@@ -130,7 +147,14 @@ void SVGInterface::printReceipt(QStringList detailList, QStringList roDetail)
     try
     {
         QFile svgFile(QString(configure->getSamepleFileLocation()+"/receipt.svg"));
+
+        if(!svgFile.open(QIODevice::ReadOnly))
+        {
+            log->critical("Error in Reading SVG File: {} {}", str(svgFile.fileName()), svgFile.exists());
+            svgFile.close();
+        }
         assert(svgFile.open(QIODevice::ReadOnly));
+        log->debug("File Opened! {}", str(svgFile.fileName()));
         auto stream = svgFile.readAll();
 
         stream.replace("[NAME]", roDetail.at(1).toStdString().c_str());
@@ -147,6 +171,14 @@ void SVGInterface::printReceipt(QStringList detailList, QStringList roDetail)
         saveFile = QString(configure->getReceiptSaveLocation()+ QString("/receipt_%0.svg").arg(detailList.at(0)));
 
         QFile svgFileW(saveFile);
+        if(!svgFileW.open(QIODevice::WriteOnly))
+        {
+            log->critical("Error in Writing SVG File: {} {}", str(svgFileW.fileName()), svgFileW.exists());
+            svgFile.close();
+            QMessageBox mb;
+            mb.setText("Errorin Writing");
+            mb.exec();
+        }
         assert(svgFileW.open(QIODevice::WriteOnly));
         svgFileW.write(stream);
         svgFile.close();
@@ -166,7 +198,13 @@ void SVGInterface::printInvoice(QStringList dataList, QStringList roDetail)
     try
     {
         QFile svgFile(QString(configure->getSamepleFileLocation()+"/invoice.svg"));
+        if(!svgFile.open(QIODevice::ReadOnly))
+        {
+            log->critical("Error in Reading SVG File: {} {}", str(svgFile.fileName()), svgFile.exists());
+            svgFile.close();
+        }
         assert(svgFile.open(QIODevice::ReadOnly));
+        log->debug("File Opened! {}", str(svgFile.fileName()));
         auto stream = svgFile.readAll();
 
         stream.replace("[RONO]", dataList.at(0).toStdString().c_str());
@@ -199,6 +237,14 @@ void SVGInterface::printInvoice(QStringList dataList, QStringList roDetail)
 
         saveFile = QString(configure->getInvoiceSaveLocation() +QString("/invoice_%0.svg").arg(dataList.at(0)));
         QFile svgFileW(saveFile);
+        if(!svgFileW.open(QIODevice::WriteOnly))
+        {
+            log->critical("Error in Writing SVG File: {} {}", str(svgFileW.fileName()), svgFileW.exists());
+            svgFile.close();
+            QMessageBox mb;
+            mb.setText("Errorin Writing");
+            mb.exec();
+        }
         assert(svgFileW.open(QIODevice::WriteOnly));
         svgFileW.write(stream);
         svgFile.close();
