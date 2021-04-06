@@ -302,7 +302,7 @@ void AddReleaseOrder::setValues(const QStringList detailList)
     code = detailList.at(0).toInt();
     roNo->setText(detailList.at(1));
     roNo->setDisabled(true);
-    date->setDate(QDate()); // 10
+    date->setDate(QDate::fromString(detailList[2], "dd-MM-yyyy")); // 10
     mediaHouseList->setCurrentText(detailList.at(4));
     clientList->setCurrentText(detailList.at(6));
     jobTypeList->setCurrentText(detailList.at(8));
