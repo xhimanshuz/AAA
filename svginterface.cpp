@@ -28,8 +28,13 @@ void SVGInterface::multiLine(int perLine, QString string, QString key, QByteArra
     }
 
     int i =0;
-    for(auto str: strList)
-        stream.replace(QString("[%0_%1]").arg(key).arg(i++).toStdString().c_str(), str.toStdString().c_str());
+    for(auto string: strList)
+    {
+        stream.replace(QString("[%0_%1]").arg(key).arg(i++).toStdString().c_str(), string.toStdString().c_str());
+//        auto s = QString("[%0_%1]").arg(key).arg(i);
+//        s.replace(s,  string.toStdString().c_str());
+//        auto kp = "111";
+    }
 }
 
 const std::string SVGInterface::rightPadding(std::string string, int spaceSize)
@@ -73,9 +78,9 @@ void SVGInterface::printRO(QStringList detailList, QStringList mediaPaymentList)
         if(!svgFile.open(QIODevice::ReadOnly))
         {
             log->critical("Error in Reading SVG File: {} {}", str(svgFile.fileName()), svgFile.exists());
+            assert(svgFile.open(QIODevice::ReadOnly));
             svgFile.close();
         }
-        assert(svgFile.open(QIODevice::ReadOnly));
         log->debug("File Opened! {}", str(svgFile.fileName()));
 
         double amount = detailList[19].toDouble();
@@ -152,8 +157,8 @@ void SVGInterface::printReceipt(QStringList detailList, QStringList roDetail)
         {
             log->critical("Error in Reading SVG File: {} {}", str(svgFile.fileName()), svgFile.exists());
             svgFile.close();
+            assert(svgFile.open(QIODevice::ReadOnly));
         }
-        assert(svgFile.open(QIODevice::ReadOnly));
         log->debug("File Opened! {}", str(svgFile.fileName()));
         auto stream = svgFile.readAll();
 
@@ -178,8 +183,8 @@ void SVGInterface::printReceipt(QStringList detailList, QStringList roDetail)
             QMessageBox mb;
             mb.setText("Errorin Writing");
             mb.exec();
+            assert(svgFileW.open(QIODevice::WriteOnly));
         }
-        assert(svgFileW.open(QIODevice::WriteOnly));
         svgFileW.write(stream);
         svgFile.close();
         svgFileW.close();
@@ -202,8 +207,8 @@ void SVGInterface::printInvoice(QStringList dataList, QStringList roDetail)
         {
             log->critical("Error in Reading SVG File: {} {}", str(svgFile.fileName()), svgFile.exists());
             svgFile.close();
+            assert(svgFile.open(QIODevice::ReadOnly));
         }
-        assert(svgFile.open(QIODevice::ReadOnly));
         log->debug("File Opened! {}", str(svgFile.fileName()));
         auto stream = svgFile.readAll();
 
@@ -223,8 +228,8 @@ void SVGInterface::printInvoice(QStringList dataList, QStringList roDetail)
         stream.replace("[SGST]", rightPadding(dataList.at(11).toStdString(), 20).c_str());
         stream.replace("[IGST]", rightPadding(dataList.at(12).toStdString(), 20).c_str());
         stream.replace("[INVOICE_AMT]", rightPadding(dataList.at(14).toStdString(), 20).c_str());
-        stream.replace("[CLIENT", dataList.at(17).toStdString().c_str());
-        multiLine(60, dataList.at(18), "CLIENT_ADDRESS", stream);
+        stream.replace("[CLIENT]", dataList.at(17).toStdString().c_str());
+        multiLine(60, dataList.at(18), "CA", stream, 2);
         stream.replace("[CLIENT_CITY]", (dataList.at(19)+", "+dataList[20]).toStdString().c_str());
         stream.replace("[INVOICE_DATE]", dataList.at(2).toStdString().c_str());
         stream.replace("[INVOICE_NO]", dataList.at(1).toStdString().c_str());
@@ -244,8 +249,8 @@ void SVGInterface::printInvoice(QStringList dataList, QStringList roDetail)
             QMessageBox mb;
             mb.setText("Errorin Writing");
             mb.exec();
+            assert(svgFileW.open(QIODevice::WriteOnly));
         }
-        assert(svgFileW.open(QIODevice::WriteOnly));
         svgFileW.write(stream);
         svgFile.close();
         svgFileW.close();
