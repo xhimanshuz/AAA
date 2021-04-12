@@ -29,12 +29,7 @@ void SVGInterface::multiLine(int perLine, QString string, QString key, QByteArra
 
     int i =0;
     for(auto string: strList)
-    {
         stream.replace(QString("[%0_%1]").arg(key).arg(i++).toStdString().c_str(), string.toStdString().c_str());
-//        auto s = QString("[%0_%1]").arg(key).arg(i);
-//        s.replace(s,  string.toStdString().c_str());
-//        auto kp = "111";
-    }
 }
 
 const std::string SVGInterface::rightPadding(std::string string, int spaceSize)
