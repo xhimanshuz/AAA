@@ -208,15 +208,15 @@ void SVGInterface::printInvoice(QStringList dataList, QStringList roDetail)
         auto stream = svgFile.readAll();
 
         stream.replace("[RONO]", dataList.at(0).toHtmlEscaped().toStdString().c_str());
-        multiLine(23, roDetail.at(4).toHtmlEscaped(),"MEDIA_CENTRE", stream);
+        multiLine(20, roDetail.at(4).toHtmlEscaped(),"MEDIA_CENTRE", stream);
         stream.replace("[DATE]", dataList.at(2).toHtmlEscaped().toStdString().c_str());
-        multiLine(15, roDetail.at(12).toHtmlEscaped(), "SIZE_DUR", stream);
+        multiLine(14, roDetail.at(12).toHtmlEscaped(), "SIZE_DUR", stream);
         multiLine(15, dataList.at(16).toHtmlEscaped(), "TOTAL_DUR", stream);
         stream.replace("[HSN]", roDetail.at(35).toHtmlEscaped().toStdString().c_str());
         stream.replace("[RATE]", rightPadding(roDetail.at(17).toHtmlEscaped().toStdString(), 8).c_str());
         stream.replace("[PREMIUM]",rightPadding(dataList.at(0).toHtmlEscaped().toStdString(), 13).c_str());
         stream.replace("[AMOUNT]", rightPadding(dataList.at(4).toHtmlEscaped().toStdString(), 13).c_str());
-        stream.replace("[GROSS_AMOUNT]", rightPadding(dataList.at(4).toHtmlEscaped().toStdString(), 20).c_str());
+        stream.replace("[GROSS_AMT]", rightPadding(dataList.at(4).toHtmlEscaped().toStdString(), 20).c_str());
         stream.replace("[DISCOUNT]", rightPadding(dataList.at(6).toHtmlEscaped().toStdString(), 20).c_str());
         stream.replace("[AMT_AFT_DIS]", rightPadding(dataList.at(7).toHtmlEscaped().toStdString(), 20).c_str());
         stream.replace("[CGST]", rightPadding(dataList.at(9).toHtmlEscaped().toStdString(), 20).c_str());
@@ -224,7 +224,7 @@ void SVGInterface::printInvoice(QStringList dataList, QStringList roDetail)
         stream.replace("[IGST]", rightPadding(dataList.at(12).toHtmlEscaped().toStdString(), 20).c_str());
         stream.replace("[INVOICE_AMT]", rightPadding(dataList.at(14).toHtmlEscaped().toStdString(), 20).c_str());
         stream.replace("[CLIENT]", dataList.at(17).toHtmlEscaped().toStdString().c_str());
-        multiLine(60, dataList.at(18).toHtmlEscaped(), "CA", stream, 2);
+        multiLine(48, dataList.at(18).toHtmlEscaped(), "CA", stream, 2);
         stream.replace("[CLIENT_CITY]", (dataList.at(19).toHtmlEscaped()+", "+dataList[20].toHtmlEscaped()).toStdString().c_str());
         stream.replace("[INVOICE_DATE]", dataList.at(2).toHtmlEscaped().toStdString().c_str());
         stream.replace("[INVOICE_NO]", dataList.at(1).toHtmlEscaped().toStdString().c_str());
