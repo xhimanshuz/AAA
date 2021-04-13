@@ -15,7 +15,7 @@
    height="1121.3333"
    viewBox="0 0 793.33331 1121.3333"
    sodipodi:docname="invoice.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    inkscape:export-filename="/home/gnu/Documents/Codes/git/AAA/Data/PDFSample/Invoice.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"><style
@@ -49,13 +49,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1080"
+     inkscape:window-width="1366"
+     inkscape:window-height="768"
      id="namedview4"
      showgrid="false"
      inkscape:zoom="4.2500322"
      inkscape:cx="48.1214"
-     inkscape:cy="236.37802"
+     inkscape:cy="876.37317"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -147,28 +147,32 @@
            x="-222 -216.1698 -212.0862 -207.78735 -205.68405 -201.57585 -199.47255 -195.01994 -190.93636 -186.55756 -183.75314 -180.69659 -251.8 -246.99071 -241.7632 -239.6599 -234.45085 -230.2258 -120 -114.8955 -110.7873 -107.9829 -66 -61.633499 -59.530201 -55.85865 -51.775051 -47.537701 -42.433201 -38.054401 152.2 157.00929 161.11749 163.92191 183.05 187.55795 190.6145 194.6981 201.2048 203.30811 207.6869 214.1936 248.89999 253.67239 260.17911 264.40414 268.78296 273.16174"
            y="0"
            sodipodi:role="line"
-           id="tspan64">Media CentreRO No.DateSize/DurRatePremium%Amount</tspan></text><text
+           id="tspan64">Media CentreRO No.DateSize/DurRatePremium%Amount</tspan></text>
+<text
          transform="matrix(1,0,0,-1,492,-247.7)"
          style="font-variant:normal;font-weight:bold;font-size:8.25px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text70"><tspan
            x="0 5.973 11.64075 17.407499 22.8855 26.202 -270 -264.14249 -260.38049 -254.86951 -251.1075 -245.6295 -242.313"
            y="0"
            sodipodi:role="line"
-           id="tspan68">Code: State: </tspan></text><text
+           id="tspan68">Code: State: </tspan></text>
+<text
          transform="matrix(1,0,0,-1,252.45,-247.7)"
          style="font-variant:normal;font-weight:normal;font-size:8.25px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text74"><tspan
            sodipodi:role="line"
            id="tspan72"
            x="0"
-           y="0">[STATE]</tspan></text><text
+           y="0">[STATE]</tspan></text>
+<text
          transform="matrix(1,0,0,-1,24,-247.7)"
          style="font-variant:normal;font-weight:bold;font-size:8.25px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text78"><tspan
            x="0 6.6907501 12.54825 18.174749 22.679251 29.667 32.645248"
            y="0"
            sodipodi:role="line"
-           id="tspan76">GSTIN. [GSTIN]</tspan></text><text
+           id="tspan76">GSTIN. [GSTIN]</tspan></text>
+<text
          transform="matrix(1,0,0,-1,24,-54.85)"
          style="font-variant:normal;font-weight:bold;font-size:7.45px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text96"><tspan
@@ -203,42 +207,48 @@
            x="119.85 123.426 125.9739 131.27084 136.56779"
            y="10.9"
            sodipodi:role="line"
-           id="tspan94">- 09 </tspan></text><text
+           id="tspan94">- 09 </tspan></text>
+<text
          transform="matrix(1,0,0,-1,270.2,-40.85)"
          style="font-variant:normal;font-weight:bold;font-size:10.8px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text100"><tspan
            x="0 5.8968 15.0444 23.295601 32.475601 38.372398 46.191601"
            y="0"
            sodipodi:role="line"
-           id="tspan98">INVOICE</tspan></text><text
+           id="tspan98">INVOICE</tspan></text>
+<text
          transform="matrix(1,0,0,-1,318,-204.85)"
          style="font-variant:normal;font-weight:normal;font-size:7.45px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text104"><tspan
            x="0 5.2000999 10.2959 14.78825 19.377451 22.513901 28.37705"
            y="0"
            sodipodi:role="line"
-           id="tspan102">CAPTION</tspan></text><text
+           id="tspan102">CAPTION</tspan></text>
+<text
          transform="matrix(1,0,0,-1,318,-215.75)"
          style="font-variant:normal;font-weight:normal;font-size:7.45px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text108"><tspan
            sodipodi:role="line"
            id="tspan106"
            x="0"
-           y="0">[CAPTION]</tspan></text><text
+           y="0">[CAPTION]</tspan></text>
+<text
          transform="matrix(1,0,0,-1,450,-157.7)"
          style="font-variant:normal;font-weight:normal;font-size:8.25px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text112"><tspan
            x="0 3.4732499 9.6442499 15.28725 21.780001 25.25325 31.011749 36.22575 39.129749 45.300751 50.308498"
            y="0"
            sodipodi:role="line"
-           id="tspan110">INVOICE No.</tspan></text><text
+           id="tspan110">INVOICE No.</tspan></text>
+<text
          transform="matrix(1,0,0,-1,450,-170.15)"
          style="font-variant:normal;font-weight:bold;font-size:8.25px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text116"><tspan
            sodipodi:role="line"
            id="tspan114"
            x="0"
-           y="0">[INVOICE_NO]</tspan></text><text
+           y="0">[INVOICE_NO]</tspan></text>
+<text
          transform="matrix(1,0,0,-1,30,-157.7)"
          style="font-variant:normal;font-weight:normal;font-size:8.25px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text144"><tspan
@@ -285,7 +295,8 @@
            sodipodi:role="line"
            id="tspan142"
            x="0"
-           y="10.3125" /></text><g
+           y="10.3125" /></text>
+<g
          id="g146"
          transform="matrix(78,0,0,72,24,-141.75)"><image
            width="1"
@@ -313,7 +324,8 @@
            x="435.25 441.03119 447.0806 452.1615 458.39716 464.72964 470.55554 474.62326 479.91275 485.0011 491.1846 496.2804 501.56989 505.6376 511.67953 517.98969 523.77087 528.85181 534.90118 540.72711"
            y="42"
            sodipodi:role="line"
-           id="tspan166">AUTHORISED SIGNATURE</tspan></text><text
+           id="tspan166">AUTHORISED SIGNATURE</tspan></text>
+<text
          transform="matrix(1,0,0,-1,453.8,-711.25)"
          style="font-variant:normal;font-weight:normal;font-size:6.15px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text180"><tspan
@@ -332,21 +344,24 @@
            sodipodi:role="line"
            id="tspan178"
            x="0"
-           y="-28.3125" /></text><text
+           y="-28.3125" /></text>
+<text
          transform="matrix(1,0,0,-1,30,-675.75)"
          style="font-variant:normal;font-weight:bold;font-size:6.6px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text184"><tspan
            x="0 5.1612 9.5436001 16.5264 20.9352 24.215401 28.643999"
            y="0"
            sodipodi:role="line"
-           id="tspan182">Remark:</tspan></text><text
+           id="tspan182">Remark:</tspan></text>
+<text
          transform="matrix(1,0,0,-1,30,-685.35)"
          style="font-variant:normal;font-weight:normal;font-size:6.6px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text192"><tspan
            sodipodi:role="line"
            id="tspan190"
            x="0"
-           y="0">[REMARK_0]</tspan></text><text
+           y="0">[REMARK_0]</tspan></text>
+<text
          transform="matrix(1,0,0,-1,461.25,-735.25)"
          style="font-variant:normal;font-weight:normal;font-size:6.15px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text210"><tspan
@@ -369,14 +384,16 @@
            x="0"
            sodipodi:role="line"
            id="tspan208"
-           y="-4.3125" /></text><text
+           y="-4.3125" /></text>
+<text
          transform="matrix(1,0,0,-1,288.3,-678.85)"
          style="font-variant:normal;font-weight:bold;font-size:9.1px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text218"><tspan
            x="0 7.0616002 12.4124 17.763201 24.0149 30.494101 36.973301 41.122898 44.2351 51.788101 57.830502 61.980099 68.058899 71.171097 74.283302 79.679604"
            y="0"
            sodipodi:role="line"
-           id="tspan216">Account Details:</tspan></text><text
+           id="tspan216">Account Details:</tspan></text>
+<text
          transform="matrix(1,0,0,-1,278.6,-689.3)"
          style="font-variant:normal;font-weight:bold;font-size:6.6px;font-family:Verdana;-inkscape-font-specification:'Verdana Bold';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          id="text230"><tspan
@@ -399,7 +416,8 @@
            x="5.0999999 8.7035999 11.4888 15.4026 19.2834 21.5406 25.4214 29.955601 34.569 38.951401 42.1194 44.376598 49.465199 54.5868 59.748001 64.777199 69.469803 74.162399 78.855003 83.5476 88.240196 92.9328"
            y="38.400002"
            sodipodi:role="line"
-           id="tspan228">Ifsc code- KARB0000524</tspan></text><text
+           id="tspan228">Ifsc code- KARB0000524</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="512.48438"
@@ -410,7 +428,8 @@
            id="tspan1161"
            x="512.48438"
            y="698.38086"
-           style="font-size:6px;stroke-width:0.75">[AMT_AFT_DIS]</tspan></text><text
+           style="font-size:6px;stroke-width:0.75">[AMT_AFT_DIS]</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="512.48438"
@@ -421,7 +440,8 @@
            id="tspan1161-2"
            x="512.48438"
            y="686.59589"
-           style="font-size:6px;stroke-width:0.75">[DISCOUNT]</tspan></text><text
+           style="font-size:6px;stroke-width:0.75">[DISCOUNT]</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="512.48438"
@@ -432,7 +452,8 @@
            id="tspan1161-8"
            x="512.48438"
            y="732.79657"
-           style="font-size:6px;stroke-width:0.75">[IGST]</tspan></text><text
+           style="font-size:6px;stroke-width:0.75">[IGST]</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="512.48438"
@@ -443,7 +464,8 @@
            id="tspan1161-9"
            x="512.48438"
            y="709.11658"
-           style="font-size:6px;stroke-width:0.75">[CGST]</tspan></text><text
+           style="font-size:6px;stroke-width:0.75">[CGST]</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="512.48438"
@@ -454,7 +476,8 @@
            id="tspan1161-0"
            x="512.48438"
            y="721.43799"
-           style="font-size:6px;stroke-width:0.75">[SGST]</tspan></text><text
+           style="font-size:6px;stroke-width:0.75">[SGST]</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="512.48438"
@@ -465,7 +488,8 @@
            id="tspan1161-7"
            x="512.48438"
            y="674.85638"
-           style="font-size:6px;stroke-width:0.75">[GROSS_AMOUNT]</tspan></text><text
+           style="font-size:6px;stroke-width:0.75">[GROSS_AMOUNT]</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="512.48438"
@@ -476,7 +500,8 @@
            id="tspan1161-92"
            x="512.48438"
            y="745.07941"
-           style="font-weight:bold;font-size:6px;stroke-width:0.75">[INVOICE_AMT]</tspan></text><text
+           style="font-weight:bold;font-size:6px;stroke-width:0.75">[INVOICE_AMT]</tspan></text>
+<text
          xml:space="preserve"
          style="font-size:9.99998px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
          x="317.90799"
@@ -487,7 +512,8 @@
            id="tspan1609"
            x="317.90799"
            y="169.73242"
-           style="stroke-width:0.75">[INVOICE_DATE]</tspan></text><text
+           style="stroke-width:0.75">[INVOICE_DATE]</tspan></text>
+<text
          style="font-variant:normal;font-weight:normal;font-size:6.6px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.999998"
          id="text192-9"
          x="29.844707"
@@ -497,7 +523,8 @@
            id="tspan190-1"
            x="29.844707"
            y="693.55536"
-           style="stroke-width:0.999998">[REMARK_1]</tspan></text><text
+           style="stroke-width:0.999998">[REMARK_1]</tspan></text>
+<text
          style="font-variant:normal;font-weight:normal;font-size:6.6px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.999998"
          id="text192-2"
          x="29.73089"
@@ -507,7 +534,8 @@
            id="tspan190-7"
            x="29.73089"
            y="701.80774"
-           style="stroke-width:0.999998">[REMARK_2]</tspan></text><text
+           style="stroke-width:0.999998">[REMARK_2]</tspan></text>
+<text
          style="font-variant:normal;font-weight:normal;font-size:6.6px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.999998"
          id="text192-2-3"
          x="29.807014"
@@ -517,10 +545,12 @@
            id="tspan190-7-6"
            x="29.807014"
            y="710.84393"
-           style="stroke-width:0.999998">[REMARK_3]</tspan></text></g><text
+           style="stroke-width:0.999998">[REMARK_3]</tspan></text>
+</g><text
        xml:space="preserve"
        id="text1057"
-       style="line-height:1.25;font-family:sans-serif;font-size:10.00000025px;white-space:pre;shape-inside:url(#rect1059);" /><text
+       style="line-height:1.25;font-family:sans-serif;font-size:10.00000025px;white-space:pre;shape-inside:url(#rect1059);" />
+<text
        xml:space="preserve"
        style="font-size:6.00001px;line-height:1.25;font-family:sans-serif;stroke-width:0.750001"
        x="28.478443"
@@ -531,7 +561,8 @@
          id="tspan1063"
          x="28.478443"
          y="301.50909"
-         style="font-size:6.00001px;stroke-width:0.750001">[RONO]</tspan></text><text
+         style="font-size:6.00001px;stroke-width:0.750001">[RONO]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="63.234375"
@@ -542,7 +573,8 @@
          id="tspan1063-6"
          x="63.234375"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[MEDIA_CENTRE_0]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[MEDIA_CENTRE_0]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="166.59715"
@@ -553,7 +585,8 @@
          id="tspan1063-6-5"
          x="166.59715"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[DATE]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[DATE]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="222.07397"
@@ -564,7 +597,8 @@
          id="tspan1063-6-5-5"
          x="222.07397"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[SIZE_DUR_0]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[SIZE_DUR_0]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="286.53293"
@@ -575,7 +609,8 @@
          id="tspan1063-6-5-2"
          x="286.53293"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[TOTAL_DUR_0]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[TOTAL_DUR_0]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="369.60513"
@@ -586,7 +621,8 @@
          id="tspan1063-6-5-1"
          x="369.60513"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[HSN]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[HSN]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="422.42587"
@@ -597,7 +633,8 @@
          id="tspan1063-6-5-7"
          x="422.42587"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[RATE]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[RATE]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="467.20737"
@@ -608,7 +645,8 @@
          id="tspan1063-6-5-9"
          x="467.20737"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[PREMIUM]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[PREMIUM]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;stroke-width:0.75"
        x="527.82471"
@@ -619,7 +657,8 @@
          id="tspan1063-6-5-0"
          x="527.82471"
          y="301.50861"
-         style="font-size:6px;stroke-width:0.75">[AMOUNT]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[AMOUNT]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:8px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="519.58179"
@@ -630,7 +669,8 @@
          id="tspan2332"
          x="519.58179"
          y="247.47829"
-         style="font-size:8px;stroke-width:0.75">[CODE]</tspan></text><path
+         style="font-size:8px;stroke-width:0.75">[CODE]</tspan></text>
+<path
        style="fill:none;stroke:#000000;stroke-width:0.75px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 24.5,-255.75 545.5,-0.5"
        id="path217"
@@ -651,7 +691,8 @@
          id="tspan1063-6-5-5-6"
          x="221.98618"
          y="309.00861"
-         style="font-size:6px;stroke-width:0.75">[SIZE_DUR_1]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[SIZE_DUR_1]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="221.98895"
@@ -662,7 +703,8 @@
          id="tspan1063-6-5-5-6-5"
          x="221.98895"
          y="316.50861"
-         style="font-size:6px;stroke-width:0.75">[SIZE_DUR_2]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[SIZE_DUR_2]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="286.4838"
@@ -673,7 +715,8 @@
          id="tspan1063-6-5-2-5"
          x="286.4838"
          y="309.00861"
-         style="font-size:6px;stroke-width:0.75">[TOTAL_DUR_1]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[TOTAL_DUR_1]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="286.68958"
@@ -684,7 +727,8 @@
          id="tspan1063-6-5-2-2"
          x="286.68958"
          y="316.50861"
-         style="font-size:6px;stroke-width:0.75">[TOTAL_DUR_2]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[TOTAL_DUR_2]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="63.234375"
@@ -695,7 +739,8 @@
          id="tspan1063-6-6"
          x="63.234375"
          y="308.53806"
-         style="font-size:6px;stroke-width:0.75">[MEDIA_CENTRE_1]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[MEDIA_CENTRE_1]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:sans-serif;stroke-width:0.75"
        x="63.234375"
@@ -706,7 +751,8 @@
          id="tspan1063-6-3"
          x="63.234375"
          y="316.03806"
-         style="font-size:6px;stroke-width:0.75">[MEDIA_CENTRE_2]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[MEDIA_CENTRE_2]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans';stroke-width:0.75"
        x="30.984375"
@@ -717,7 +763,8 @@
          id="tspan168"
          x="30.984375"
          y="170.54106"
-         style="font-size:6px;stroke-width:0.75">[CLIENT]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[CLIENT]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans';stroke-width:0.75"
        x="30.984375"
@@ -728,7 +775,8 @@
          id="tspan173"
          x="30.984375"
          y="179.49785"
-         style="font-size:6px;stroke-width:0.75">[CLIENTADDRESS_0]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[CA_0]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans';stroke-width:0.75"
        x="30.926456"
@@ -739,7 +787,8 @@
          id="tspan177"
          x="30.926456"
          y="187.79047"
-         style="font-size:6px;stroke-width:0.75">[CLIENTADDRESS_1]</tspan></text><text
+         style="font-size:6px;stroke-width:0.75">[CA_1]</tspan></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans';stroke-width:0.75"
        x="30.984375"
@@ -750,7 +799,8 @@
          id="tspan181"
          x="30.984375"
          y="196.56841"
-         style="font-size:6px;stroke-width:0.75" /></text><text
+         style="font-size:6px;stroke-width:0.75" /></text>
+<text
        xml:space="preserve"
        style="font-size:6px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans';stroke-width:0.75"
        x="31.372383"
@@ -761,4 +811,5 @@
          id="tspan171"
          x="31.372383"
          y="195.79427"
-         style="font-size:6px;stroke-width:0.75">[CLIENT_CITY]</tspan></text></g></svg>
+         style="font-size:6px;stroke-width:0.75">[CLIENT_CITY]</tspan></text>
+</g></svg>
